@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             btnSearch = new Button();
             txtFilePattern = new TextBox();
             txtContainingText = new TextBox();
@@ -35,6 +36,8 @@
             grdResult = new DataGridView();
             colName = new DataGridViewTextBoxColumn();
             colLocation = new DataGridViewTextBoxColumn();
+            colSize = new DataGridViewTextBoxColumn();
+            colLastModified = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)grdResult).BeginInit();
             SuspendLayout();
             // 
@@ -78,7 +81,7 @@
             // 
             grdResult.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             grdResult.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            grdResult.Columns.AddRange(new DataGridViewColumn[] { colName, colLocation });
+            grdResult.Columns.AddRange(new DataGridViewColumn[] { colName, colLocation, colSize, colLastModified });
             grdResult.Location = new Point(22, 269);
             grdResult.Name = "grdResult";
             grdResult.ReadOnly = true;
@@ -102,6 +105,26 @@
             colLocation.Name = "colLocation";
             colLocation.ReadOnly = true;
             colLocation.Width = 125;
+            // 
+            // colSize
+            // 
+            colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
+            colSize.DefaultCellStyle = dataGridViewCellStyle1;
+            colSize.HeaderText = "Size";
+            colSize.MinimumWidth = 6;
+            colSize.Name = "colSize";
+            colSize.ReadOnly = true;
+            colSize.Width = 65;
+            // 
+            // colLastModified
+            // 
+            colLastModified.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            colLastModified.HeaderText = "Modified";
+            colLastModified.MinimumWidth = 6;
+            colLastModified.Name = "colLastModified";
+            colLastModified.ReadOnly = true;
+            colLastModified.Width = 200;
             // 
             // Form1
             // 
@@ -129,5 +152,7 @@
         private DataGridView grdResult;
         private DataGridViewTextBoxColumn colName;
         private DataGridViewTextBoxColumn colLocation;
+        private DataGridViewTextBoxColumn colSize;
+        private DataGridViewTextBoxColumn colLastModified;
     }
 }

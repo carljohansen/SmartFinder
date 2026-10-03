@@ -19,7 +19,8 @@ namespace SharpExplorer
 
             await foreach (var item in search.SearchFilesAsync(directoryPath, searchPattern))
             {
-                grdResult.Rows.Add(item.Name, item.Location);
+                item.InitializeMetadata();
+                grdResult.Rows.Add(item.Name, item.Location, item.SizeDisplay, item.LastModified);
             }
         }
     }
