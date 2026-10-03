@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SharpExplorer.Domain/SharpExplorer.Domain.csproj" />
+  <Project Path="SharpExplorer/SharpExplorer.csproj" />
+</Solution>
