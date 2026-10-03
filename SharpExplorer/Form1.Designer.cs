@@ -90,6 +90,7 @@
             grdResult.Size = new Size(974, 286);
             grdResult.TabIndex = 4;
             grdResult.CellClick += grdResult_CellClick;
+            grdResult.SortCompare += grdResult_SortCompare;
             // 
             // colName
             // 
