@@ -18,13 +18,23 @@ namespace SharpExplorer
             var searchPatternCollection = PathCollection.Create(searchPatterns);
             var directoryPath = txtRootDir.Text;
             var query = txtContainingText.Text.Trim();
-
+            var doMatchCase = chkMatchCase.Checked;
+            var doMatchWholeWord = chkMatchWholeWord.Checked;
+            var options = TextMatchingOptions.None;
+            if (doMatchCase)
+            {
+                options |= TextMatchingOptions.CaseSensitive;
+            }
+            if (doMatchWholeWord)
+            {
+                options |= TextMatchingOptions.WholeWord;
+            }
             grdResult.Rows.Clear();
 
             _currentSearch = new FileSearch();
             if (!string.IsNullOrWhiteSpace(query))
             {
-                _currentSearch.TextSearches.Add(new AtomicTextMatch(query, TextMatchingOptions.None));
+                _currentSearch.TextSearches.Add(new AtomicTextMatch(query, options));
             }
 
             foreach (var searchPattern in searchPatternCollection.Paths)
@@ -66,6 +76,30 @@ namespace SharpExplorer
                 var size2 = grdResult.Rows[e.RowIndex2].Tag is FileDisplay file2 ? file2.Size : 0;
                 e.SortResult = size1 < size2 ? -1 : (size1 > size2 ? 1 : 0);
             }
+        }
+
+        private void mnuCopyPath_Click(object sender, EventArgs e)
+        {
+            if (contextMenuRowIndex < 0)
+            {
+                return;
+            }
+
+            var selectedRow = grdResult.Rows[contextMenuRowIndex];
+            var selectedFilePath = selectedRow.Tag is FileDisplay fileDisplay ? fileDisplay.FullPath : null;
+            if (selectedFilePath != null)
+            {
+                Clipboard.SetText(selectedFilePath);
+            }
+        }
+
+        private int contextMenuRowIndex = -1;
+
+        
+
+        private void grdResult_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
+        {
+            var x = e.RowIndex;
         }
     }
 }

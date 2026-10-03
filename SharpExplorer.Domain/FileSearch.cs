@@ -51,6 +51,11 @@ public class FileSearch
 
     public IReadOnlyCollection<FileLineTextMatch> GetMatches(string filePath)
     {
+        if (TextSearches.Count == 0)
+        {
+            return [];
+        }
+
         var firstChecker = new FileTextMatcher(null, TextSearches.First());
         return firstChecker.GetMatches(filePath);
     }
