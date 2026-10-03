@@ -58,7 +58,7 @@
             txtFilePattern.Name = "txtFilePattern";
             txtFilePattern.Size = new Size(886, 27);
             txtFilePattern.TabIndex = 0;
-            txtFilePattern.Text = "**/*.jpg";
+            txtFilePattern.Text = "**/*.txt";
             // 
             // txtContainingText
             // 
