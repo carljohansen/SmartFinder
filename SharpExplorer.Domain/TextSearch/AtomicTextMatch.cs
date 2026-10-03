@@ -2,6 +2,8 @@
 
 public class AtomicTextMatch(string TextPattern, TextMatchingOptions Options)
 {
+    public readonly int Length = TextPattern.Length;
+
     public int FindInLine(string line)
     {
         var comparisonType = Options.HasFlag(TextMatchingOptions.CaseSensitive) ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;

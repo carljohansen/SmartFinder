@@ -89,6 +89,7 @@
             grdResult.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             grdResult.Size = new Size(974, 286);
             grdResult.TabIndex = 4;
+            grdResult.CellClick += grdResult_CellClick;
             // 
             // colName
             // 
