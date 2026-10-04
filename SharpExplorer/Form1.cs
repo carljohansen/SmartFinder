@@ -20,10 +20,9 @@ namespace SharpExplorer
 
         private FileSearch _currentSearch;
 
-        private async void btnSearch_Click(object sender, EventArgs e)
+        private UserSearchDto CreateUserSearchDto()
         {
             var searchPatterns = txtFilePattern.Text;
-            var searchPatternCollection = PathCollection.Create(searchPatterns);
             var directoryPath = txtRootDir.Text;
             var query = txtContainingText.Text.Trim();
             var doMatchCase = chkMatchCase.Checked;
@@ -37,17 +36,33 @@ namespace SharpExplorer
             {
                 options |= TextMatchingOptions.WholeWord;
             }
+
+            return new UserSearchDto
+            {
+                RawIncludeFilesPattern = searchPatterns,
+                RawExcludeFilesPattern = string.Empty,
+                TextSearchPattern = query,
+                TextMatchingOptions = options,
+                BaseDirectoriesPattern = directoryPath
+            };
+        }
+
+        private async void btnSearch_Click(object sender, EventArgs e)
+        {
+            var searchDto = CreateUserSearchDto();
+            var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern);
+
             grdResult.Rows.Clear();
 
             _currentSearch = new FileSearch();
-            if (!string.IsNullOrWhiteSpace(query))
+            if (searchDto.HasTextSearch())
             {
-                _currentSearch.TextSearches.Add(new AtomicTextMatch(query, options));
+                _currentSearch.TextSearches.Add(new AtomicTextMatch(searchDto.TextSearchPattern, searchDto.TextMatchingOptions));
             }
 
             foreach (var searchPattern in searchPatternCollection.Paths)
             {
-                await foreach (var item in _currentSearch.SearchFilesAsync(directoryPath, searchPattern))
+                await foreach (var item in _currentSearch.SearchFilesAsync(searchDto.BaseDirectoriesPattern, searchPattern))
                 {
                     item.InitializeMetadata();
                     var newRowIndex = grdResult.Rows.Add(item.Name, item.Location, item.SizeDisplay, item.LastModified);
