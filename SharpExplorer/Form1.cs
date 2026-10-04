@@ -5,6 +5,8 @@ namespace SharpExplorer
 {
     public partial class Form1 : Form
     {
+        private readonly Brush[] brushes = new[] { Color.Black, Color.Orange }.Select(c => new SolidBrush(c)).ToArray();
+
         public Form1()
         {
             InitializeComponent();
@@ -51,21 +53,15 @@ namespace SharpExplorer
             {
                 grdResult.Sort(grdResult.SortedColumn, grdResult.SortOrder == SortOrder.Ascending ? System.ComponentModel.ListSortDirection.Ascending : System.ComponentModel.ListSortDirection.Descending);
             }
-        }
 
-        private void grdResult_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0)
+            if(grdResult.Rows.Count > 0)
             {
-                return;
-            }
-
-            var selectedRow = grdResult.Rows[e.RowIndex];
-            if (selectedRow.Tag is FileDisplay fileDisplay)
-            {
-                var matches = _currentSearch.GetMatches(fileDisplay.FullPath);
+                grdResult.Rows[0].Selected = true;
+                grdResult.CurrentCell = grdResult.Rows[0].Cells[0];
+                grdResult.Focus();
             }
         }
+
 
         private void grdResult_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
         {
@@ -95,11 +91,80 @@ namespace SharpExplorer
 
         private int contextMenuRowIndex = -1;
 
-        
+
 
         private void grdResult_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
         {
             var x = e.RowIndex;
+        }
+
+        private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+
+        }
+
+        private void grdResult_CellClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void lstTextMatches_DrawItem(object sender, DrawListViewItemEventArgs e)
+        {
+            if (e.ItemIndex < 0) return;
+
+            var itemUnderlyingMatches = lstTextMatches.Items[e.ItemIndex].Tag as FileLineTextMatch;
+
+            if (itemUnderlyingMatches == null)
+            {
+                return;
+            }
+
+            var textSegments = itemUnderlyingMatches.GetSegments();
+
+            e.DrawBackground();
+
+            Font font = lstTextMatches.Font;
+            float xPos = e.Bounds.Left;
+
+            using Graphics g = e.Graphics;
+
+            foreach (var segment in textSegments)
+            {
+                string segmentText = segment.SegmentText;
+                Brush brush = brushes[segment.SegmentColourIndex];
+                g.DrawString(segmentText, font, brush, xPos, e.Bounds.Top);
+                xPos += g.MeasureString(segmentText, font).Width;
+            }
+
+            e.DrawFocusRectangle();
+        }
+
+        private void grdResult_RowEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
+            var selectedRow = grdResult.Rows[e.RowIndex];
+            if (selectedRow.Tag is FileDisplay fileDisplay)
+            {
+                var matches = _currentSearch.GetMatches(fileDisplay.FullPath);
+                lstTextMatches.Items.Clear();
+                foreach (var match in matches)
+                {
+                    var newItem = lstTextMatches.Items.Add(match.Line);
+                    newItem.Tag = match;
+                }
+            }
+        }
+
+        private void txtContainingText_Enter(object sender, EventArgs e)
+        {
+            if(sender is TextBox textBox)
+            {
+                textBox.SelectAll();
+            }
         }
     }
 }
