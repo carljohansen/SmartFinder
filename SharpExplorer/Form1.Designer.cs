@@ -172,7 +172,6 @@
             spltResultPanel.Size = new Size(984, 298);
             spltResultPanel.SplitterDistance = 710;
             spltResultPanel.TabIndex = 101;
-            spltResultPanel.SplitterMoved += splitContainer1_SplitterMoved;
             // 
             // grdResult
             // 
@@ -189,7 +188,6 @@
             grdResult.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             grdResult.Size = new Size(707, 292);
             grdResult.TabIndex = 100;
-            grdResult.CellClick += grdResult_CellClick_1;
             grdResult.RowEnter += grdResult_RowEnter;
             // 
             // colName

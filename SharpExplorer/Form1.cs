@@ -83,7 +83,6 @@ namespace SharpExplorer
             }
         }
 
-
         private void grdResult_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
         {
             if (e.Column == grdResult.Columns["colSize"])
@@ -111,23 +110,6 @@ namespace SharpExplorer
         }
 
         private int contextMenuRowIndex = -1;
-
-
-
-        private void grdResult_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
-        {
-            var x = e.RowIndex;
-        }
-
-        private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
-        {
-
-        }
-
-        private void grdResult_CellClick_1(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
 
         private void lstTextMatches_DrawItem(object sender, DrawListViewItemEventArgs e)
         {

@@ -21,7 +21,7 @@ public class FileSearch
 
     private async IAsyncEnumerable<FileDisplay> SearchFilesInternalAsync(string baseDiretory, string pattern, FileTextMatcher[] textChecks)
     {
-        var rawFiles = FileSearcher.DoSearch(baseDiretory, pattern);
+        var rawFiles = await Task.Run(() => FileSearcher.DoSearch(baseDiretory, pattern));
         if (!rawFiles.HasMatches)
         {
             yield break;
