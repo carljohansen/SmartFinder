@@ -91,7 +91,7 @@
             txtRootDir.Name = "txtRootDir";
             txtRootDir.Size = new Size(834, 27);
             txtRootDir.TabIndex = 7;
-            txtRootDir.Text = "S:\\mod";
+            txtRootDir.Text = "S:\\Text";
             // 
             // mnuFileItemContext
             // 

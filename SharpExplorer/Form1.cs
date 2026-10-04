@@ -6,10 +6,16 @@ namespace SharpExplorer
     public partial class Form1 : Form
     {
         private readonly Brush[] brushes = new[] { Color.Black, Color.Orange }.Select(c => new SolidBrush(c)).ToArray();
-
+        private readonly StringFormat _formatForMeasuring;
         public Form1()
         {
             InitializeComponent();
+            _formatForMeasuring = new(StringFormat.GenericTypographic)
+            {
+                Alignment = StringAlignment.Center,
+                Trimming = StringTrimming.None
+            };
+            _formatForMeasuring.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
         }
 
         private FileSearch _currentSearch;
@@ -54,7 +60,7 @@ namespace SharpExplorer
                 grdResult.Sort(grdResult.SortedColumn, grdResult.SortOrder == SortOrder.Ascending ? System.ComponentModel.ListSortDirection.Ascending : System.ComponentModel.ListSortDirection.Descending);
             }
 
-            if(grdResult.Rows.Count > 0)
+            if (grdResult.Rows.Count > 0)
             {
                 grdResult.Rows[0].Selected = true;
                 grdResult.CurrentCell = grdResult.Rows[0].Cells[0];
@@ -124,6 +130,7 @@ namespace SharpExplorer
             e.DrawBackground();
 
             Font font = lstTextMatches.Font;
+            using var highlightFont = new Font(font.FontFamily, font.Size, FontStyle.Bold, font.Unit, font.GdiCharSet, font.GdiVerticalFont);
             float xPos = e.Bounds.Left;
 
             using Graphics g = e.Graphics;
@@ -132,8 +139,9 @@ namespace SharpExplorer
             {
                 string segmentText = segment.SegmentText;
                 Brush brush = brushes[segment.SegmentColourIndex];
-                g.DrawString(segmentText, font, brush, xPos, e.Bounds.Top);
-                xPos += g.MeasureString(segmentText, font).Width;
+                var segmentFont = segment.SegmentColourIndex == 0 ? font : highlightFont;
+                g.DrawString(segmentText, segmentFont, brush, xPos, e.Bounds.Top, StringFormat.GenericTypographic);
+                xPos += g.MeasureString(segmentText, segmentFont, 0, _formatForMeasuring).Width;
             }
 
             e.DrawFocusRectangle();
@@ -161,7 +169,7 @@ namespace SharpExplorer
 
         private void txtContainingText_Enter(object sender, EventArgs e)
         {
-            if(sender is TextBox textBox)
+            if (sender is TextBox textBox)
             {
                 textBox.SelectAll();
             }

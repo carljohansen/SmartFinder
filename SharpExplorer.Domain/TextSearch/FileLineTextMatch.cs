@@ -14,9 +14,10 @@ public record FileLineTextMatch(string Line, int LineNumber, int StartPos, int L
         }
 
         // For longer lines, return a substring and adjusted start position
-        int numCharsAround = (maxLineLength - Length) / 2;
-        int contextStringStartPos = Math.Max(0, StartPos - numCharsAround);
-        int contextStringEndPos = Math.Min(Line.Length, StartPos + Length + numCharsAround);
+        const int numCharsBefore = 20;
+        var numCharsAfter = maxLineLength - numCharsBefore - Length;
+        int contextStringStartPos = Math.Max(0, StartPos - numCharsBefore);
+        int contextStringEndPos = Math.Min(Line.Length, StartPos + Length + numCharsAfter);
 
         var optimizedLine = Line[contextStringStartPos..contextStringEndPos];
         var optimizedStartPos = StartPos - contextStringStartPos;
@@ -35,7 +36,7 @@ public record FileLineTextMatch(string Line, int LineNumber, int StartPos, int L
 
     public MatchSegmentDisplay[] GetSegments()
     {
-        var (optimizedLine, optimizedStartPos) = GetOptimizedLine(80);
+        var (optimizedLine, optimizedStartPos) = GetOptimizedLine(200);
         var segments = new List<MatchSegmentDisplay>();
         if (StartPos > 0)
         {
