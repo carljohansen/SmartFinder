@@ -6,15 +6,22 @@ namespace SharpExplorer.Domain;
 
 public static class FileSearcher
 {
-    public static PatternMatchingResult DoSearch(string directoryPath, string pattern)
+    public static PatternMatchingResult DoSearch(string directoryPath, PathCollection includePatterns, PathCollection excludePatterns)
     {
         try
         {
             // Create matcher and add pattern
             var matcher = new Matcher();
-            matcher.AddInclude(pattern);
+            foreach (var pattern in includePatterns.Paths)
+            {
+                matcher.AddInclude(pattern);
+            }
 
             matcher.AddExclude(@"\System Volume Information\**");
+            foreach (var pattern in excludePatterns.Paths)
+            {
+                matcher.AddExclude(pattern);
+            }
 
             // Wrap directory for globbing
             var directoryInfo = new DirectoryInfo(directoryPath);

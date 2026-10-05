@@ -29,13 +29,14 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             btnSearch = new Button();
             txtFilePattern = new TextBox();
             txtContainingText = new TextBox();
             txtRootDir = new TextBox();
             mnuFileItemContext = new ContextMenuStrip(components);
             mnuCopyPath = new ToolStripMenuItem();
+            mnuShowInExplorer = new ToolStripMenuItem();
             chkMatchCase = new CheckBox();
             chkMatchWholeWord = new CheckBox();
             label1 = new Label();
@@ -48,6 +49,8 @@
             colSize = new DataGridViewTextBoxColumn();
             colLastModified = new DataGridViewTextBoxColumn();
             lstTextMatches = new ListView();
+            label4 = new Label();
+            txtExceptFilePattern = new TextBox();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -69,52 +72,61 @@
             // txtFilePattern
             // 
             txtFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtFilePattern.Location = new Point(140, 39);
+            txtFilePattern.Location = new Point(140, 35);
             txtFilePattern.Name = "txtFilePattern";
             txtFilePattern.Size = new Size(834, 27);
             txtFilePattern.TabIndex = 1;
-            txtFilePattern.Text = "**/*.txt";
+            txtFilePattern.Text = "*.txt";
+            txtFilePattern.Enter += txtFilePattern_Enter;
             // 
             // txtContainingText
             // 
             txtContainingText.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtContainingText.Location = new Point(140, 98);
+            txtContainingText.Location = new Point(140, 125);
             txtContainingText.Name = "txtContainingText";
             txtContainingText.Size = new Size(714, 27);
-            txtContainingText.TabIndex = 3;
+            txtContainingText.TabIndex = 5;
             txtContainingText.Enter += txtContainingText_Enter;
             // 
             // txtRootDir
             // 
             txtRootDir.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtRootDir.Location = new Point(140, 158);
+            txtRootDir.Location = new Point(140, 185);
             txtRootDir.Name = "txtRootDir";
             txtRootDir.Size = new Size(834, 27);
             txtRootDir.TabIndex = 7;
             txtRootDir.Text = "S:\\Text";
+            txtRootDir.Enter += txtRootDir_Enter;
             // 
             // mnuFileItemContext
             // 
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
-            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuCopyPath });
+            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuCopyPath, mnuShowInExplorer });
             mnuFileItemContext.Name = "mnuFileItemContext";
-            mnuFileItemContext.Size = new Size(172, 28);
+            mnuFileItemContext.Size = new Size(237, 52);
             // 
             // mnuCopyPath
             // 
             mnuCopyPath.Name = "mnuCopyPath";
-            mnuCopyPath.Size = new Size(171, 24);
+            mnuCopyPath.Size = new Size(236, 24);
             mnuCopyPath.Text = "Copy Full Path";
             mnuCopyPath.Click += mnuCopyPath_Click;
+            // 
+            // mnuShowInExplorer
+            // 
+            mnuShowInExplorer.Name = "mnuShowInExplorer";
+            mnuShowInExplorer.Size = new Size(236, 24);
+            mnuShowInExplorer.Text = "Open Containing Folder";
+            mnuShowInExplorer.Click += mnuShowInExplorer_Click;
             // 
             // chkMatchCase
             // 
             chkMatchCase.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chkMatchCase.AutoSize = true;
-            chkMatchCase.Location = new Point(864, 83);
+            chkMatchCase.Location = new Point(864, 110);
             chkMatchCase.Name = "chkMatchCase";
             chkMatchCase.Size = new Size(107, 24);
-            chkMatchCase.TabIndex = 4;
+            chkMatchCase.TabIndex = 9;
             chkMatchCase.Text = "Match &Case";
             chkMatchCase.UseVisualStyleBackColor = true;
             // 
@@ -122,17 +134,17 @@
             // 
             chkMatchWholeWord.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chkMatchWholeWord.AutoSize = true;
-            chkMatchWholeWord.Location = new Point(864, 119);
+            chkMatchWholeWord.Location = new Point(864, 146);
             chkMatchWholeWord.Name = "chkMatchWholeWord";
             chkMatchWholeWord.Size = new Size(114, 24);
-            chkMatchWholeWord.TabIndex = 5;
+            chkMatchWholeWord.TabIndex = 10;
             chkMatchWholeWord.Text = "Whole &Word";
             chkMatchWholeWord.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(23, 46);
+            label1.Location = new Point(27, 42);
             label1.Name = "label1";
             label1.Size = new Size(76, 20);
             label1.TabIndex = 0;
@@ -141,16 +153,16 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(22, 101);
+            label2.Location = new Point(23, 128);
             label2.Name = "label2";
             label2.Size = new Size(113, 20);
-            label2.TabIndex = 2;
+            label2.TabIndex = 4;
             label2.Text = "Containing &text:";
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(22, 158);
+            label3.Location = new Point(23, 188);
             label3.Name = "label3";
             label3.Size = new Size(60, 20);
             label3.TabIndex = 6;
@@ -210,8 +222,8 @@
             // colSize
             // 
             colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleRight;
-            colSize.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
+            colSize.DefaultCellStyle = dataGridViewCellStyle1;
             colSize.HeaderText = "Size";
             colSize.MinimumWidth = 6;
             colSize.Name = "colSize";
@@ -230,20 +242,41 @@
             // lstTextMatches
             // 
             lstTextMatches.Dock = DockStyle.Fill;
+            lstTextMatches.HeaderStyle = ColumnHeaderStyle.None;
             lstTextMatches.Location = new Point(0, 0);
             lstTextMatches.Name = "lstTextMatches";
             lstTextMatches.OwnerDraw = true;
             lstTextMatches.Size = new Size(270, 298);
             lstTextMatches.TabIndex = 102;
             lstTextMatches.UseCompatibleStateImageBehavior = false;
-            lstTextMatches.View = View.List;
+            lstTextMatches.View = View.Details;
             lstTextMatches.DrawItem += lstTextMatches_DrawItem;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(27, 80);
+            label4.Name = "label4";
+            label4.Size = new Size(56, 20);
+            label4.TabIndex = 2;
+            label4.Text = "E&xcept:";
+            // 
+            // txtExceptFilePattern
+            // 
+            txtExceptFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtExceptFilePattern.Location = new Point(140, 77);
+            txtExceptFilePattern.Name = "txtExceptFilePattern";
+            txtExceptFilePattern.Size = new Size(834, 27);
+            txtExceptFilePattern.TabIndex = 3;
+            txtExceptFilePattern.Enter += txtExceptFilePattern_Enter;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1008, 564);
+            Controls.Add(label4);
+            Controls.Add(txtExceptFilePattern);
             Controls.Add(spltResultPanel);
             Controls.Add(label3);
             Controls.Add(label2);
@@ -287,5 +320,8 @@
         private DataGridViewTextBoxColumn colSize;
         private DataGridViewTextBoxColumn colLastModified;
         private ListView lstTextMatches;
+        private Label label4;
+        private TextBox txtExceptFilePattern;
+        private ToolStripMenuItem mnuShowInExplorer;
     }
 }

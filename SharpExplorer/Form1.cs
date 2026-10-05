@@ -1,13 +1,19 @@
 using SharpExplorer.Domain;
 using SharpExplorer.Domain.TextSearch;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace SharpExplorer
 {
     public partial class Form1 : Form
     {
-        private readonly Brush[] brushes = new[] { Color.Black, Color.Orange }.Select(c => new SolidBrush(c)).ToArray();
+        private readonly Brush[] brushes = [.. new[] { Color.Black, Color.Orange }.Select(c => new SolidBrush(c))];
         private readonly StringFormat _formatForMeasuring;
+        private FileSearch _currentSearch;
+        private readonly BindingList<FileDisplay> _boundItems;
+        private readonly BindingSource _searchResultDataSource;
+        private int contextMenuRowIndex = -1;
+
         public Form1()
         {
             InitializeComponent();
@@ -22,11 +28,10 @@ namespace SharpExplorer
             _searchResultDataSource = new BindingSource(_boundItems, null!);
         }
 
-        private FileSearch _currentSearch;
-
         private UserSearchDto CreateUserSearchDto()
         {
             var searchPatterns = txtFilePattern.Text;
+            var exceptSearchPatterns = txtExceptFilePattern.Text;
             var directoryPath = txtRootDir.Text;
             var query = txtContainingText.Text.Trim();
             var doMatchCase = chkMatchCase.Checked;
@@ -44,54 +49,32 @@ namespace SharpExplorer
             return new UserSearchDto
             {
                 RawIncludeFilesPattern = searchPatterns,
-                RawExcludeFilesPattern = string.Empty,
+                RawExcludeFilesPattern = exceptSearchPatterns,
                 TextSearchPattern = query,
                 TextMatchingOptions = options,
                 BaseDirectoriesPattern = directoryPath
             };
         }
 
-        private readonly BindingList<FileDisplay> _boundItems;
-        private readonly BindingSource _searchResultDataSource;
-
         private async void btnSearch_Click(object sender, EventArgs e)
         {
             var searchDto = CreateUserSearchDto();
             var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern);
+            var excludeSearchPatternCollection = PathCollection.Create(searchDto.RawExcludeFilesPattern);
 
             _boundItems.Clear();
 
             _currentSearch = new FileSearch();
             if (searchDto.HasTextSearch())
             {
-                _currentSearch.TextSearches.Add(new AtomicTextMatch(searchDto.TextSearchPattern, searchDto.TextMatchingOptions));
+                _currentSearch.TextSearches.Add(new AtomicTextMatch(searchDto.TextSearchPattern!, searchDto.TextMatchingOptions));
             }
 
-            foreach (var searchPattern in searchPatternCollection.Paths)
+            await foreach (var item in _currentSearch.SearchFilesAsync(searchDto.BaseDirectoriesPattern, searchPatternCollection, excludeSearchPatternCollection))
             {
-                await foreach (var item in _currentSearch.SearchFilesAsync(searchDto.BaseDirectoriesPattern, searchPattern))
-                {
-                    item.InitializeMetadata();
-                    _boundItems.Add(item);
-                }
+                item.InitializeMetadata();
+                _boundItems.Add(item);
             }
-
-            //foreach (var searchPattern in searchPatternCollection.Paths)
-            //{
-            //    await foreach (var item in _currentSearch.SearchFilesAsync(searchDto.BaseDirectoriesPattern, searchPattern))
-            //    {
-            //        item.InitializeMetadata();
-            //        var newRowIndex = grdResult.Rows.Add(item.Name, item.Location, item.SizeDisplay, item.LastModified);
-            //        grdResult.Rows[newRowIndex].Tag = item;
-            //    }
-            //}
-
-            //if (grdResult.SortedColumn != null)
-            //{
-            //    grdResult.Sort(grdResult.SortedColumn, grdResult.SortOrder == SortOrder.Ascending ? System.ComponentModel.ListSortDirection.Ascending : System.ComponentModel.ListSortDirection.Descending);
-            //}
-
-            //_searchResultDataSource.Sort = $"Name DESC";
 
             if (grdResult.Rows.Count > 0)
             {
@@ -127,7 +110,27 @@ namespace SharpExplorer
             }
         }
 
-        private int contextMenuRowIndex = -1;
+        private void mnuShowInExplorer_Click(object sender, EventArgs e)
+        {
+            if (contextMenuRowIndex < 0)
+            {
+                return;
+            }
+
+            var selectedRow = grdResult.Rows[contextMenuRowIndex];
+            var selectedFilePath = selectedRow.DataBoundItem is FileDisplay fileDisplay ? fileDisplay.FullPath : null;
+            if (selectedFilePath == null
+                || !File.Exists(selectedFilePath))
+            {
+                return;
+            }
+
+            var containingFolder = Path.GetDirectoryName(selectedFilePath);
+            if (containingFolder != null)
+            {
+                Process.Start("explorer.exe", containingFolder);
+            }
+        }
 
         private void lstTextMatches_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
@@ -192,14 +195,12 @@ namespace SharpExplorer
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            lstTextMatches.View = View.Details;
             ColumnHeader header = new()
             {
                 Text = "",
                 Name = "col1",
                 Width = 2000
             };
-            lstTextMatches.HeaderStyle = ColumnHeaderStyle.None;
             lstTextMatches.Columns.Add(header);
 
             grdResult.DataSource = _searchResultDataSource;
@@ -213,5 +214,30 @@ namespace SharpExplorer
         {
             contextMenuRowIndex = e.RowIndex;
         }
+
+        private void txtFilePattern_Enter(object sender, EventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                textBox.SelectAll();
+            }
+        }
+
+        private void txtExceptFilePattern_Enter(object sender, EventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                textBox.SelectAll();
+            }
+        }
+
+        private void txtRootDir_Enter(object sender, EventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                textBox.SelectAll();
+            }
+        }
+
     }
 }

@@ -13,9 +13,30 @@ public class PathCollection
     public static PathCollection Create(string rawPaths)
     {
         var paths = rawPaths.Split([';'], StringSplitOptions.RemoveEmptyEntries)
-                            .Select(p => p.Trim())
+                            .Select(Globbify)
                             .Where(p => !string.IsNullOrWhiteSpace(p))
                             .ToList();
         return new(paths);
+    }
+
+    public static string Globbify(string path)
+    {
+        path = path.Trim();
+        if (path.StartsWith("**"))
+        {
+            return "/" + path;
+        }
+        else if (path.StartsWith("/**"))
+        {
+            return path; // Nothing to do.
+        }
+        else if (path.StartsWith('/'))
+        {
+            return path; // They don't want us to touch this.
+        }
+        else
+        {
+            return $"**/{path}";
+        }
     }
 }
