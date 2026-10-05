@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             btnSearch = new Button();
             txtFilePattern = new TextBox();
             txtContainingText = new TextBox();
@@ -188,6 +188,7 @@
             grdResult.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             grdResult.Size = new Size(707, 292);
             grdResult.TabIndex = 100;
+            grdResult.CellContextMenuStripNeeded += grdResult_CellContextMenuStripNeeded;
             grdResult.RowEnter += grdResult_RowEnter;
             // 
             // colName
@@ -209,8 +210,8 @@
             // colSize
             // 
             colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
-            colSize.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleRight;
+            colSize.DefaultCellStyle = dataGridViewCellStyle3;
             colSize.HeaderText = "Size";
             colSize.MinimumWidth = 6;
             colSize.Name = "colSize";
@@ -228,12 +229,12 @@
             // 
             // lstTextMatches
             // 
-            lstTextMatches.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            lstTextMatches.Location = new Point(3, 3);
+            lstTextMatches.Dock = DockStyle.Fill;
+            lstTextMatches.Location = new Point(0, 0);
             lstTextMatches.Name = "lstTextMatches";
             lstTextMatches.OwnerDraw = true;
-            lstTextMatches.Size = new Size(264, 292);
-            lstTextMatches.TabIndex = 101;
+            lstTextMatches.Size = new Size(270, 298);
+            lstTextMatches.TabIndex = 102;
             lstTextMatches.UseCompatibleStateImageBehavior = false;
             lstTextMatches.View = View.List;
             lstTextMatches.DrawItem += lstTextMatches_DrawItem;
@@ -255,6 +256,7 @@
             Controls.Add(btnSearch);
             Name = "Form1";
             Text = "Sharp Explorer";
+            Load += Form1_Load;
             mnuFileItemContext.ResumeLayout(false);
             spltResultPanel.Panel1.ResumeLayout(false);
             spltResultPanel.Panel2.ResumeLayout(false);

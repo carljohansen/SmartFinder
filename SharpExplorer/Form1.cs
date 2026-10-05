@@ -1,5 +1,6 @@
 using SharpExplorer.Domain;
 using SharpExplorer.Domain.TextSearch;
+using System.ComponentModel;
 
 namespace SharpExplorer
 {
@@ -16,6 +17,9 @@ namespace SharpExplorer
                 Trimming = StringTrimming.None
             };
             _formatForMeasuring.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
+            grdResult.AutoGenerateColumns = false;
+            _boundItems = [];
+            _searchResultDataSource = new BindingSource(_boundItems, null!);
         }
 
         private FileSearch _currentSearch;
@@ -47,12 +51,15 @@ namespace SharpExplorer
             };
         }
 
+        private readonly BindingList<FileDisplay> _boundItems;
+        private readonly BindingSource _searchResultDataSource;
+
         private async void btnSearch_Click(object sender, EventArgs e)
         {
             var searchDto = CreateUserSearchDto();
             var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern);
 
-            grdResult.Rows.Clear();
+            _boundItems.Clear();
 
             _currentSearch = new FileSearch();
             if (searchDto.HasTextSearch())
@@ -65,15 +72,26 @@ namespace SharpExplorer
                 await foreach (var item in _currentSearch.SearchFilesAsync(searchDto.BaseDirectoriesPattern, searchPattern))
                 {
                     item.InitializeMetadata();
-                    var newRowIndex = grdResult.Rows.Add(item.Name, item.Location, item.SizeDisplay, item.LastModified);
-                    grdResult.Rows[newRowIndex].Tag = item;
+                    _boundItems.Add(item);
                 }
             }
 
-            if (grdResult.SortedColumn != null)
-            {
-                grdResult.Sort(grdResult.SortedColumn, grdResult.SortOrder == SortOrder.Ascending ? System.ComponentModel.ListSortDirection.Ascending : System.ComponentModel.ListSortDirection.Descending);
-            }
+            //foreach (var searchPattern in searchPatternCollection.Paths)
+            //{
+            //    await foreach (var item in _currentSearch.SearchFilesAsync(searchDto.BaseDirectoriesPattern, searchPattern))
+            //    {
+            //        item.InitializeMetadata();
+            //        var newRowIndex = grdResult.Rows.Add(item.Name, item.Location, item.SizeDisplay, item.LastModified);
+            //        grdResult.Rows[newRowIndex].Tag = item;
+            //    }
+            //}
+
+            //if (grdResult.SortedColumn != null)
+            //{
+            //    grdResult.Sort(grdResult.SortedColumn, grdResult.SortOrder == SortOrder.Ascending ? System.ComponentModel.ListSortDirection.Ascending : System.ComponentModel.ListSortDirection.Descending);
+            //}
+
+            //_searchResultDataSource.Sort = $"Name DESC";
 
             if (grdResult.Rows.Count > 0)
             {
@@ -102,10 +120,10 @@ namespace SharpExplorer
             }
 
             var selectedRow = grdResult.Rows[contextMenuRowIndex];
-            var selectedFilePath = selectedRow.Tag is FileDisplay fileDisplay ? fileDisplay.FullPath : null;
+            var selectedFilePath = selectedRow.DataBoundItem is FileDisplay fileDisplay ? fileDisplay.FullPath : null;
             if (selectedFilePath != null)
             {
-                Clipboard.SetText(selectedFilePath);
+                Clipboard.SetText($"\"{selectedFilePath}\"");
             }
         }
 
@@ -152,7 +170,7 @@ namespace SharpExplorer
             }
 
             var selectedRow = grdResult.Rows[e.RowIndex];
-            if (selectedRow.Tag is FileDisplay fileDisplay)
+            if (selectedRow.DataBoundItem is FileDisplay fileDisplay)
             {
                 var matches = _currentSearch.GetMatches(fileDisplay.FullPath);
                 lstTextMatches.Items.Clear();
@@ -170,6 +188,30 @@ namespace SharpExplorer
             {
                 textBox.SelectAll();
             }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            lstTextMatches.View = View.Details;
+            ColumnHeader header = new()
+            {
+                Text = "",
+                Name = "col1",
+                Width = 2000
+            };
+            lstTextMatches.HeaderStyle = ColumnHeaderStyle.None;
+            lstTextMatches.Columns.Add(header);
+
+            grdResult.DataSource = _searchResultDataSource;
+            grdResult.Columns["colName"]!.DataPropertyName = nameof(FileDisplay.Name);
+            grdResult.Columns["colLocation"]!.DataPropertyName = nameof(FileDisplay.Location);
+            grdResult.Columns["colSize"]!.DataPropertyName = nameof(FileDisplay.SizeDisplay);
+            grdResult.Columns["colLastModified"]!.DataPropertyName = nameof(FileDisplay.LastModified);
+        }
+
+        private void grdResult_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
+        {
+            contextMenuRowIndex = e.RowIndex;
         }
     }
 }

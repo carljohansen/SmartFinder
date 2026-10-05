@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace SharpExplorer.Domain;
+﻿namespace SharpExplorer.Domain;
 
 public class FileDisplay
 {
@@ -20,7 +18,7 @@ public class FileDisplay
     }
     public FileDisplay(string relativePath, string baseDirectory)
     {
-        FullPath = Path.Combine(baseDirectory, relativePath);
+        FullPath = Path.GetFullPath(Path.Combine(baseDirectory, relativePath));
         Name = Path.GetFileName(FullPath);
         Location = Path.GetDirectoryName(FullPath) ?? string.Empty;
         SizeDisplay = "";
