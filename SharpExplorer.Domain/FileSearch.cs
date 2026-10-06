@@ -56,7 +56,13 @@ public class FileSearch
             return [];
         }
 
-        var firstChecker = new FileTextMatcher(null, TextSearches.First());
-        return firstChecker.GetMatches(filePath);
+        var result = new List<FileLineTextMatch>();
+        foreach (var match in TextSearches)
+        {
+            var checker = new FileTextMatcher(null, match);
+            result.AddRange(checker.GetMatches(filePath));
+        }
+
+        return result;
     }
 }

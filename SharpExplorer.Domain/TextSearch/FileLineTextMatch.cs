@@ -4,7 +4,7 @@
 
 namespace SharpExplorer.Domain.TextSearch;
 
-public record FileLineTextMatch(string Line, int LineNumber, int StartPos, int Length)
+public record FileLineTextMatch(string Line, int LineNumber, int StartPos, int Length, AtomicTextMatch Source)
 {
     internal (string optimizedLine, int optimizedStartPos) GetOptimizedLine(int maxLineLength)
     {

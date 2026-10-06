@@ -8,7 +8,7 @@ public class FileLineTextMatchTests
     public void SplitsIntoSegmentsCorrectly()
     {
         var line = "This is a sample line with the word hello.";
-        var match = new FileLineTextMatch(line, 1, 10, 6); // "sample" starts at index 10 and has length 6
+        var match = new FileLineTextMatch(line, 1, 10, 6, new AtomicTextMatch("sample", TextMatchingOptions.None, false)); // "sample" starts at index 10 and has length 6
         var segments = match.GetSegments();
         Assert.Equal(3, segments.Length);
         Assert.Equal("This is a ", segments[0].SegmentText);
@@ -23,7 +23,7 @@ public class FileLineTextMatchTests
     public void GetsOptimizedLine()
     {
         var longLine = @"You can replace the default context menu with a custom one in ContextMenuOpenning event. In the menu item Click event handler, you can get the index of the grid's current row, which will be the index of right-clicked row. This is a migrated thread and some comments may be shown as answers.";
-        var match = new FileLineTextMatch(longLine, 1, 50, 6);
+        var match = new FileLineTextMatch(longLine, 1, 50, 6, new AtomicTextMatch("sample", TextMatchingOptions.None, false));
         var (optimizedLine, optimizedStartPos) = match.GetOptimizedLine(40);
 
         Assert.NotNull(optimizedLine);

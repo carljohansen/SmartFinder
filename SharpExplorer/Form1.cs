@@ -67,7 +67,8 @@ namespace SharpExplorer
             _currentSearch = new FileSearch();
             if (searchDto.HasTextSearch())
             {
-                _currentSearch.TextSearches.Add(new AtomicTextMatch(searchDto.TextSearchPattern!, searchDto.TextMatchingOptions));
+                var matchFragments = searchDto.ParseTextSearchPattern();
+                _currentSearch.TextSearches.AddRange(matchFragments);
             }
 
             await foreach (var item in _currentSearch.SearchFilesAsync(searchDto.BaseDirectoriesPattern, searchPatternCollection, excludeSearchPatternCollection))
