@@ -29,14 +29,16 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             btnSearch = new Button();
             txtFilePattern = new TextBox();
             txtContainingText = new TextBox();
             txtRootDir = new TextBox();
             mnuFileItemContext = new ContextMenuStrip(components);
+            mnuOpenFile = new ToolStripMenuItem();
             mnuCopyPath = new ToolStripMenuItem();
             mnuShowInExplorer = new ToolStripMenuItem();
+            mnuOpenWithTextEditor = new ToolStripMenuItem();
             chkMatchCase = new CheckBox();
             chkMatchWholeWord = new CheckBox();
             label1 = new Label();
@@ -46,11 +48,13 @@
             grdResult = new DataGridView();
             colName = new DataGridViewTextBoxColumn();
             colLocation = new DataGridViewTextBoxColumn();
+            colFileType = new DataGridViewTextBoxColumn();
             colSize = new DataGridViewTextBoxColumn();
             colLastModified = new DataGridViewTextBoxColumn();
             lstTextMatches = new ListView();
             label4 = new Label();
             txtExceptFilePattern = new TextBox();
+            chkEnableExclusions = new CheckBox();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -101,9 +105,17 @@
             // mnuFileItemContext
             // 
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
-            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuCopyPath, mnuShowInExplorer });
+            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuCopyPath, mnuShowInExplorer, mnuOpenWithTextEditor });
             mnuFileItemContext.Name = "mnuFileItemContext";
-            mnuFileItemContext.Size = new Size(237, 52);
+            mnuFileItemContext.Size = new Size(237, 128);
+            // 
+            // mnuOpenFile
+            // 
+            mnuOpenFile.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            mnuOpenFile.Name = "mnuOpenFile";
+            mnuOpenFile.Size = new Size(236, 24);
+            mnuOpenFile.Text = "Open";
+            mnuOpenFile.Click += mnuOpenFile_Click;
             // 
             // mnuCopyPath
             // 
@@ -118,6 +130,13 @@
             mnuShowInExplorer.Size = new Size(236, 24);
             mnuShowInExplorer.Text = "Open Containing Folder";
             mnuShowInExplorer.Click += mnuShowInExplorer_Click;
+            // 
+            // mnuOpenWithTextEditor
+            // 
+            mnuOpenWithTextEditor.Name = "mnuOpenWithTextEditor";
+            mnuOpenWithTextEditor.Size = new Size(236, 24);
+            mnuOpenWithTextEditor.Text = "Open With Text Editor";
+            mnuOpenWithTextEditor.Click += mnuOpenWithTextEditor_Click;
             // 
             // chkMatchCase
             // 
@@ -191,7 +210,7 @@
             grdResult.AllowUserToDeleteRows = false;
             grdResult.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             grdResult.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            grdResult.Columns.AddRange(new DataGridViewColumn[] { colName, colLocation, colSize, colLastModified });
+            grdResult.Columns.AddRange(new DataGridViewColumn[] { colName, colLocation, colFileType, colSize, colLastModified });
             grdResult.ContextMenuStrip = mnuFileItemContext;
             grdResult.Location = new Point(0, 3);
             grdResult.Name = "grdResult";
@@ -219,11 +238,19 @@
             colLocation.ReadOnly = true;
             colLocation.Width = 125;
             // 
+            // colFileType
+            // 
+            colFileType.HeaderText = "Type";
+            colFileType.MinimumWidth = 6;
+            colFileType.Name = "colFileType";
+            colFileType.ReadOnly = true;
+            colFileType.Width = 125;
+            // 
             // colSize
             // 
             colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
-            colSize.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleRight;
+            colSize.DefaultCellStyle = dataGridViewCellStyle2;
             colSize.HeaderText = "Size";
             colSize.MinimumWidth = 6;
             colSize.Name = "colSize";
@@ -266,15 +293,28 @@
             txtExceptFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtExceptFilePattern.Location = new Point(140, 77);
             txtExceptFilePattern.Name = "txtExceptFilePattern";
-            txtExceptFilePattern.Size = new Size(834, 27);
+            txtExceptFilePattern.Size = new Size(719, 27);
             txtExceptFilePattern.TabIndex = 3;
             txtExceptFilePattern.Enter += txtExceptFilePattern_Enter;
+            // 
+            // chkEnableExclusions
+            // 
+            chkEnableExclusions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            chkEnableExclusions.AutoSize = true;
+            chkEnableExclusions.Location = new Point(861, 77);
+            chkEnableExclusions.Name = "chkEnableExclusions";
+            chkEnableExclusions.Size = new Size(76, 24);
+            chkEnableExclusions.TabIndex = 102;
+            chkEnableExclusions.Text = "Enable";
+            chkEnableExclusions.UseVisualStyleBackColor = true;
+            chkEnableExclusions.CheckedChanged += chkEnableExclusions_CheckedChanged;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1008, 564);
+            Controls.Add(chkEnableExclusions);
             Controls.Add(label4);
             Controls.Add(txtExceptFilePattern);
             Controls.Add(spltResultPanel);
@@ -315,13 +355,17 @@
         private ToolStripMenuItem mnuCopyPath;
         private SplitContainer spltResultPanel;
         private DataGridView grdResult;
-        private DataGridViewTextBoxColumn colName;
-        private DataGridViewTextBoxColumn colLocation;
-        private DataGridViewTextBoxColumn colSize;
-        private DataGridViewTextBoxColumn colLastModified;
         private ListView lstTextMatches;
         private Label label4;
         private TextBox txtExceptFilePattern;
         private ToolStripMenuItem mnuShowInExplorer;
+        private CheckBox chkEnableExclusions;
+        private ToolStripMenuItem mnuOpenWithTextEditor;
+        private DataGridViewTextBoxColumn colName;
+        private DataGridViewTextBoxColumn colLocation;
+        private DataGridViewTextBoxColumn colFileType;
+        private DataGridViewTextBoxColumn colSize;
+        private DataGridViewTextBoxColumn colLastModified;
+        private ToolStripMenuItem mnuOpenFile;
     }
 }

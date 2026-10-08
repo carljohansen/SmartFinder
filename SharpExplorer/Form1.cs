@@ -1,4 +1,5 @@
 using SharpExplorer.Domain;
+using SharpExplorer.Domain.FileType;
 using SharpExplorer.Domain.TextSearch;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -30,9 +31,9 @@ namespace SharpExplorer
 
         private UserSearchDto CreateUserSearchDto()
         {
-            var searchPatterns = txtFilePattern.Text;
+            var searchPatterns = string.IsNullOrEmpty(txtFilePattern.Text) ? "/**/*" : txtFilePattern.Text;
             var exceptSearchPatterns = txtExceptFilePattern.Text;
-            var directoryPath = txtRootDir.Text;
+            var directoryPath = string.IsNullOrEmpty(txtRootDir.Text) ? "." : txtRootDir.Text;
             var query = txtContainingText.Text.Trim();
             var doMatchCase = chkMatchCase.Checked;
             var doMatchWholeWord = chkMatchWholeWord.Checked;
@@ -133,6 +134,55 @@ namespace SharpExplorer
             }
         }
 
+        private void mnuOpenWithTextEditor_Click(object sender, EventArgs e)
+        {
+            if (contextMenuRowIndex < 0)
+            {
+                return;
+            }
+
+            var selectedRow = grdResult.Rows[contextMenuRowIndex];
+            var selectedFileDisplay = selectedRow.DataBoundItem as FileDisplay;
+            if (selectedFileDisplay == null)
+            {
+                return;
+            }
+
+            var isDefinitelyTextFile = FileTypeHelper.IsKnownTextFile(selectedFileDisplay.GetFileExtension());
+            if (!isDefinitelyTextFile)
+            {
+                return;
+            }
+
+            var textEditorExeName = FileExtensionHelper.GetFileExtensionInfo(AssocStr.Executable, ".txt");
+            if (textEditorExeName != null)
+            {
+                Process.Start(textEditorExeName, selectedFileDisplay.FullPath);
+            }
+        }
+
+        private void mnuOpenFile_Click(object sender, EventArgs e)
+        {
+            // This doesn't work, e.g. for images where the app is a "package".
+            if (contextMenuRowIndex < 0)
+            {
+                return;
+            }
+
+            var selectedRow = grdResult.Rows[contextMenuRowIndex];
+            var selectedFileDisplay = selectedRow.DataBoundItem as FileDisplay;
+            if (selectedFileDisplay == null)
+            {
+                return;
+            }
+
+            var registeredAppFullPath = FileExtensionHelper.GetFileExtensionInfo(AssocStr.Executable, selectedFileDisplay.GetFileExtension());
+            if (registeredAppFullPath != null)
+            {
+                Process.Start(registeredAppFullPath, selectedFileDisplay.FullPath);
+            }
+        }
+
         private void lstTextMatches_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
             if (e.ItemIndex < 0) return;
@@ -209,11 +259,25 @@ namespace SharpExplorer
             grdResult.Columns["colLocation"]!.DataPropertyName = nameof(FileDisplay.Location);
             grdResult.Columns["colSize"]!.DataPropertyName = nameof(FileDisplay.SizeDisplay);
             grdResult.Columns["colLastModified"]!.DataPropertyName = nameof(FileDisplay.LastModified);
+            grdResult.Columns["colFileType"]!.DataPropertyName = nameof(FileDisplay.FileTypeDescription);
+
+            EnableDisableExclusions();
         }
 
         private void grdResult_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
         {
             contextMenuRowIndex = e.RowIndex;
+
+            var selectedRow = grdResult.Rows[contextMenuRowIndex];
+
+            var enableOpenWithTextEditor = false;
+            if (selectedRow.DataBoundItem is FileDisplay selectedFileDisplay
+                && FileTypeHelper.IsKnownTextFile(selectedFileDisplay.GetFileExtension()))
+            {
+                enableOpenWithTextEditor = true;
+            }
+
+            mnuOpenWithTextEditor.Enabled = enableOpenWithTextEditor;
         }
 
         private void txtFilePattern_Enter(object sender, EventArgs e)
@@ -238,6 +302,16 @@ namespace SharpExplorer
             {
                 textBox.SelectAll();
             }
+        }
+
+        private void chkEnableExclusions_CheckedChanged(object sender, EventArgs e)
+        {
+            EnableDisableExclusions();
+        }
+
+        private void EnableDisableExclusions()
+        {
+            txtExceptFilePattern.Enabled = chkEnableExclusions.Checked;
         }
 
     }

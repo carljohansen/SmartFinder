@@ -1,4 +1,6 @@
-﻿namespace SharpExplorer.Domain;
+﻿using SharpExplorer.Domain.FileType;
+
+namespace SharpExplorer.Domain;
 
 public class FileDisplay
 {
@@ -11,6 +13,8 @@ public class FileDisplay
     public string SizeDisplay { get; private set; }
 
     public DateTime LastModified { get; private set; }
+
+    public string FileTypeDescription { get; private set; } = string.Empty;
 
     public string Location
     {
@@ -28,7 +32,6 @@ public class FileDisplay
     {
         var fullPath = Path.Combine(Location, Name);
 
-
         if (File.Exists(fullPath))
         {
             FileInfo fileInfo = new(FullPath);
@@ -37,7 +40,11 @@ public class FileDisplay
             SizeDisplay = BytesToString(Size);
             LastModified = fileInfo.LastWriteTime; // Last modified date/time
         }
+
+        var fileTypeDesc = FileExtensionHelper.GetFileExtensionInfo(AssocStr.FriendlyDocName, GetFileExtension());
+        FileTypeDescription = fileTypeDesc ?? string.Empty;
     }
+
     private static String BytesToString(long byteCount)
     {
         string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
@@ -47,5 +54,10 @@ public class FileDisplay
         int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
         double num = Math.Round(bytes / Math.Pow(1024, place), 0);
         return (Math.Sign(byteCount) * num).ToString() + " " + suf[place];
+    }
+
+    public string GetFileExtension()
+    {
+        return Path.GetExtension(Name);
     }
 }
