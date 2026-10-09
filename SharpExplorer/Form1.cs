@@ -67,8 +67,22 @@ namespace SharpExplorer
             return (selectedRow.DataBoundItem is DataRowView view && view.Row["FileDisplay"] is FileDisplay fileDisplay) ? fileDisplay : null;
         }
 
+        private void SetStatusText(string text)
+        {
+            lblStatus.Text = text;
+        }
+
+        private void ClearStatusText() => SetStatusText("");
+        private CancellationTokenSource? _searchCancellationTokenSource;
+
         private async void btnSearch_Click(object sender, EventArgs e)
         {
+            SetStatusText("Searching...");
+            btnSearch.Enabled = false;
+            btnCancelSearch.Enabled = true;
+            lstTextMatches.Items.Clear();
+            _searchCancellationTokenSource = new CancellationTokenSource();
+
             var searchDto = CreateUserSearchDto();
             var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern);
             var excludeSearchPatternCollection = PathCollection.Create(searchDto.RawExcludeFilesPattern);
@@ -83,18 +97,39 @@ namespace SharpExplorer
                 _currentSearch.TextSearches.AddRange(matchFragments);
             }
 
-            await foreach (var item in _currentSearch.SearchFilesAsync(searchDto.BaseDirectoriesPattern, searchPatternCollection, excludeSearchPatternCollection))
+            var wasCancelled = false;
+            try
             {
-                item.InitializeMetadata();
-                item.AddToDataTable(_resultTable);
+                await foreach (var item in _currentSearch.SearchFilesAsync(searchDto.BaseDirectoriesPattern,
+                                                                            searchPatternCollection,
+                                                                            excludeSearchPatternCollection,
+                                                                            _searchCancellationTokenSource.Token))
+                {
+                    item.InitializeMetadata();
+                    item.AddToDataTable(_resultTable);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                wasCancelled = true;
             }
 
-            if (grdResult.Rows.Count > 0)
+            var cancelledMsg = wasCancelled ? " (search cancelled)" : "";
+            var numMatches = grdResult.Rows.Count;
+            if (numMatches > 0)
             {
                 grdResult.Rows[0].Selected = true;
                 grdResult.CurrentCell = grdResult.Rows[0].Cells[0];
                 grdResult.Focus();
+                SetStatusText(numMatches == 1 ? $"1 file found{cancelledMsg}" : $"{numMatches} files found{cancelledMsg}");
             }
+            else
+            {
+                SetStatusText($"No matching files found{cancelledMsg}");
+            }
+
+            btnSearch.Enabled = true;
+            btnCancelSearch.Enabled = false;
         }
 
         private void mnuCopyPath_Click(object sender, EventArgs e)
@@ -246,11 +281,6 @@ namespace SharpExplorer
             lstTextMatches.Columns.Add(header);
 
             grdResult.DataSource = _searchResultDataSource;
-            grdResult.Columns["colName"]!.DataPropertyName = nameof(FileDisplay.Name);
-            grdResult.Columns["colLocation"]!.DataPropertyName = nameof(FileDisplay.Location);
-            grdResult.Columns["colSize"]!.DataPropertyName = nameof(FileDisplay.SizeDisplay);
-            grdResult.Columns["colLastModified"]!.DataPropertyName = nameof(FileDisplay.LastModified);
-            grdResult.Columns["colFileType"]!.DataPropertyName = nameof(FileDisplay.FileTypeDescription);
 
             EnableDisableExclusions();
         }
@@ -303,6 +333,18 @@ namespace SharpExplorer
         private void EnableDisableExclusions()
         {
             txtExceptFilePattern.Enabled = chkEnableExclusions.Checked;
+        }
+
+        private void toolStripStatusLabel1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCancelSearch_Click(object sender, EventArgs e)
+        {
+            _searchCancellationTokenSource?.Cancel();
+            _searchCancellationTokenSource?.Dispose();
+            _searchCancellationTokenSource = null;
         }
     }
 }

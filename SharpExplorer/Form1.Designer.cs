@@ -55,12 +55,16 @@
             label4 = new Label();
             txtExceptFilePattern = new TextBox();
             chkEnableExclusions = new CheckBox();
+            statusStrip1 = new StatusStrip();
+            lblStatus = new ToolStripStatusLabel();
+            btnCancelSearch = new Button();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
             spltResultPanel.Panel2.SuspendLayout();
             spltResultPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)grdResult).BeginInit();
+            statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // btnSearch
@@ -142,7 +146,7 @@
             // 
             chkMatchCase.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chkMatchCase.AutoSize = true;
-            chkMatchCase.Location = new Point(864, 110);
+            chkMatchCase.Location = new Point(864, 115);
             chkMatchCase.Name = "chkMatchCase";
             chkMatchCase.Size = new Size(107, 24);
             chkMatchCase.TabIndex = 9;
@@ -153,7 +157,7 @@
             // 
             chkMatchWholeWord.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chkMatchWholeWord.AutoSize = true;
-            chkMatchWholeWord.Location = new Point(864, 146);
+            chkMatchWholeWord.Location = new Point(864, 141);
             chkMatchWholeWord.Name = "chkMatchWholeWord";
             chkMatchWholeWord.Size = new Size(114, 24);
             chkMatchWholeWord.TabIndex = 10;
@@ -200,7 +204,7 @@
             // spltResultPanel.Panel2
             // 
             spltResultPanel.Panel2.Controls.Add(lstTextMatches);
-            spltResultPanel.Size = new Size(984, 298);
+            spltResultPanel.Size = new Size(984, 268);
             spltResultPanel.SplitterDistance = 710;
             spltResultPanel.TabIndex = 101;
             // 
@@ -217,7 +221,7 @@
             grdResult.ReadOnly = true;
             grdResult.RowHeadersWidth = 51;
             grdResult.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            grdResult.Size = new Size(707, 292);
+            grdResult.Size = new Size(707, 262);
             grdResult.TabIndex = 100;
             grdResult.CellContextMenuStripNeeded += grdResult_CellContextMenuStripNeeded;
             grdResult.CellMouseDoubleClick += grdResult_CellMouseDoubleClick;
@@ -225,31 +229,38 @@
             // 
             // colName
             // 
+            colName.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colName.DataPropertyName = "Name";
             colName.HeaderText = "Name";
             colName.MinimumWidth = 6;
             colName.Name = "colName";
             colName.ReadOnly = true;
-            colName.Width = 125;
+            colName.Width = 78;
             // 
             // colLocation
             // 
+            colLocation.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colLocation.DataPropertyName = "Location";
             colLocation.HeaderText = "Location";
             colLocation.MinimumWidth = 6;
             colLocation.Name = "colLocation";
             colLocation.ReadOnly = true;
-            colLocation.Width = 125;
+            colLocation.Width = 95;
             // 
             // colFileType
             // 
+            colFileType.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colFileType.DataPropertyName = "FileTypeDescription";
             colFileType.HeaderText = "Type";
             colFileType.MinimumWidth = 6;
             colFileType.Name = "colFileType";
             colFileType.ReadOnly = true;
-            colFileType.Width = 125;
+            colFileType.Width = 69;
             // 
             // colSize
             // 
             colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colSize.DataPropertyName = "SizeDisplay";
             dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
             colSize.DefaultCellStyle = dataGridViewCellStyle1;
             colSize.HeaderText = "Size";
@@ -260,12 +271,13 @@
             // 
             // colLastModified
             // 
-            colLastModified.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            colLastModified.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colLastModified.DataPropertyName = "LastModified";
             colLastModified.HeaderText = "Modified";
             colLastModified.MinimumWidth = 6;
             colLastModified.Name = "colLastModified";
             colLastModified.ReadOnly = true;
-            colLastModified.Width = 200;
+            colLastModified.Width = 99;
             // 
             // lstTextMatches
             // 
@@ -274,7 +286,7 @@
             lstTextMatches.Location = new Point(0, 0);
             lstTextMatches.Name = "lstTextMatches";
             lstTextMatches.OwnerDraw = true;
-            lstTextMatches.Size = new Size(270, 298);
+            lstTextMatches.Size = new Size(270, 268);
             lstTextMatches.TabIndex = 102;
             lstTextMatches.UseCompatibleStateImageBehavior = false;
             lstTextMatches.View = View.Details;
@@ -294,7 +306,7 @@
             txtExceptFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtExceptFilePattern.Location = new Point(140, 77);
             txtExceptFilePattern.Name = "txtExceptFilePattern";
-            txtExceptFilePattern.Size = new Size(719, 27);
+            txtExceptFilePattern.Size = new Size(748, 27);
             txtExceptFilePattern.TabIndex = 3;
             txtExceptFilePattern.Enter += txtExceptFilePattern_Enter;
             // 
@@ -302,7 +314,7 @@
             // 
             chkEnableExclusions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chkEnableExclusions.AutoSize = true;
-            chkEnableExclusions.Location = new Point(861, 77);
+            chkEnableExclusions.Location = new Point(902, 79);
             chkEnableExclusions.Name = "chkEnableExclusions";
             chkEnableExclusions.Size = new Size(76, 24);
             chkEnableExclusions.TabIndex = 102;
@@ -310,11 +322,40 @@
             chkEnableExclusions.UseVisualStyleBackColor = true;
             chkEnableExclusions.CheckedChanged += chkEnableExclusions_CheckedChanged;
             // 
+            // statusStrip1
+            // 
+            statusStrip1.ImageScalingSize = new Size(20, 20);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { lblStatus });
+            statusStrip1.Location = new Point(0, 542);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(1008, 22);
+            statusStrip1.TabIndex = 103;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // lblStatus
+            // 
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new Size(0, 16);
+            lblStatus.Click += toolStripStatusLabel1_Click;
+            // 
+            // btnCancelSearch
+            // 
+            btnCancelSearch.Enabled = false;
+            btnCancelSearch.Location = new Point(123, 219);
+            btnCancelSearch.Name = "btnCancelSearch";
+            btnCancelSearch.Size = new Size(94, 29);
+            btnCancelSearch.TabIndex = 104;
+            btnCancelSearch.Text = "Sto&p";
+            btnCancelSearch.UseVisualStyleBackColor = true;
+            btnCancelSearch.Click += btnCancelSearch_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1008, 564);
+            Controls.Add(btnCancelSearch);
+            Controls.Add(statusStrip1);
             Controls.Add(chkEnableExclusions);
             Controls.Add(label4);
             Controls.Add(txtExceptFilePattern);
@@ -337,6 +378,8 @@
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).EndInit();
             spltResultPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)grdResult).EndInit();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -363,10 +406,13 @@
         private CheckBox chkEnableExclusions;
         private ToolStripMenuItem mnuOpenWithTextEditor;
         private ToolStripMenuItem mnuOpenFile;
+        private StatusStrip statusStrip1;
+        private ToolStripStatusLabel lblStatus;
         private DataGridViewTextBoxColumn colName;
         private DataGridViewTextBoxColumn colLocation;
         private DataGridViewTextBoxColumn colFileType;
         private DataGridViewTextBoxColumn colSize;
         private DataGridViewTextBoxColumn colLastModified;
+        private Button btnCancelSearch;
     }
 }
