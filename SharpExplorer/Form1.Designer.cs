@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             btnSearch = new Button();
             txtFilePattern = new TextBox();
             txtContainingText = new TextBox();
@@ -107,7 +107,7 @@
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
             mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuCopyPath, mnuShowInExplorer, mnuOpenWithTextEditor });
             mnuFileItemContext.Name = "mnuFileItemContext";
-            mnuFileItemContext.Size = new Size(237, 128);
+            mnuFileItemContext.Size = new Size(237, 100);
             // 
             // mnuOpenFile
             // 
@@ -220,6 +220,7 @@
             grdResult.Size = new Size(707, 292);
             grdResult.TabIndex = 100;
             grdResult.CellContextMenuStripNeeded += grdResult_CellContextMenuStripNeeded;
+            grdResult.CellMouseDoubleClick += grdResult_CellMouseDoubleClick;
             grdResult.RowEnter += grdResult_RowEnter;
             // 
             // colName
@@ -249,8 +250,8 @@
             // colSize
             // 
             colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleRight;
-            colSize.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
+            colSize.DefaultCellStyle = dataGridViewCellStyle1;
             colSize.HeaderText = "Size";
             colSize.MinimumWidth = 6;
             colSize.Name = "colSize";
@@ -361,11 +362,11 @@
         private ToolStripMenuItem mnuShowInExplorer;
         private CheckBox chkEnableExclusions;
         private ToolStripMenuItem mnuOpenWithTextEditor;
+        private ToolStripMenuItem mnuOpenFile;
         private DataGridViewTextBoxColumn colName;
         private DataGridViewTextBoxColumn colLocation;
         private DataGridViewTextBoxColumn colFileType;
         private DataGridViewTextBoxColumn colSize;
         private DataGridViewTextBoxColumn colLastModified;
-        private ToolStripMenuItem mnuOpenFile;
     }
 }

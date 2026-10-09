@@ -1,7 +1,7 @@
 using SharpExplorer.Domain;
 using SharpExplorer.Domain.FileType;
 using SharpExplorer.Domain.TextSearch;
-using System.ComponentModel;
+using System.Data;
 using System.Diagnostics;
 
 namespace SharpExplorer
@@ -11,8 +11,10 @@ namespace SharpExplorer
         private readonly Brush[] brushes = [.. new[] { Color.Black, Color.Orange }.Select(c => new SolidBrush(c))];
         private readonly StringFormat _formatForMeasuring;
         private FileSearch _currentSearch;
-        private readonly BindingList<FileDisplay> _boundItems;
+
         private readonly BindingSource _searchResultDataSource;
+        private readonly DataTable _resultTable = new();
+
         private int contextMenuRowIndex = -1;
 
         public Form1()
@@ -25,8 +27,8 @@ namespace SharpExplorer
             };
             _formatForMeasuring.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
             grdResult.AutoGenerateColumns = false;
-            _boundItems = [];
-            _searchResultDataSource = new BindingSource(_boundItems, null!);
+            SearchResultDataTableHelper.CreateColumns(_resultTable);
+            _searchResultDataSource = new BindingSource(_resultTable.DefaultView, null!);
         }
 
         private UserSearchDto CreateUserSearchDto()
@@ -57,13 +59,22 @@ namespace SharpExplorer
             };
         }
 
+        private FileDisplay? GetRowFileDisplay(int rowIndex)
+        {
+            if (rowIndex < 0)
+                return null;
+            var selectedRow = grdResult.Rows[rowIndex];
+            return (selectedRow.DataBoundItem is DataRowView view && view.Row["FileDisplay"] is FileDisplay fileDisplay) ? fileDisplay : null;
+        }
+
         private async void btnSearch_Click(object sender, EventArgs e)
         {
             var searchDto = CreateUserSearchDto();
             var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern);
             var excludeSearchPatternCollection = PathCollection.Create(searchDto.RawExcludeFilesPattern);
 
-            _boundItems.Clear();
+            _resultTable.Clear();
+            contextMenuRowIndex = -1;
 
             _currentSearch = new FileSearch();
             if (searchDto.HasTextSearch())
@@ -75,7 +86,7 @@ namespace SharpExplorer
             await foreach (var item in _currentSearch.SearchFilesAsync(searchDto.BaseDirectoriesPattern, searchPatternCollection, excludeSearchPatternCollection))
             {
                 item.InitializeMetadata();
-                _boundItems.Add(item);
+                item.AddToDataTable(_resultTable);
             }
 
             if (grdResult.Rows.Count > 0)
@@ -86,26 +97,13 @@ namespace SharpExplorer
             }
         }
 
-        private void grdResult_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
-        {
-            if (e.Column == grdResult.Columns["colSize"])
-            {
-                e.Handled = true;
-                var size1 = grdResult.Rows[e.RowIndex1].Tag is FileDisplay file1 ? file1.Size : 0;
-                var size2 = grdResult.Rows[e.RowIndex2].Tag is FileDisplay file2 ? file2.Size : 0;
-                e.SortResult = size1 < size2 ? -1 : (size1 > size2 ? 1 : 0);
-            }
-        }
-
         private void mnuCopyPath_Click(object sender, EventArgs e)
         {
-            if (contextMenuRowIndex < 0)
-            {
+            var selectedFileDisplay = GetRowFileDisplay(contextMenuRowIndex);
+            if (selectedFileDisplay == null)
                 return;
-            }
 
-            var selectedRow = grdResult.Rows[contextMenuRowIndex];
-            var selectedFilePath = selectedRow.DataBoundItem is FileDisplay fileDisplay ? fileDisplay.FullPath : null;
+            var selectedFilePath = selectedFileDisplay.FullPath;
             if (selectedFilePath != null)
             {
                 Clipboard.SetText($"\"{selectedFilePath}\"");
@@ -114,13 +112,11 @@ namespace SharpExplorer
 
         private void mnuShowInExplorer_Click(object sender, EventArgs e)
         {
-            if (contextMenuRowIndex < 0)
-            {
+            var selectedFileDisplay = GetRowFileDisplay(contextMenuRowIndex);
+            if (selectedFileDisplay == null)
                 return;
-            }
 
-            var selectedRow = grdResult.Rows[contextMenuRowIndex];
-            var selectedFilePath = selectedRow.DataBoundItem is FileDisplay fileDisplay ? fileDisplay.FullPath : null;
+            var selectedFilePath = selectedFileDisplay.FullPath;
             if (selectedFilePath == null
                 || !File.Exists(selectedFilePath))
             {
@@ -136,17 +132,9 @@ namespace SharpExplorer
 
         private void mnuOpenWithTextEditor_Click(object sender, EventArgs e)
         {
-            if (contextMenuRowIndex < 0)
-            {
-                return;
-            }
-
-            var selectedRow = grdResult.Rows[contextMenuRowIndex];
-            var selectedFileDisplay = selectedRow.DataBoundItem as FileDisplay;
+            var selectedFileDisplay = GetRowFileDisplay(contextMenuRowIndex);
             if (selectedFileDisplay == null)
-            {
                 return;
-            }
 
             var isDefinitelyTextFile = FileTypeHelper.IsKnownTextFile(selectedFileDisplay.GetFileExtension());
             if (!isDefinitelyTextFile)
@@ -163,24 +151,27 @@ namespace SharpExplorer
 
         private void mnuOpenFile_Click(object sender, EventArgs e)
         {
-            // This doesn't work, e.g. for images where the app is a "package".
-            if (contextMenuRowIndex < 0)
-            {
-                return;
-            }
+            _ = OpenFileInRegisteredApp(contextMenuRowIndex);
+        }
 
-            var selectedRow = grdResult.Rows[contextMenuRowIndex];
-            var selectedFileDisplay = selectedRow.DataBoundItem as FileDisplay;
+        private bool OpenFileInRegisteredApp(int rowIndex)
+        {
+            var selectedFileDisplay = GetRowFileDisplay(rowIndex);
             if (selectedFileDisplay == null)
-            {
-                return;
-            }
+                return false;
 
-            var registeredAppFullPath = FileExtensionHelper.GetFileExtensionInfo(AssocStr.Executable, selectedFileDisplay.GetFileExtension());
-            if (registeredAppFullPath != null)
+            Process.Start(new ProcessStartInfo
             {
-                Process.Start(registeredAppFullPath, selectedFileDisplay.FullPath);
-            }
+                FileName = selectedFileDisplay.FullPath,
+                UseShellExecute = true,
+                Verb = "open"
+            });
+            return true;
+        }
+
+        private void grdResult_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            _ = OpenFileInRegisteredApp(e.RowIndex);
         }
 
         private void lstTextMatches_DrawItem(object sender, DrawListViewItemEventArgs e)
@@ -223,8 +214,8 @@ namespace SharpExplorer
                 return;
             }
 
-            var selectedRow = grdResult.Rows[e.RowIndex];
-            if (selectedRow.DataBoundItem is FileDisplay fileDisplay)
+            var fileDisplay = GetRowFileDisplay(e.RowIndex);
+            if (fileDisplay != null)
             {
                 var matches = _currentSearch.GetMatches(fileDisplay.FullPath);
                 lstTextMatches.Items.Clear();
@@ -313,6 +304,5 @@ namespace SharpExplorer
         {
             txtExceptFilePattern.Enabled = chkEnableExclusions.Checked;
         }
-
     }
 }

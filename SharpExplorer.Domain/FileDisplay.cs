@@ -1,4 +1,5 @@
 ﻿using SharpExplorer.Domain.FileType;
+using System.Data;
 
 namespace SharpExplorer.Domain;
 
@@ -59,5 +60,10 @@ public class FileDisplay
     public string GetFileExtension()
     {
         return Path.GetExtension(Name);
+    }
+
+    public void AddToDataTable(DataTable dataTable)
+    {
+        dataTable.Rows.Add(Name, new FileSizeDisplayComparable(Size, SizeDisplay), Location, FileTypeDescription, LastModified, this);
     }
 }
