@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace SharpExplorer
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         private readonly Brush[] brushes = [.. new[] { Color.Black, Color.Orange }.Select(c => new SolidBrush(c))];
         private readonly StringFormat _formatForMeasuring;
@@ -17,7 +17,7 @@ namespace SharpExplorer
 
         private int contextMenuRowIndex = -1;
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             _formatForMeasuring = new(StringFormat.GenericTypographic)
