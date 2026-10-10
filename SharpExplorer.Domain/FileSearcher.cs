@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
+using SharpExplorer.Domain.FileType;
 using System.Diagnostics;
 
 namespace SharpExplorer.Domain;
@@ -37,5 +38,13 @@ public static class FileSearcher
             Debug.WriteLine($"Error: {ex.Message}");
             throw;
         }
+    }
+
+    public static PatternMatchingResult DoNotBinarySearch(string directoryPath, PathCollection excludePatterns)
+    {
+        var allFiles = DoSearch(directoryPath, PathCollection.Create("**/*"), excludePatterns);
+
+        var notBinFiles = new PatternMatchingResult(allFiles.Files.Where(fpm => !FileTypeHelper.IsKnownBinaryFile(Path.GetExtension(fpm.Path))));
+        return notBinFiles;
     }
 }

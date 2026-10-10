@@ -23,8 +23,9 @@ public class FileTextMatcher(string? BaseDirectory, AtomicTextMatch TextMatch)
         return TextMatch.IsExclusion;
     }
 
-    public IReadOnlyCollection<FileLineTextMatch> GetMatches(string filePath)
+    public IReadOnlyCollection<FileLineTextMatch> GetMatches(string filePath, int max = 200)
     {
+        var numFound = 0;
         if (TextMatch.IsExclusion)
         {
             return [];
@@ -40,6 +41,10 @@ public class FileTextMatcher(string? BaseDirectory, AtomicTextMatch TextMatch)
             if (startPos >= 0)
             {
                 matches.Add(new FileLineTextMatch(line, lineNumber, startPos, TextMatch.Length, TextMatch));
+                if (numFound++ >= max)
+                {
+                    return matches;
+                }
             }
         }
         return matches;

@@ -67,7 +67,17 @@ public class FileSearch
 
         SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building file list..." });
 
-        var rawFiles = await Task.Run(() => FileSearcher.DoSearch(baseDirectory, includePatterns, excludePatterns));
+        var rawFiles = await Task.Run(() =>
+        {
+            if (includePatterns.IsSearchingForNotBinaryFiles())
+            {
+                return FileSearcher.DoNotBinarySearch(baseDirectory, excludePatterns);
+            }
+            else
+            {
+                return FileSearcher.DoSearch(baseDirectory, includePatterns, excludePatterns);
+            }
+        });
         if (!rawFiles.HasMatches)
         {
             yield break;

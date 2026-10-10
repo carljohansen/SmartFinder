@@ -25,9 +25,18 @@ public class PathCollection
         return new(paths);
     }
 
+    public bool IsSearchingForNotBinaryFiles()
+    {
+        return Paths.Count == 1 && Paths.Single() == "{notbin}";
+    }
+
     public static string Globbify(string path)
     {
         path = path.Trim();
+        if (path.Contains("{notbin}"))
+        {
+            return path;
+        }
         if (path.StartsWith("**"))
         {
             return "/" + path;

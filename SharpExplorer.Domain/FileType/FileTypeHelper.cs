@@ -14,8 +14,9 @@ public static class FileTypeHelper
 
     public readonly static string[] KnownBinaryFileExtensions =
     [
-        ".exe", ".dll", ".bin", ".dat", ".jpg", ".jpeg", ".png", ".gif", ".bmp",
-        ".mp3", ".wav", ".mp4", ".avi", ".mov", ".zip", ".rar",
+        ".exe", ".dll", ".bin", ".dat", ".jpg", ".jpeg", ".jfif", ".png", ".gif", ".bmp",
+        ".au", ".mp3", ".wav", ".mpg", ".mpeg", ".mp4", ".m4v", ".avi", ".avif", ".mov", ".zip", ".rar", ".wmv", ".db", ".flv", ".info", ".rm",
+        ".ram", ".swf", ".webp"
         // Add more known binary file extensions as needed
     ];
 
