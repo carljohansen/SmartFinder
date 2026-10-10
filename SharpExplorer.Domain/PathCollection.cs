@@ -10,6 +10,12 @@ public class PathCollection
     {
         _paths = paths;
     }
+
+    public override string ToString()
+    {
+        return string.Join("; ", _paths);
+    }
+
     public static PathCollection Create(string rawPaths)
     {
         var paths = rawPaths.Split([';'], StringSplitOptions.RemoveEmptyEntries)

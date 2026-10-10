@@ -1,11 +1,24 @@
 ﻿using SharpExplorer.Domain.TextSearch;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace SharpExplorer.Domain;
 
 public class FileSearch
 {
+    public event EventHandler<SearchProgressEventArgs>? SearchProgressUpdate;
+
     public List<AtomicTextMatch> TextSearches { get; } = [];
+
+    private string? _currentStatusReportingPath = null;
+    private string? _currentStatusReportedDirectory = null;
+
+    public void Reset()
+    {
+        TextSearches.Clear();
+        _currentStatusReportedDirectory = null;
+        _currentStatusReportingPath = null;
+    }
 
     public IAsyncEnumerable<FileDisplay> SearchFilesAsync(string directoryPath,
                                                             PathCollection includePatterns,
@@ -24,21 +37,28 @@ public class FileSearch
                                         cancellationToken);
     }
 
-    private async IAsyncEnumerable<FileDisplay> SearchFilesInternalAsync(string baseDiretory,
+    private async IAsyncEnumerable<FileDisplay> SearchFilesInternalAsync(string baseDirectory,
                                                                         PathCollection includePatterns,
                                                                         PathCollection excludePatterns,
                                                                         FileTextMatcher[] textChecks,
-                                                                        CancellationToken cancellationToken)
+                                                                        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
             yield break;
         }
 
-        var rawFiles = await Task.Run(() => FileSearcher.DoSearch(baseDiretory, includePatterns, excludePatterns));
+        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building file list..." });
+
+        var rawFiles = await Task.Run(() => FileSearcher.DoSearch(baseDirectory, includePatterns, excludePatterns));
         if (!rawFiles.HasMatches)
         {
             yield break;
+        }
+
+        if (TextSearches.Count > 0)
+        {
+            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Searching in files..." });
         }
 
         var timer = Stopwatch.StartNew();
@@ -64,15 +84,27 @@ public class FileSearch
 
             if (passesTextCheck)
             {
-                yield return new FileDisplay(match.Path, baseDiretory);
+                yield return new FileDisplay(match.Path, baseDirectory);
             }
 
             if (timer.ElapsedMilliseconds > 100)
             {
                 await Task.Delay(1, cancellationToken);
                 timer.Restart();
+                SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = $"Searching in files ({GetDirectoryForStatusReport(match.Path, baseDirectory)})..." });
             }
         }
+    }
+
+    private string GetDirectoryForStatusReport(string path, string baseDirectory)
+    {
+        if (path != _currentStatusReportingPath)
+        {
+            _currentStatusReportingPath = path;
+            _currentStatusReportedDirectory = Path.GetDirectoryName(Path.GetFullPath(Path.Combine(baseDirectory, path)));
+        }
+
+        return _currentStatusReportedDirectory!;
     }
 
     public IReadOnlyCollection<FileLineTextMatch> GetMatches(string filePath)

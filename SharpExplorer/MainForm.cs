@@ -10,7 +10,7 @@ namespace SharpExplorer
     {
         private readonly Brush[] brushes = [.. new[] { Color.Black, Color.Orange }.Select(c => new SolidBrush(c))];
         private readonly StringFormat _formatForMeasuring;
-        private FileSearch _currentSearch;
+        private readonly FileSearch _currentSearch = new();
 
         private readonly BindingSource _searchResultDataSource;
         private readonly DataTable _resultTable = new();
@@ -29,6 +29,7 @@ namespace SharpExplorer
             grdResult.AutoGenerateColumns = false;
             SearchResultDataTableHelper.CreateColumns(_resultTable);
             _searchResultDataSource = new BindingSource(_resultTable.DefaultView, null!);
+            _currentSearch.SearchProgressUpdate += HandleSearchStatusUpdate;
         }
 
         private UserSearchDto CreateUserSearchDto()
@@ -67,6 +68,11 @@ namespace SharpExplorer
             return (selectedRow.DataBoundItem is DataRowView view && view.Row["FileDisplay"] is FileDisplay fileDisplay) ? fileDisplay : null;
         }
 
+        private void HandleSearchStatusUpdate(object? sender, SearchProgressEventArgs e)
+        {
+            SetStatusText(e.StatusMessage);
+        }
+
         private void SetStatusText(string text)
         {
             lblStatus.Text = text;
@@ -87,10 +93,10 @@ namespace SharpExplorer
             var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern);
             var excludeSearchPatternCollection = PathCollection.Create(searchDto.RawExcludeFilesPattern);
 
+            _currentSearch.Reset();
             _resultTable.Clear();
             contextMenuRowIndex = -1;
 
-            _currentSearch = new FileSearch();
             if (searchDto.HasTextSearch())
             {
                 var matchFragments = searchDto.ParseTextSearchPattern();

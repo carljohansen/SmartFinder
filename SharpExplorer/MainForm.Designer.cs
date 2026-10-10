@@ -212,13 +212,16 @@
             // 
             grdResult.AllowUserToAddRows = false;
             grdResult.AllowUserToDeleteRows = false;
+            grdResult.AllowUserToResizeRows = false;
             grdResult.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            grdResult.CellBorderStyle = DataGridViewCellBorderStyle.None;
             grdResult.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             grdResult.Columns.AddRange(new DataGridViewColumn[] { colName, colLocation, colFileType, colSize, colLastModified });
             grdResult.ContextMenuStrip = mnuFileItemContext;
             grdResult.Location = new Point(0, 3);
             grdResult.Name = "grdResult";
             grdResult.ReadOnly = true;
+            grdResult.RowHeadersVisible = false;
             grdResult.RowHeadersWidth = 51;
             grdResult.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             grdResult.Size = new Size(707, 262);
@@ -349,7 +352,7 @@
             btnCancelSearch.UseVisualStyleBackColor = true;
             btnCancelSearch.Click += btnCancelSearch_Click;
             // 
-            // Form1
+            // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -369,7 +372,7 @@
             Controls.Add(txtContainingText);
             Controls.Add(txtFilePattern);
             Controls.Add(btnSearch);
-            Name = "Form1";
+            Name = "MainForm";
             Text = "Sharp Explorer";
             Load += Form1_Load;
             mnuFileItemContext.ResumeLayout(false);
