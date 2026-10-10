@@ -31,6 +31,11 @@ public class FileDisplay
 
     public void InitializeMetadata()
     {
+        if (LastModified != default)
+        {
+            return; // Already done.
+        }
+
         var fullPath = Path.Combine(Location, Name);
 
         if (File.Exists(fullPath))
@@ -45,7 +50,7 @@ public class FileDisplay
         var fileTypeDesc = FileExtensionHelper.GetFileExtensionInfo(AssocStr.FriendlyDocName, GetFileExtension());
         FileTypeDescription = fileTypeDesc ?? string.Empty;
     }
-
+    
     private static String BytesToString(long byteCount)
     {
         string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB

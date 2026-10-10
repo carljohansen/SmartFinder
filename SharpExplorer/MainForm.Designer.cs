@@ -58,6 +58,9 @@
             statusStrip1 = new StatusStrip();
             lblStatus = new ToolStripStatusLabel();
             btnCancelSearch = new Button();
+            chkFilterByDate = new CheckBox();
+            txtDateFilterAmount = new TextBox();
+            cmbDateFilterAmountType = new ComboBox();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -72,7 +75,7 @@
             btnSearch.Location = new Point(23, 219);
             btnSearch.Name = "btnSearch";
             btnSearch.Size = new Size(94, 29);
-            btnSearch.TabIndex = 8;
+            btnSearch.TabIndex = 14;
             btnSearch.Text = "&Search";
             btnSearch.UseVisualStyleBackColor = true;
             btnSearch.Click += btnSearch_Click;
@@ -149,7 +152,7 @@
             chkMatchCase.Location = new Point(864, 115);
             chkMatchCase.Name = "chkMatchCase";
             chkMatchCase.Size = new Size(107, 24);
-            chkMatchCase.TabIndex = 9;
+            chkMatchCase.TabIndex = 11;
             chkMatchCase.Text = "Match &Case";
             chkMatchCase.UseVisualStyleBackColor = true;
             // 
@@ -160,7 +163,7 @@
             chkMatchWholeWord.Location = new Point(864, 141);
             chkMatchWholeWord.Name = "chkMatchWholeWord";
             chkMatchWholeWord.Size = new Size(114, 24);
-            chkMatchWholeWord.TabIndex = 10;
+            chkMatchWholeWord.TabIndex = 12;
             chkMatchWholeWord.Text = "Whole &Word";
             chkMatchWholeWord.UseVisualStyleBackColor = true;
             // 
@@ -320,7 +323,7 @@
             chkEnableExclusions.Location = new Point(902, 79);
             chkEnableExclusions.Name = "chkEnableExclusions";
             chkEnableExclusions.Size = new Size(76, 24);
-            chkEnableExclusions.TabIndex = 102;
+            chkEnableExclusions.TabIndex = 13;
             chkEnableExclusions.Text = "Enable";
             chkEnableExclusions.UseVisualStyleBackColor = true;
             chkEnableExclusions.CheckedChanged += chkEnableExclusions_CheckedChanged;
@@ -347,16 +350,47 @@
             btnCancelSearch.Location = new Point(123, 219);
             btnCancelSearch.Name = "btnCancelSearch";
             btnCancelSearch.Size = new Size(94, 29);
-            btnCancelSearch.TabIndex = 104;
+            btnCancelSearch.TabIndex = 15;
             btnCancelSearch.Text = "Sto&p";
             btnCancelSearch.UseVisualStyleBackColor = true;
             btnCancelSearch.Click += btnCancelSearch_Click;
+            // 
+            // chkFilterByDate
+            // 
+            chkFilterByDate.AutoSize = true;
+            chkFilterByDate.Location = new Point(419, 222);
+            chkFilterByDate.Name = "chkFilterByDate";
+            chkFilterByDate.Size = new Size(160, 24);
+            chkFilterByDate.TabIndex = 8;
+            chkFilterByDate.Text = "&Modified in the last";
+            chkFilterByDate.UseVisualStyleBackColor = true;
+            chkFilterByDate.CheckedChanged += chkFilterByDate_CheckedChanged;
+            // 
+            // txtDateFilterAmount
+            // 
+            txtDateFilterAmount.Location = new Point(585, 221);
+            txtDateFilterAmount.Name = "txtDateFilterAmount";
+            txtDateFilterAmount.Size = new Size(43, 27);
+            txtDateFilterAmount.TabIndex = 9;
+            // 
+            // cmbDateFilterAmountType
+            // 
+            cmbDateFilterAmountType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbDateFilterAmountType.FormattingEnabled = true;
+            cmbDateFilterAmountType.Items.AddRange(new object[] { "hours", "days", "months", "years" });
+            cmbDateFilterAmountType.Location = new Point(634, 221);
+            cmbDateFilterAmountType.Name = "cmbDateFilterAmountType";
+            cmbDateFilterAmountType.Size = new Size(85, 28);
+            cmbDateFilterAmountType.TabIndex = 10;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1008, 564);
+            Controls.Add(cmbDateFilterAmountType);
+            Controls.Add(txtDateFilterAmount);
+            Controls.Add(chkFilterByDate);
             Controls.Add(btnCancelSearch);
             Controls.Add(statusStrip1);
             Controls.Add(chkEnableExclusions);
@@ -417,5 +451,8 @@
         private DataGridViewTextBoxColumn colSize;
         private DataGridViewTextBoxColumn colLastModified;
         private Button btnCancelSearch;
+        private CheckBox chkFilterByDate;
+        private TextBox txtDateFilterAmount;
+        private ComboBox cmbDateFilterAmountType;
     }
 }

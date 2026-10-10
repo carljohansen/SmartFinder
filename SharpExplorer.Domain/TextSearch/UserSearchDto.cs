@@ -12,6 +12,12 @@ public class UserSearchDto
 
     public required string BaseDirectoriesPattern { get; set; }
 
+    public DateTimeOffset? ModifiedBefore { get; set; }
+
+    public DateTimeOffset? ModifiedAfter { get; set; }
+
+    public bool HasMetadataCriteria => ModifiedAfter.HasValue || ModifiedBefore.HasValue;
+
     public bool HasTextSearch() => !string.IsNullOrWhiteSpace(TextSearchPattern);
 
     public IReadOnlyCollection<AtomicTextMatch> ParseTextSearchPattern()

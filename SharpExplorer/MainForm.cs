@@ -56,7 +56,8 @@ namespace SharpExplorer
                 RawExcludeFilesPattern = exceptSearchPatterns,
                 TextSearchPattern = query,
                 TextMatchingOptions = options,
-                BaseDirectoriesPattern = directoryPath
+                BaseDirectoriesPattern = directoryPath,
+                ModifiedAfter = GetModifiedBeforeFilterDate()
             };
         }
 
@@ -97,11 +98,7 @@ namespace SharpExplorer
             _resultTable.Clear();
             contextMenuRowIndex = -1;
 
-            if (searchDto.HasTextSearch())
-            {
-                var matchFragments = searchDto.ParseTextSearchPattern();
-                _currentSearch.TextSearches.AddRange(matchFragments);
-            }
+            _currentSearch.SetSearch(searchDto);
 
             var wasCancelled = false;
             try
@@ -295,7 +292,7 @@ namespace SharpExplorer
 
             grdResult.DataSource = _searchResultDataSource;
 
-            EnableDisableExclusions();
+            EnableDisableControls();
         }
 
         private void grdResult_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
@@ -348,6 +345,18 @@ namespace SharpExplorer
             txtExceptFilePattern.Enabled = chkEnableExclusions.Checked;
         }
 
+        private void EnableDisableDateFiltering()
+        {
+            txtDateFilterAmount.Enabled = chkFilterByDate.Checked;
+            cmbDateFilterAmountType.Enabled = chkFilterByDate.Checked;
+        }
+
+        private void EnableDisableControls()
+        {
+            EnableDisableDateFiltering();
+            EnableDisableExclusions();
+        }
+
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
         {
 
@@ -358,6 +367,44 @@ namespace SharpExplorer
             _searchCancellationTokenSource?.Cancel();
             _searchCancellationTokenSource?.Dispose();
             _searchCancellationTokenSource = null;
+        }
+
+        private void chkFilterByDate_CheckedChanged(object sender, EventArgs e)
+        {
+            EnableDisableDateFiltering();
+        }
+
+        private DateTimeOffset? GetModifiedBeforeFilterDate()
+        {
+            if (!chkFilterByDate.Checked)
+            {
+                return null;
+            }
+
+            if (!float.TryParse(txtDateFilterAmount.Text, out var dateFilterQty))
+            {
+                return null;
+            }
+
+            dateFilterQty *= -1;
+
+            var dateFilterQtyType = cmbDateFilterAmountType.SelectedItem?.ToString();
+            if (string.IsNullOrEmpty(dateFilterQtyType))
+            {
+                return null;
+            }
+
+            var referenceTime = DateTimeOffset.UtcNow;
+            var result = dateFilterQtyType switch
+            {
+                "hours" => referenceTime.AddHours(dateFilterQty),
+                "days" => referenceTime.AddDays(dateFilterQty),
+                "months" => referenceTime.AddMonths((int)dateFilterQty),
+                "years" => referenceTime.AddYears((int)dateFilterQty),
+                _ => throw new InvalidOperationException()
+            };
+
+            return result;
         }
     }
 }

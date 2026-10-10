@@ -8,14 +8,28 @@ public class FileSearch
 {
     public event EventHandler<SearchProgressEventArgs>? SearchProgressUpdate;
 
-    public List<AtomicTextMatch> TextSearches { get; } = [];
+    public IReadOnlyCollection<AtomicTextMatch> TextSearches => _textSearches;
+    private readonly List<AtomicTextMatch> _textSearches = [];
+
+    public UserSearchDto? SearchCriteria { get; private set; }
+
+    public void SetSearch(UserSearchDto search)
+    {
+        SearchCriteria = search;
+        _textSearches.Clear();
+        if (search.HasTextSearch())
+        {
+            var matchFragments = search.ParseTextSearchPattern();
+            _textSearches.AddRange(matchFragments);
+        }
+    }
 
     private string? _currentStatusReportingPath = null;
     private string? _currentStatusReportedDirectory = null;
 
     public void Reset()
     {
-        TextSearches.Clear();
+        _textSearches.Clear();
         _currentStatusReportedDirectory = null;
         _currentStatusReportingPath = null;
     }
@@ -48,6 +62,9 @@ public class FileSearch
             yield break;
         }
 
+        if (SearchCriteria == null)
+            yield break; // Should not happen.
+
         SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building file list..." });
 
         var rawFiles = await Task.Run(() => FileSearcher.DoSearch(baseDirectory, includePatterns, excludePatterns));
@@ -62,6 +79,7 @@ public class FileSearch
         }
 
         var timer = Stopwatch.StartNew();
+        FileDisplay? matchedItem = null;
 
         foreach (var match in rawFiles.Files)
         {
@@ -69,8 +87,18 @@ public class FileSearch
             {
                 yield break;
             }
+
+            var passesMetadataChecks = true;
+            if (SearchCriteria.HasMetadataCriteria)
+            {
+                matchedItem = new FileDisplay(match.Path, baseDirectory);
+                matchedItem.InitializeMetadata();
+                passesMetadataChecks = MeetsMetadataCriteria(matchedItem);
+            }
+
             var passesTextCheck = true;
-            if (TextSearches.Count > 0)
+            if (TextSearches.Count > 0
+                && passesMetadataChecks)
             {
                 foreach (var textChecker in textChecks)
                 {
@@ -82,9 +110,10 @@ public class FileSearch
                 }
             }
 
-            if (passesTextCheck)
+            if (passesTextCheck
+                && passesMetadataChecks)
             {
-                yield return new FileDisplay(match.Path, baseDirectory);
+                yield return matchedItem ?? new FileDisplay(match.Path, baseDirectory);
             }
 
             if (timer.ElapsedMilliseconds > 100)
@@ -94,6 +123,21 @@ public class FileSearch
                 SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = $"Searching in files ({GetDirectoryForStatusReport(match.Path, baseDirectory)})..." });
             }
         }
+    }
+
+    private bool MeetsMetadataCriteria(FileDisplay item)
+    {
+        if (SearchCriteria!.ModifiedBefore.HasValue
+            && item.LastModified > SearchCriteria.ModifiedBefore)
+        {
+            return false;
+        }
+        if (SearchCriteria!.ModifiedAfter.HasValue
+            && item.LastModified < SearchCriteria.ModifiedAfter)
+        {
+            return false;
+        }
+        return true;
     }
 
     private string GetDirectoryForStatusReport(string path, string baseDirectory)
