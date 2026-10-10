@@ -42,7 +42,7 @@ public record FileLineTextMatch(string Line, int LineNumber, int StartPos, int L
         {
             segments.Add(new(optimizedLine[..optimizedStartPos], 0));
         }
-        segments.Add(new(optimizedLine[optimizedStartPos..(optimizedStartPos + Length)], 1));
+        segments.Add(new(optimizedLine[optimizedStartPos..(optimizedStartPos + Length)], Source.Index));
         if (StartPos + Length < Line.Length)
         {
             segments.Add(new(optimizedLine[(optimizedStartPos + Length)..], 0));

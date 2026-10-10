@@ -1,8 +1,10 @@
 ﻿namespace SharpExplorer.Domain.TextSearch;
 
-public class AtomicTextMatch(string textPattern, TextMatchingOptions options, bool isExclusion)
+public class AtomicTextMatch(string textPattern, TextMatchingOptions options, bool isExclusion, int index)
 {
     public readonly int Length = textPattern.Length;
+
+    public readonly int Index = index;
 
     public readonly bool IsExclusion = isExclusion;
 

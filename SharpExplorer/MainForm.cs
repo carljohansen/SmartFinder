@@ -8,7 +8,7 @@ namespace SharpExplorer
 {
     public partial class MainForm : Form
     {
-        private readonly Brush[] brushes = [.. new[] { Color.Black, Color.Orange }.Select(c => new SolidBrush(c))];
+        private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
         private readonly StringFormat _formatForMeasuring;
         private readonly FileSearch _currentSearch = new();
 
@@ -236,10 +236,17 @@ namespace SharpExplorer
 
             using Graphics g = e.Graphics;
 
+            // Line Number:
+            string lineNumberText = itemUnderlyingMatches.LineNumber.ToString();
+            Brush brush = _brushes[0];
+            g.DrawString(lineNumberText, highlightFont, brush, xPos, e.Bounds.Top, StringFormat.GenericTypographic);
+            xPos = 50; // Prepare for next col.
+
+            // Text:
             foreach (var segment in textSegments)
             {
                 string segmentText = segment.SegmentText;
-                Brush brush = brushes[segment.SegmentColourIndex];
+                brush = _brushes[Math.Min(segment.SegmentColourIndex, _brushes.Length - 1)];
                 var segmentFont = segment.SegmentColourIndex == 0 ? font : highlightFont;
                 g.DrawString(segmentText, segmentFont, brush, xPos, e.Bounds.Top, StringFormat.GenericTypographic);
                 xPos += g.MeasureString(segmentText, segmentFont, 0, _formatForMeasuring).Width;

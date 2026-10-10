@@ -121,6 +121,12 @@ public class FileSearch
             result.AddRange(checker.GetMatches(filePath));
         }
 
+        result.Sort(FileLineTextMatchSorter);
         return result;
+    }
+
+    private int FileLineTextMatchSorter(FileLineTextMatch x, FileLineTextMatch y)
+    {
+        return x.LineNumber.CompareTo(y.LineNumber);
     }
 }

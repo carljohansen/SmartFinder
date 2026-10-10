@@ -24,7 +24,7 @@ public class UserSearchDto
         string[] parts = TextSearchPattern.Split([" AND "], StringSplitOptions.RemoveEmptyEntries);
 
         var result = new List<AtomicTextMatch>();
-
+        var index = 1;
         foreach (string part in parts)
         {
             var isExclusion = false;
@@ -34,7 +34,7 @@ public class UserSearchDto
                 isExclusion = true;
                 exclusionPart = part[4..]; // Remove the "NOT " prefix
             }
-            var atomicMatch = new AtomicTextMatch(exclusionPart ?? part, TextMatchingOptions, isExclusion);
+            var atomicMatch = new AtomicTextMatch(exclusionPart ?? part, TextMatchingOptions, isExclusion, isExclusion ? 0 : index++);
             result.Add(atomicMatch);
         }
 

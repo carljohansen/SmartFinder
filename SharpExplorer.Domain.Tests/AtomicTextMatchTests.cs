@@ -11,7 +11,7 @@ public class AtomicTextMatchTests
     [InlineData("thewholething", "thewholething", 0)]
     public void Match_ReturnsCorrectIndex_WhenTextIsFound(string textPattern, string line, int expectedIndex)
     {
-        var textMatch = new AtomicTextMatch(textPattern, TextMatchingOptions.WholeWord, false);
+        var textMatch = new AtomicTextMatch(textPattern, TextMatchingOptions.WholeWord, false, 0);
 
         var actual = textMatch.FindInLine(line);
 
@@ -32,7 +32,7 @@ public class AtomicTextMatchTests
     [InlineData("second", "The obvious match, seconds, doesn't work with whole word matching.  But 'second' must!", 73)]
     public void Match_ReturnsCorrectIndex_WhenTextIsFound_WithWholeWordOptions(string textPattern, string line, int expectedIndex)
     {
-        var textMatch = new AtomicTextMatch(textPattern, TextMatchingOptions.WholeWord, false);
+        var textMatch = new AtomicTextMatch(textPattern, TextMatchingOptions.WholeWord, false, 0);
 
         var actual = textMatch.FindInLine(line);
         Assert.Equal(expectedIndex, actual);
@@ -50,7 +50,7 @@ public class AtomicTextMatchTests
     [InlineData("thewholething", "thewholething", 0)]
     public void Match_ReturnsCorrectIndex_WhenTextIsFound_CaseSensitive(string textPattern, string line, int expectedIndex)
     {
-        var textMatch = new AtomicTextMatch(textPattern, TextMatchingOptions.WholeWord | TextMatchingOptions.CaseSensitive, false);
+        var textMatch = new AtomicTextMatch(textPattern, TextMatchingOptions.WholeWord | TextMatchingOptions.CaseSensitive, false, 0);
 
         var actual = textMatch.FindInLine(line);
 
@@ -70,7 +70,7 @@ public class AtomicTextMatchTests
     [InlineData("thewholething", "thewholething", 0)]
     public void Match_ReturnsCorrectIndex_WhenTextIsFound_WithWholeWordOptions_CaseSensitive(string textPattern, string line, int expectedIndex)
     {
-        var textMatch = new AtomicTextMatch(textPattern, TextMatchingOptions.WholeWord | TextMatchingOptions.CaseSensitive, false);
+        var textMatch = new AtomicTextMatch(textPattern, TextMatchingOptions.WholeWord | TextMatchingOptions.CaseSensitive, false, 0);
 
         var actual = textMatch.FindInLine(line);
 
