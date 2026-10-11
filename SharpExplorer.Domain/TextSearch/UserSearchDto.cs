@@ -12,11 +12,47 @@ public class UserSearchDto
 
     public required string BaseDirectoriesPattern { get; set; }
 
+    public bool FilterByModifiedDate { get; set; }
+
+    public float? ModifiedInLastQuantity { get; set; }
+
+    public string? ModifiedInLastQuantityType { get; set; }
+
     public DateTimeOffset? ModifiedBefore { get; set; }
 
-    public DateTimeOffset? ModifiedAfter { get; set; }
+    public DateTimeOffset? ModifiedAfter
+    {
+        get
+        {
+            if (!FilterByModifiedDate
+                || ModifiedInLastQuantity == null)
+            {
+                return null;
+            }
 
-    public bool HasMetadataCriteria => ModifiedAfter.HasValue || ModifiedBefore.HasValue;
+            var dateFilterQty = ModifiedInLastQuantity.Value * -1;
+
+            var dateFilterQtyType = ModifiedInLastQuantityType;
+            if (string.IsNullOrEmpty(dateFilterQtyType))
+            {
+                return null;
+            }
+
+            var referenceTime = DateTimeOffset.UtcNow;
+            var result = dateFilterQtyType switch
+            {
+                "hours" => referenceTime.AddHours(dateFilterQty),
+                "days" => referenceTime.AddDays(dateFilterQty),
+                "months" => referenceTime.AddMonths((int)dateFilterQty),
+                "years" => referenceTime.AddYears((int)dateFilterQty),
+                _ => throw new InvalidOperationException()
+            };
+
+            return result;
+        }
+    }
+
+    public bool HasMetadataCriteria => ModifiedAfter.HasValue;
 
     public bool HasTextSearch() => !string.IsNullOrWhiteSpace(TextSearchPattern);
 

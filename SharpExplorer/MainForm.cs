@@ -54,6 +54,12 @@ namespace SharpExplorer
                 options |= TextMatchingOptions.WholeWord;
             }
 
+            float? userSearchDateFilterQty = null;
+            if (float.TryParse(txtDateFilterAmount.Text, out var dateFilterQty))
+            {
+                userSearchDateFilterQty = dateFilterQty;
+            }
+
             return new UserSearchDto
             {
                 RawIncludeFilesPattern = searchPatterns,
@@ -61,7 +67,9 @@ namespace SharpExplorer
                 TextSearchPattern = query,
                 TextMatchingOptions = options,
                 BaseDirectoriesPattern = directoryPath,
-                ModifiedAfter = GetModifiedBeforeFilterDate()
+                FilterByModifiedDate = chkFilterByDate.Checked,
+                ModifiedInLastQuantity = userSearchDateFilterQty,
+                ModifiedInLastQuantityType = cmbDateFilterAmountType.SelectedItem?.ToString(),
             };
         }
 
@@ -95,7 +103,16 @@ namespace SharpExplorer
             _searchCancellationTokenSource = new CancellationTokenSource();
 
             var searchDto = CreateUserSearchDto();
-            var finalStatusMsg = await _currentSearch.SearchAndPopulateTableAsync(searchDto, _searchCancellationTokenSource.Token);
+
+            try
+            {
+                var finalStatusMsg = await _currentSearch.SearchAndPopulateTableAsync(searchDto, _searchCancellationTokenSource.Token);
+                SetStatusText(finalStatusMsg);
+            }
+            catch
+            {
+                SetStatusText("Invalid search criteria");
+            }
 
             var numMatches = grdResult.Rows.Count;
             if (numMatches > 0)
@@ -104,8 +121,6 @@ namespace SharpExplorer
                 grdResult.CurrentCell = grdResult.Rows[0].Cells[0];
                 grdResult.Focus();
             }
-
-            SetStatusText(finalStatusMsg);
 
             btnSearch.Enabled = true;
             btnCancelSearch.Enabled = false;
@@ -360,39 +375,6 @@ namespace SharpExplorer
             {
                 txtDateFilterAmount.Focus();
             }
-        }
-
-        private DateTimeOffset? GetModifiedBeforeFilterDate()
-        {
-            if (!chkFilterByDate.Checked)
-            {
-                return null;
-            }
-
-            if (!float.TryParse(txtDateFilterAmount.Text, out var dateFilterQty))
-            {
-                return null;
-            }
-
-            dateFilterQty *= -1;
-
-            var dateFilterQtyType = cmbDateFilterAmountType.SelectedItem?.ToString();
-            if (string.IsNullOrEmpty(dateFilterQtyType))
-            {
-                return null;
-            }
-
-            var referenceTime = DateTimeOffset.UtcNow;
-            var result = dateFilterQtyType switch
-            {
-                "hours" => referenceTime.AddHours(dateFilterQty),
-                "days" => referenceTime.AddDays(dateFilterQty),
-                "months" => referenceTime.AddMonths((int)dateFilterQty),
-                "years" => referenceTime.AddYears((int)dateFilterQty),
-                _ => throw new InvalidOperationException()
-            };
-
-            return result;
         }
     }
 }
