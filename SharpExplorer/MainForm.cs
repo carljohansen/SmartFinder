@@ -8,9 +8,10 @@ namespace SharpExplorer
 {
     public partial class MainForm : Form
     {
+        private readonly FileSearch _currentSearch;
+
         private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
         private readonly StringFormat _formatForMeasuring;
-        private readonly FileSearch _currentSearch;
 
         private int contextMenuRowIndex = -1;
 
@@ -94,21 +95,17 @@ namespace SharpExplorer
             _searchCancellationTokenSource = new CancellationTokenSource();
 
             var searchDto = CreateUserSearchDto();
-            bool wasCancelled = await _currentSearch.SearchAndPopulateTableAsync(searchDto, _searchCancellationTokenSource.Token);
+            var finalStatusMsg = await _currentSearch.SearchAndPopulateTableAsync(searchDto, _searchCancellationTokenSource.Token);
 
-            var cancelledMsg = wasCancelled ? " (search cancelled)" : "";
             var numMatches = grdResult.Rows.Count;
             if (numMatches > 0)
             {
                 grdResult.Rows[0].Selected = true;
                 grdResult.CurrentCell = grdResult.Rows[0].Cells[0];
                 grdResult.Focus();
-                SetStatusText(numMatches == 1 ? $"1 file found{cancelledMsg}" : $"{numMatches} files found{cancelledMsg}");
             }
-            else
-            {
-                SetStatusText($"No matching files found{cancelledMsg}");
-            }
+
+            SetStatusText(finalStatusMsg);
 
             btnSearch.Enabled = true;
             btnCancelSearch.Enabled = false;

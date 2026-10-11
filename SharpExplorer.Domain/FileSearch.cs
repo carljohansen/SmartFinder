@@ -42,7 +42,23 @@ public class FileSearch
         _currentStatusReportingPath = null;
     }
 
-    public async Task<bool> SearchAndPopulateTableAsync(UserSearchDto searchDto, CancellationToken cancellationToken)
+    public async Task<string> SearchAndPopulateTableAsync(UserSearchDto searchDto, CancellationToken cancellationToken)
+    {
+        bool wasCancelled = await SearchAndPopulateTableAsyncInternal(searchDto, cancellationToken);
+
+        var cancelledMsg = wasCancelled ? " (search cancelled)" : "";
+        var numMatches = DataTable.Rows.Count;
+        if (numMatches > 0)
+        {
+            return numMatches == 1 ? $"1 file found{cancelledMsg}" : $"{numMatches} files found{cancelledMsg}";
+        }
+        else
+        {
+            return $"No matching files found{cancelledMsg}";
+        }
+    }
+
+    private async Task<bool> SearchAndPopulateTableAsyncInternal(UserSearchDto searchDto, CancellationToken cancellationToken)
     {
         var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern);
         var excludeSearchPatternCollection = PathCollection.Create(searchDto.RawExcludeFilesPattern);
