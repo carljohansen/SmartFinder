@@ -73,6 +73,22 @@ namespace SharpExplorer
             };
         }
 
+        private void ApplyUserSearchDto(UserSearchDto dto)
+        {
+            txtFilePattern.Text = dto.RawIncludeFilesPattern ?? "";
+            txtExceptFilePattern.Text = dto.RawExcludeFilesPattern ?? "";
+            txtContainingText.Text = dto.TextSearchPattern ?? "";
+            txtRootDir.Text = dto.BaseDirectoriesPattern ?? "";
+            chkMatchCase.Checked = dto.TextMatchingOptions.HasFlag(TextMatchingOptions.CaseSensitive);
+            chkMatchWholeWord.Checked = dto.TextMatchingOptions.HasFlag(TextMatchingOptions.WholeWord);
+            chkFilterByDate.Checked = dto.FilterByModifiedDate;
+            txtDateFilterAmount.Text = dto.ModifiedInLastQuantity?.ToString() ?? "";
+            if (!string.IsNullOrEmpty(dto.ModifiedInLastQuantityType))
+            {
+                cmbDateFilterAmountType.SelectedItem = dto.ModifiedInLastQuantityType;
+            }
+        }
+
         private FileDisplay? GetRowFileDisplay(int rowIndex)
         {
             if (rowIndex < 0)
@@ -113,6 +129,8 @@ namespace SharpExplorer
             {
                 SetStatusText("Invalid search criteria");
             }
+
+            UserSearchRepository.SaveLastSearchDto(searchDto);
 
             var numMatches = grdResult.Rows.Count;
             if (numMatches > 0)
@@ -280,6 +298,12 @@ namespace SharpExplorer
                 Width = 2000
             };
             lstTextMatches.Columns.Add(header);
+
+            var lastSearch = UserSearchRepository.GetLastSearchDto();
+            if (lastSearch != null)
+            {
+                ApplyUserSearchDto(lastSearch);
+            }
 
             EnableDisableControls();
         }
