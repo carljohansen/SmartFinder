@@ -14,6 +14,7 @@ namespace SharpExplorer
         private readonly StringFormat _formatForMeasuring;
 
         private int contextMenuRowIndex = -1;
+        private CancellationTokenSource? _searchCancellationTokenSource;
 
         public MainForm()
         {
@@ -83,7 +84,6 @@ namespace SharpExplorer
         }
 
         private void ClearStatusText() => SetStatusText("");
-        private CancellationTokenSource? _searchCancellationTokenSource;
 
         private async void btnSearch_Click(object sender, EventArgs e)
         {
@@ -213,7 +213,7 @@ namespace SharpExplorer
             string lineNumberText = itemUnderlyingMatches.LineNumber.ToString();
             Brush brush = _brushes[0];
             g.DrawString(lineNumberText, highlightFont, brush, xPos, e.Bounds.Top, StringFormat.GenericTypographic);
-            xPos = 50; // Prepare for next col.
+            xPos = e.Bounds.Left + 50; // Prepare for next col.
 
             // Text:
             foreach (var segment in textSegments)
