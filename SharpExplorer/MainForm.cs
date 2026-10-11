@@ -88,6 +88,7 @@ namespace SharpExplorer
             btnSearch.Enabled = false;
             btnCancelSearch.Enabled = true;
             lstTextMatches.Items.Clear();
+            contextMenuRowIndex = -1;
             _searchCancellationTokenSource = new CancellationTokenSource();
 
             var searchDto = CreateUserSearchDto();
@@ -96,7 +97,6 @@ namespace SharpExplorer
 
             _currentSearch.Reset();
             _resultTable.Clear();
-            contextMenuRowIndex = -1;
 
             _currentSearch.SetSearch(searchDto);
 

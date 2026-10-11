@@ -170,7 +170,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(27, 42);
+            label1.Location = new Point(27, 38);
             label1.Name = "label1";
             label1.Size = new Size(76, 20);
             label1.TabIndex = 0;
@@ -179,7 +179,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(23, 128);
+            label2.Location = new Point(27, 128);
             label2.Name = "label2";
             label2.Size = new Size(113, 20);
             label2.TabIndex = 4;
@@ -188,7 +188,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(23, 188);
+            label3.Location = new Point(27, 188);
             label3.Name = "label3";
             label3.Size = new Size(60, 20);
             label3.TabIndex = 6;
@@ -197,6 +197,7 @@
             // spltResultPanel
             // 
             spltResultPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            spltResultPanel.FixedPanel = FixedPanel.Panel1;
             spltResultPanel.Location = new Point(12, 254);
             spltResultPanel.Name = "spltResultPanel";
             // 
