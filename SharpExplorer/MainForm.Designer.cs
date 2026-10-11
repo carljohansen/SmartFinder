@@ -373,6 +373,7 @@
             txtDateFilterAmount.Name = "txtDateFilterAmount";
             txtDateFilterAmount.Size = new Size(43, 27);
             txtDateFilterAmount.TabIndex = 9;
+            txtDateFilterAmount.Enter += txtDateFilterAmount_Enter;
             // 
             // cmbDateFilterAmountType
             // 

@@ -335,6 +335,14 @@ namespace SharpExplorer
             }
         }
 
+        private void txtDateFilterAmount_Enter(object sender, EventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                textBox.SelectAll();
+            }
+        }
+
         private void chkEnableExclusions_CheckedChanged(object sender, EventArgs e)
         {
             EnableDisableExclusions();
@@ -347,8 +355,10 @@ namespace SharpExplorer
 
         private void EnableDisableDateFiltering()
         {
-            txtDateFilterAmount.Enabled = chkFilterByDate.Checked;
-            cmbDateFilterAmountType.Enabled = chkFilterByDate.Checked;
+            var isEnabled = chkFilterByDate.Checked;
+            txtDateFilterAmount.Enabled = isEnabled;
+            cmbDateFilterAmountType.Enabled = isEnabled;
+            chkFilterByDate.ForeColor = isEnabled ? SystemColors.ControlText : SystemColors.GrayText;
         }
 
         private void EnableDisableControls()
@@ -372,6 +382,10 @@ namespace SharpExplorer
         private void chkFilterByDate_CheckedChanged(object sender, EventArgs e)
         {
             EnableDisableDateFiltering();
+            if (chkFilterByDate.Checked)
+            {
+                txtDateFilterAmount.Focus();
+            }
         }
 
         private DateTimeOffset? GetModifiedBeforeFilterDate()
