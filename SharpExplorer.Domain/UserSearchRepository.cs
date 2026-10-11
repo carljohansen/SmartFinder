@@ -63,7 +63,7 @@ public static class UserSearchRepository
 
     public static UserSearchDto? GetLastSearchDto() => GetSearchDto("last");
 
-    public UserSearchDto GetDefaultSearchDto()
+    public static UserSearchDto GetDefaultSearchDto()
     {
         return new()
         {
