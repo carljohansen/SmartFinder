@@ -1,4 +1,5 @@
 ﻿using SharpExplorer.Domain.TextSearch;
+using System.Data;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
@@ -11,7 +12,14 @@ public class FileSearch
     public IReadOnlyCollection<AtomicTextMatch> TextSearches => _textSearches;
     private readonly List<AtomicTextMatch> _textSearches = [];
 
+    public readonly DataTable DataTable;
+
     public UserSearchDto? SearchCriteria { get; private set; }
+
+    public FileSearch(DataTable dataTable)
+    {
+        DataTable = dataTable;
+    }
 
     public void SetSearch(UserSearchDto search)
     {
@@ -32,6 +40,36 @@ public class FileSearch
         _textSearches.Clear();
         _currentStatusReportedDirectory = null;
         _currentStatusReportingPath = null;
+    }
+
+    public async Task<bool> SearchAndPopulateTableAsync(UserSearchDto searchDto, CancellationToken cancellationToken)
+    {
+        var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern);
+        var excludeSearchPatternCollection = PathCollection.Create(searchDto.RawExcludeFilesPattern);
+
+        Reset();
+        DataTable.Clear();
+
+        SetSearch(searchDto);
+
+        var wasCancelled = false;
+        try
+        {
+            await foreach (var item in SearchFilesAsync(searchDto.BaseDirectoriesPattern,
+                                                                        searchPatternCollection,
+                                                                        excludeSearchPatternCollection,
+                                                                        cancellationToken))
+            {
+                item.InitializeMetadata();
+                item.AddToDataTable(DataTable);
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            wasCancelled = true;
+        }
+
+        return wasCancelled;
     }
 
     public IAsyncEnumerable<FileDisplay> SearchFilesAsync(string directoryPath,

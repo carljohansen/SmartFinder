@@ -10,25 +10,27 @@ namespace SharpExplorer
     {
         private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
         private readonly StringFormat _formatForMeasuring;
-        private readonly FileSearch _currentSearch = new();
-
-        private readonly BindingSource _searchResultDataSource;
-        private readonly DataTable _resultTable = new();
+        private readonly FileSearch _currentSearch;
 
         private int contextMenuRowIndex = -1;
 
         public MainForm()
         {
             InitializeComponent();
+
+            var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();
+            var searchResultDataSource = new BindingSource(resultTable.DefaultView, null!);
+            _currentSearch = new(resultTable);
+
+            grdResult.AutoGenerateColumns = false;
+            grdResult.DataSource = searchResultDataSource;
+
             _formatForMeasuring = new(StringFormat.GenericTypographic)
             {
                 Alignment = StringAlignment.Center,
                 Trimming = StringTrimming.None
             };
             _formatForMeasuring.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
-            grdResult.AutoGenerateColumns = false;
-            SearchResultDataTableHelper.CreateColumns(_resultTable);
-            _searchResultDataSource = new BindingSource(_resultTable.DefaultView, null!);
             _currentSearch.SearchProgressUpdate += HandleSearchStatusUpdate;
         }
 
@@ -92,30 +94,7 @@ namespace SharpExplorer
             _searchCancellationTokenSource = new CancellationTokenSource();
 
             var searchDto = CreateUserSearchDto();
-            var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern);
-            var excludeSearchPatternCollection = PathCollection.Create(searchDto.RawExcludeFilesPattern);
-
-            _currentSearch.Reset();
-            _resultTable.Clear();
-
-            _currentSearch.SetSearch(searchDto);
-
-            var wasCancelled = false;
-            try
-            {
-                await foreach (var item in _currentSearch.SearchFilesAsync(searchDto.BaseDirectoriesPattern,
-                                                                            searchPatternCollection,
-                                                                            excludeSearchPatternCollection,
-                                                                            _searchCancellationTokenSource.Token))
-                {
-                    item.InitializeMetadata();
-                    item.AddToDataTable(_resultTable);
-                }
-            }
-            catch (TaskCanceledException)
-            {
-                wasCancelled = true;
-            }
+            bool wasCancelled = await _currentSearch.SearchAndPopulateTableAsync(searchDto, _searchCancellationTokenSource.Token);
 
             var cancelledMsg = wasCancelled ? " (search cancelled)" : "";
             var numMatches = grdResult.Rows.Count;
@@ -289,8 +268,6 @@ namespace SharpExplorer
                 Width = 2000
             };
             lstTextMatches.Columns.Add(header);
-
-            grdResult.DataSource = _searchResultDataSource;
 
             EnableDisableControls();
         }
