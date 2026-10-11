@@ -38,7 +38,7 @@ namespace SharpExplorer
 
         private UserSearchDto CreateUserSearchDto()
         {
-            var searchPatterns = string.IsNullOrEmpty(txtFilePattern.Text) ? "/**/*" : txtFilePattern.Text;
+            var searchPatterns = txtFilePattern.Text;
             var exceptSearchPatterns = txtExceptFilePattern.Text;
             var directoryPath = string.IsNullOrEmpty(txtRootDir.Text) ? "." : txtRootDir.Text;
             var query = txtContainingText.Text.Trim();

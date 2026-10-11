@@ -60,8 +60,15 @@ public class FileSearch
 
     private async Task<bool> SearchAndPopulateTableAsyncInternal(UserSearchDto searchDto, CancellationToken cancellationToken)
     {
-        var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern);
-        var excludeSearchPatternCollection = PathCollection.Create(searchDto.RawExcludeFilesPattern);
+        var options = new FileSearchOptions { AutomaticTextSearchFileFiltering = true };
+
+        var optionsForSearchPattern = (searchDto.HasTextSearch() 
+                                       && options.AutomaticTextSearchFileFiltering) 
+                                            ? PathCollectionOptions.None 
+                                            : PathCollectionOptions.AddGeneralWildcardIfBlank;
+
+        var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern, optionsForSearchPattern);
+        var excludeSearchPatternCollection = PathCollection.Create(searchDto.RawExcludeFilesPattern, PathCollectionOptions.None);
 
         Reset();
         DataTable.Clear();
@@ -123,7 +130,8 @@ public class FileSearch
 
         var rawFiles = await Task.Run(() =>
         {
-            if (includePatterns.IsSearchingForNotBinaryFiles())
+            if (includePatterns.Paths.Count == 0
+                && textChecks.Length > 0)
             {
                 return FileSearcher.DoNotBinarySearch(baseDirectory, excludePatterns);
             }

@@ -42,7 +42,7 @@ public static class FileSearcher
 
     public static PatternMatchingResult DoNotBinarySearch(string directoryPath, PathCollection excludePatterns)
     {
-        var allFiles = DoSearch(directoryPath, PathCollection.Create("**/*"), excludePatterns);
+        var allFiles = DoSearch(directoryPath, PathCollection.CreateForFullSearch(), excludePatterns);
 
         var notBinFiles = new PatternMatchingResult(allFiles.Files.Where(fpm => !FileTypeHelper.IsKnownBinaryFile(Path.GetExtension(fpm.Path))));
         return notBinFiles;

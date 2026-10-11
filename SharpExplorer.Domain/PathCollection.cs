@@ -16,27 +16,26 @@ public class PathCollection
         return string.Join("; ", _paths);
     }
 
-    public static PathCollection Create(string rawPaths)
+    public static PathCollection Create(string rawPaths, PathCollectionOptions options)
     {
+        if (string.IsNullOrWhiteSpace(rawPaths)
+            && options.HasFlag(PathCollectionOptions.AddGeneralWildcardIfBlank))
+        {
+            rawPaths = "/**/*";
+        }
+
         var paths = rawPaths.Split([';'], StringSplitOptions.RemoveEmptyEntries)
-                            .Select(Globbify)
-                            .Where(p => !string.IsNullOrWhiteSpace(p))
-                            .ToList();
+                    .Select(Globbify)
+                    .Where(p => !string.IsNullOrWhiteSpace(p))
+                    .ToList();
         return new(paths);
     }
 
-    public bool IsSearchingForNotBinaryFiles()
-    {
-        return Paths.Count == 1 && Paths.Single() == "{notbin}";
-    }
+    public static PathCollection CreateForFullSearch() => Create("", PathCollectionOptions.AddGeneralWildcardIfBlank);
 
     public static string Globbify(string path)
     {
         path = path.Trim();
-        if (path.Contains("{notbin}"))
-        {
-            return path;
-        }
         if (path.StartsWith("**"))
         {
             return "/" + path;
