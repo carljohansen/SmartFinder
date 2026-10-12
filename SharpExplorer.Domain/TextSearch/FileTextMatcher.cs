@@ -2,6 +2,8 @@
 
 public class FileTextMatcher(string? BaseDirectory, AtomicTextMatch TextMatch)
 {
+    public bool IsExclusion => TextMatch.IsExclusion;
+
     private string GetFullPath(string filePath)
     {
         if (BaseDirectory is null)
@@ -9,18 +11,11 @@ public class FileTextMatcher(string? BaseDirectory, AtomicTextMatch TextMatch)
             return filePath; // This better be absolute!
         }
         return Path.Combine(BaseDirectory, filePath);
-    }
+    }    
 
-    public bool HasMatch(string filePath)
+    public bool HasMatchOnLine(string line)
     {
-        foreach (var line in File.ReadLines(GetFullPath(filePath)))
-        {
-            if (TextMatch.FindInLine(line) >= 0)
-            {
-                return !TextMatch.IsExclusion; // If it's an exclusion match, we return false; otherwise, true.
-            }
-        }
-        return TextMatch.IsExclusion;
+        return TextMatch.FindInLine(line) >= 0;
     }
 
     public IReadOnlyCollection<FileLineTextMatch> GetMatches(string filePath, int max = 200)

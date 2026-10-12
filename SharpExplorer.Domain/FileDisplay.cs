@@ -1,11 +1,13 @@
-﻿using SharpExplorer.Domain.FileType;
-using System.Data;
+﻿using System.Data;
+using System.Drawing;
 
 namespace SharpExplorer.Domain;
 
 public class FileDisplay
 {
     public string FullPath { get; init; }
+
+    public Icon? Icon { get; set; }
 
     public string Name { get; init; }
 
@@ -21,11 +23,15 @@ public class FileDisplay
     {
         get; init;
     }
+
+    public string DisplayLocation { get; init; }
+
     public FileDisplay(string relativePath, string baseDirectory)
     {
         FullPath = Path.GetFullPath(Path.Combine(baseDirectory, relativePath));
         Name = Path.GetFileName(FullPath);
         Location = Path.GetDirectoryName(FullPath) ?? string.Empty;
+        DisplayLocation = ShortenPath(Location, 50);
         SizeDisplay = "";
     }
 
@@ -40,6 +46,7 @@ public class FileDisplay
 
         if (File.Exists(fullPath))
         {
+            Icon = null;// FileIconRepository.GetSmallIcon(FullPath);
             FileInfo fileInfo = new(FullPath);
 
             Size = fileInfo.Length; // File size in bytes
@@ -47,15 +54,20 @@ public class FileDisplay
             LastModified = fileInfo.LastWriteTime; // Last modified date/time
         }
 
-        var fileTypeDesc = FileExtensionHelper.GetFileExtensionInfo(AssocStr.FriendlyDocName, GetFileExtension());
+        var fileTypeDesc = "too slow"; // FileExtensionHelper.GetFileExtensionInfo(AssocStr.FriendlyDocName, GetFileExtension());
         FileTypeDescription = fileTypeDesc ?? string.Empty;
     }
-    
+
+
+
     private static String BytesToString(long byteCount)
     {
-        string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
+        string[] suf = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
+
         if (byteCount == 0)
-            return "0" + suf[0];
+
+            return "0 KB";
+
         long bytes = Math.Abs(byteCount);
         int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
         double num = Math.Round(bytes / Math.Pow(1024, place), 0);
@@ -69,6 +81,66 @@ public class FileDisplay
 
     public void AddToDataTable(DataTable dataTable)
     {
-        dataTable.Rows.Add(Name, new FileSizeDisplayComparable(Size, SizeDisplay), Location, FileTypeDescription, LastModified, this);
+        dataTable.Rows.Add(Icon, Name, new FileSizeDisplayComparable(Size, SizeDisplay), DisplayLocation, FileTypeDescription, LastModified, this);
+    }
+
+    private static string ShortenPath(string path, int maxLength)
+    {
+        if (path.Length <= maxLength)
+
+            return path;
+
+        var pathElements = DirectorySplit(new DirectoryInfo(path)).Reverse().ToArray();
+        var currLength = pathElements[0].Length;
+        var leftMaxIncludeIndex = 0;
+        var leftIndex = 1;
+        var rightMaxIncludeIndex = pathElements.Length - 1;
+        var rightIndex = pathElements.Length - 2;
+
+        while (leftIndex < rightIndex)
+        {
+            int nextIndex;
+
+            if (pathElements[leftIndex].Length < pathElements[rightIndex].Length)
+            {
+                nextIndex = leftIndex++;
+                currLength += pathElements[nextIndex].Length;
+                if (currLength < maxLength)
+                    leftMaxIncludeIndex = leftIndex - 1;
+            }
+            else
+            {
+                nextIndex = rightIndex--;
+                currLength += pathElements[nextIndex].Length;
+                if (currLength < maxLength)
+                    rightMaxIncludeIndex = rightIndex + 1;
+            }
+
+            if (currLength > maxLength)
+                break;
+        }
+
+        var result = pathElements[0];
+        for (var i = 1; i <= leftMaxIncludeIndex; i++)
+        {
+            result = Path.Combine(result, pathElements[i]);
+        }
+
+        result = Path.Combine(result, "...");
+        for (var i = rightMaxIncludeIndex; i < pathElements.Length; i++)
+        {
+            result = Path.Combine(result, pathElements[i]);
+        }
+
+        return result;
+    }
+
+    public static IEnumerable<string> DirectorySplit(DirectoryInfo directory)
+    {
+        while (directory != null)
+        {
+            yield return directory.Name;
+            directory = directory.Parent!;
+        }
     }
 }

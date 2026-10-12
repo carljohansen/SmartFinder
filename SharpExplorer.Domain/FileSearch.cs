@@ -50,7 +50,7 @@ public class FileSearch
         var numMatches = DataTable.Rows.Count;
         if (numMatches > 0)
         {
-            return numMatches == 1 ? $"1 file found{cancelledMsg}" : $"{numMatches} files found{cancelledMsg}";
+            return numMatches == 1 ? $"1 file found{cancelledMsg}" : $"{numMatches:#,##0} files found{cancelledMsg}";
         }
         else
         {
@@ -62,9 +62,9 @@ public class FileSearch
     {
         var options = new FileSearchOptions { AutomaticTextSearchFileFiltering = true };
 
-        var optionsForSearchPattern = (searchDto.HasTextSearch() 
-                                       && options.AutomaticTextSearchFileFiltering) 
-                                            ? PathCollectionOptions.None 
+        var optionsForSearchPattern = (searchDto.HasTextSearch()
+                                       && options.AutomaticTextSearchFileFiltering)
+                                            ? PathCollectionOptions.None
                                             : PathCollectionOptions.AddGeneralWildcardIfBlank;
 
         var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern, optionsForSearchPattern);
@@ -169,18 +169,41 @@ public class FileSearch
             }
 
             var passesTextCheck = true;
-            if (TextSearches.Count > 0
-                && passesMetadataChecks)
+            var checkerState = new bool[textChecks.Length]; // false = still evaluating; true already found a match
+
+            foreach (var line in File.ReadLines(Path.Combine(baseDirectory, match.Path)))
             {
-                foreach (var textChecker in textChecks)
+                for (var i = 0; i < textChecks.Length; i++)
                 {
-                    if (!textChecker.HasMatch(match.Path))
+                    if (checkerState[i] == false)
                     {
-                        passesTextCheck = false;
-                        continue;
+                        if (textChecks[i].HasMatchOnLine(line))
+                        {
+                            if (textChecks[i].IsExclusion)
+                            {
+                                passesTextCheck = false;
+                                break;
+                            }
+                            checkerState[i] = true;
+                        }
                     }
                 }
+
+                if (!passesTextCheck)
+                {
+                    break;
+                }
             }
+
+            for (var i = 0; i < textChecks.Length; i++)
+            {
+                if (textChecks[i].IsExclusion)
+                {
+                    checkerState[i] = true;
+                }
+            }
+
+            passesTextCheck &= checkerState.All(x => x == true); // If any of the text checks were not satisfied, we fail the file.       
 
             if (passesTextCheck
                 && passesMetadataChecks)

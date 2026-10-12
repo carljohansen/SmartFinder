@@ -138,6 +138,8 @@ namespace SharpExplorer
                 grdResult.Rows[0].Selected = true;
                 grdResult.CurrentCell = grdResult.Rows[0].Cells[0];
                 grdResult.Focus();
+
+                spltResultPanel.FixedPanel = searchDto.HasTextSearch() ? FixedPanel.Panel1 : FixedPanel.Panel2;
             }
 
             btnSearch.Enabled = true;
@@ -398,6 +400,21 @@ namespace SharpExplorer
             if (chkFilterByDate.Checked)
             {
                 txtDateFilterAmount.Focus();
+            }
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Alt | Keys.M))
+            {
+                chkFilterByDate.Checked = true;
+                EnableDisableDateFiltering();
+                txtDateFilterAmount.Focus();
+                return true;
+            }
+            else
+            {
+                return base.ProcessCmdKey(ref msg, keyData);
             }
         }
     }
