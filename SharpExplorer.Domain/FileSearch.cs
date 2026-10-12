@@ -169,41 +169,44 @@ public class FileSearch
             }
 
             var passesTextCheck = true;
-            var checkerState = new bool[textChecks.Length]; // false = still evaluating; true already found a match
-
-            foreach (var line in File.ReadLines(Path.Combine(baseDirectory, match.Path)))
+            if (textChecks.Length > 0)
             {
-                for (var i = 0; i < textChecks.Length; i++)
+                var checkerState = new bool[textChecks.Length]; // false = still evaluating; true already found a match
+
+                foreach (var line in File.ReadLines(Path.Combine(baseDirectory, match.Path)))
                 {
-                    if (checkerState[i] == false)
+                    for (var i = 0; i < textChecks.Length; i++)
                     {
-                        if (textChecks[i].HasMatchOnLine(line))
+                        if (checkerState[i] == false)
                         {
-                            if (textChecks[i].IsExclusion)
+                            if (textChecks[i].HasMatchOnLine(line))
                             {
-                                passesTextCheck = false;
-                                break;
+                                if (textChecks[i].IsExclusion)
+                                {
+                                    passesTextCheck = false;
+                                    break;
+                                }
+                                checkerState[i] = true;
                             }
-                            checkerState[i] = true;
                         }
+                    }
+
+                    if (!passesTextCheck)
+                    {
+                        break;
                     }
                 }
 
-                if (!passesTextCheck)
+                for (var i = 0; i < textChecks.Length; i++)
                 {
-                    break;
+                    if (textChecks[i].IsExclusion)
+                    {
+                        checkerState[i] = true;
+                    }
                 }
-            }
 
-            for (var i = 0; i < textChecks.Length; i++)
-            {
-                if (textChecks[i].IsExclusion)
-                {
-                    checkerState[i] = true;
-                }
+                passesTextCheck &= checkerState.All(x => x == true); // If any of the text checks were not satisfied, we fail the file.       
             }
-
-            passesTextCheck &= checkerState.All(x => x == true); // If any of the text checks were not satisfied, we fail the file.       
 
             if (passesTextCheck
                 && passesMetadataChecks)

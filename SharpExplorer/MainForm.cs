@@ -40,7 +40,7 @@ namespace SharpExplorer
         {
             var searchPatterns = txtFilePattern.Text;
             var exceptSearchPatterns = txtExceptFilePattern.Text;
-            var directoryPath = string.IsNullOrEmpty(txtRootDir.Text) ? "." : txtRootDir.Text;
+            var directoryPath = string.IsNullOrEmpty(cmbRootDir.Text) ? "." : cmbRootDir.Text;
             var query = txtContainingText.Text.Trim();
             var doMatchCase = chkMatchCase.Checked;
             var doMatchWholeWord = chkMatchWholeWord.Checked;
@@ -78,7 +78,7 @@ namespace SharpExplorer
             txtFilePattern.Text = dto.RawIncludeFilesPattern ?? "";
             txtExceptFilePattern.Text = dto.RawExcludeFilesPattern ?? "";
             txtContainingText.Text = dto.TextSearchPattern ?? "";
-            txtRootDir.Text = dto.BaseDirectoriesPattern ?? "";
+            cmbRootDir.Text = dto.BaseDirectoriesPattern ?? "";
             chkMatchCase.Checked = dto.TextMatchingOptions.HasFlag(TextMatchingOptions.CaseSensitive);
             chkMatchWholeWord.Checked = dto.TextMatchingOptions.HasFlag(TextMatchingOptions.WholeWord);
             chkFilterByDate.Checked = dto.FilterByModifiedDate;
@@ -415,6 +415,31 @@ namespace SharpExplorer
             else
             {
                 return base.ProcessCmdKey(ref msg, keyData);
+            }
+        }
+
+        private void cmbRootDir_TextUpdate(object sender, EventArgs e)
+        {
+            var caretPos = cmbRootDir.SelectionStart;
+            var currPath = cmbRootDir.Text;
+            var possibleContinuations = DirectoryPredictiveTexter.GetPossibleContinuations(currPath);
+
+            cmbRootDir.Items.Clear();
+            cmbRootDir.Items.AddRange(possibleContinuations);
+
+            if (cmbRootDir.Items.Count > 0)
+            {
+                cmbRootDir.DroppedDown = true;
+            }
+
+            cmbRootDir.SelectionStart = Math.Min(caretPos, cmbRootDir.Text.Length);
+        }
+
+        private void cmbRootDir_Enter(object sender, EventArgs e)
+        {
+            if (sender is ComboBox cmbRootDir)
+            {
+                cmbRootDir.SelectAll();
             }
         }
     }

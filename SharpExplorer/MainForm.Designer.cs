@@ -33,7 +33,6 @@
             btnSearch = new Button();
             txtFilePattern = new TextBox();
             txtContainingText = new TextBox();
-            txtRootDir = new TextBox();
             mnuFileItemContext = new ContextMenuStrip(components);
             mnuOpenFile = new ToolStripMenuItem();
             mnuCopyPath = new ToolStripMenuItem();
@@ -46,6 +45,12 @@
             label3 = new Label();
             spltResultPanel = new SplitContainer();
             grdResult = new DataGridView();
+            colIcon = new DataGridViewImageColumn();
+            colName = new DataGridViewTextBoxColumn();
+            colLocation = new DataGridViewTextBoxColumn();
+            colFileType = new DataGridViewTextBoxColumn();
+            colSize = new DataGridViewTextBoxColumn();
+            colLastModified = new DataGridViewTextBoxColumn();
             lstTextMatches = new ListView();
             label4 = new Label();
             txtExceptFilePattern = new TextBox();
@@ -56,12 +61,7 @@
             chkFilterByDate = new CheckBox();
             txtDateFilterAmount = new TextBox();
             cmbDateFilterAmountType = new ComboBox();
-            colIcon = new DataGridViewImageColumn();
-            colName = new DataGridViewTextBoxColumn();
-            colLocation = new DataGridViewTextBoxColumn();
-            colFileType = new DataGridViewTextBoxColumn();
-            colSize = new DataGridViewTextBoxColumn();
-            colLastModified = new DataGridViewTextBoxColumn();
+            cmbRootDir = new ComboBox();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -99,16 +99,6 @@
             txtContainingText.Size = new Size(714, 27);
             txtContainingText.TabIndex = 5;
             txtContainingText.Enter += txtContainingText_Enter;
-            // 
-            // txtRootDir
-            // 
-            txtRootDir.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtRootDir.Location = new Point(140, 185);
-            txtRootDir.Name = "txtRootDir";
-            txtRootDir.Size = new Size(834, 27);
-            txtRootDir.TabIndex = 7;
-            txtRootDir.Text = "S:\\Text";
-            txtRootDir.Enter += txtRootDir_Enter;
             // 
             // mnuFileItemContext
             // 
@@ -235,6 +225,66 @@
             grdResult.CellMouseDoubleClick += grdResult_CellMouseDoubleClick;
             grdResult.RowEnter += grdResult_RowEnter;
             // 
+            // colIcon
+            // 
+            colIcon.HeaderText = "";
+            colIcon.MinimumWidth = 6;
+            colIcon.Name = "colIcon";
+            colIcon.ReadOnly = true;
+            colIcon.Width = 125;
+            // 
+            // colName
+            // 
+            colName.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colName.DataPropertyName = "Name";
+            colName.HeaderText = "Name";
+            colName.MinimumWidth = 6;
+            colName.Name = "colName";
+            colName.ReadOnly = true;
+            colName.Width = 78;
+            // 
+            // colLocation
+            // 
+            colLocation.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colLocation.DataPropertyName = "Location";
+            colLocation.HeaderText = "Location";
+            colLocation.MinimumWidth = 6;
+            colLocation.Name = "colLocation";
+            colLocation.ReadOnly = true;
+            colLocation.Width = 95;
+            // 
+            // colFileType
+            // 
+            colFileType.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colFileType.DataPropertyName = "FileTypeDescription";
+            colFileType.HeaderText = "Type";
+            colFileType.MinimumWidth = 6;
+            colFileType.Name = "colFileType";
+            colFileType.ReadOnly = true;
+            colFileType.Width = 69;
+            // 
+            // colSize
+            // 
+            colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colSize.DataPropertyName = "SizeDisplay";
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
+            colSize.DefaultCellStyle = dataGridViewCellStyle1;
+            colSize.HeaderText = "Size";
+            colSize.MinimumWidth = 6;
+            colSize.Name = "colSize";
+            colSize.ReadOnly = true;
+            colSize.Width = 65;
+            // 
+            // colLastModified
+            // 
+            colLastModified.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colLastModified.DataPropertyName = "LastModified";
+            colLastModified.HeaderText = "Modified";
+            colLastModified.MinimumWidth = 6;
+            colLastModified.Name = "colLastModified";
+            colLastModified.ReadOnly = true;
+            colLastModified.Width = 99;
+            // 
             // lstTextMatches
             // 
             lstTextMatches.Dock = DockStyle.Fill;
@@ -334,71 +384,23 @@
             cmbDateFilterAmountType.Size = new Size(85, 28);
             cmbDateFilterAmountType.TabIndex = 10;
             // 
-            // colIcon
+            // cmbRootDir
             // 
-            colIcon.HeaderText = "";
-            colIcon.MinimumWidth = 6;
-            colIcon.Name = "colIcon";
-            colIcon.ReadOnly = true;
-            colIcon.Width = 125;
-            // 
-            // colName
-            // 
-            colName.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colName.DataPropertyName = "Name";
-            colName.HeaderText = "Name";
-            colName.MinimumWidth = 6;
-            colName.Name = "colName";
-            colName.ReadOnly = true;
-            colName.Width = 78;
-            // 
-            // colLocation
-            // 
-            colLocation.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colLocation.DataPropertyName = "Location";
-            colLocation.HeaderText = "Location";
-            colLocation.MinimumWidth = 6;
-            colLocation.Name = "colLocation";
-            colLocation.ReadOnly = true;
-            colLocation.Width = 95;
-            // 
-            // colFileType
-            // 
-            colFileType.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colFileType.DataPropertyName = "FileTypeDescription";
-            colFileType.HeaderText = "Type";
-            colFileType.MinimumWidth = 6;
-            colFileType.Name = "colFileType";
-            colFileType.ReadOnly = true;
-            colFileType.Width = 69;
-            // 
-            // colSize
-            // 
-            colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colSize.DataPropertyName = "SizeDisplay";
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
-            colSize.DefaultCellStyle = dataGridViewCellStyle1;
-            colSize.HeaderText = "Size";
-            colSize.MinimumWidth = 6;
-            colSize.Name = "colSize";
-            colSize.ReadOnly = true;
-            colSize.Width = 65;
-            // 
-            // colLastModified
-            // 
-            colLastModified.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colLastModified.DataPropertyName = "LastModified";
-            colLastModified.HeaderText = "Modified";
-            colLastModified.MinimumWidth = 6;
-            colLastModified.Name = "colLastModified";
-            colLastModified.ReadOnly = true;
-            colLastModified.Width = 99;
+            cmbRootDir.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbRootDir.FormattingEnabled = true;
+            cmbRootDir.Location = new Point(93, 185);
+            cmbRootDir.Name = "cmbRootDir";
+            cmbRootDir.Size = new Size(903, 28);
+            cmbRootDir.TabIndex = 7;
+            cmbRootDir.TextUpdate += cmbRootDir_TextUpdate;
+            cmbRootDir.Enter += cmbRootDir_Enter;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1008, 564);
+            Controls.Add(cmbRootDir);
             Controls.Add(cmbDateFilterAmountType);
             Controls.Add(txtDateFilterAmount);
             Controls.Add(chkFilterByDate);
@@ -413,7 +415,6 @@
             Controls.Add(label1);
             Controls.Add(chkMatchWholeWord);
             Controls.Add(chkMatchCase);
-            Controls.Add(txtRootDir);
             Controls.Add(txtContainingText);
             Controls.Add(txtFilePattern);
             Controls.Add(btnSearch);
@@ -438,7 +439,6 @@
         private Button btnSearch;
         private TextBox txtFilePattern;
         private TextBox txtContainingText;
-        private TextBox txtRootDir;
         private CheckBox chkMatchCase;
         private CheckBox chkMatchWholeWord;
         private Label label1;
@@ -467,5 +467,6 @@
         private DataGridViewTextBoxColumn colFileType;
         private DataGridViewTextBoxColumn colSize;
         private DataGridViewTextBoxColumn colLastModified;
+        private ComboBox cmbRootDir;
     }
 }
