@@ -465,6 +465,7 @@ namespace SharpExplorer
             var possibleContinuations = DirectoryPredictiveTexter.GetPossibleContinuations(currPath);
 
             cmbRootDir.Items.Clear();
+            cmbRootDir.Items.Add(currPath);
             cmbRootDir.Items.AddRange(possibleContinuations);
 
             if (cmbRootDir.Items.Count > 0)
