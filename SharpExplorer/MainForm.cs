@@ -1,6 +1,7 @@
 using SharpExplorer.Domain;
 using SharpExplorer.Domain.FileType;
 using SharpExplorer.Domain.TextSearch;
+using System.Collections.Specialized;
 using System.Data;
 using System.Diagnostics;
 
@@ -148,14 +149,53 @@ namespace SharpExplorer
 
         private void mnuCopyPath_Click(object sender, EventArgs e)
         {
-            var selectedFileDisplay = GetRowFileDisplay(contextMenuRowIndex);
-            if (selectedFileDisplay == null)
-                return;
-
-            var selectedFilePath = selectedFileDisplay.FullPath;
-            if (selectedFilePath != null)
+            var selectedItems = grdResult.SelectedRows;
+            if (selectedItems.Count == 0)
             {
-                Clipboard.SetText($"\"{selectedFilePath}\"");
+                return;
+            }
+            List<string> filesToCopy = [];
+            List<int> selectedRowIndexes = [];
+            foreach (var selectedRow in selectedItems)
+            {
+                if (selectedRow is DataGridViewRow row)
+                {
+                    selectedRowIndexes.Add(row.Index);
+                }
+            }
+            selectedRowIndexes.Sort();
+            foreach (var rowIndex in selectedRowIndexes)
+            {
+                var selectedFile = GetRowFileDisplay(rowIndex);
+                if (selectedFile != null)
+                {
+                    filesToCopy.Add(selectedFile.FullPath);
+                }
+            }
+
+            var pathsText = string.Join(Environment.NewLine, filesToCopy.Select(f => $"\"{f}\""));
+            Clipboard.SetText(pathsText);
+        }
+
+        private void mnuCopyFiles_Click(object sender, EventArgs e)
+        {
+            var selectedItems = grdResult.SelectedRows;
+            StringCollection filesToCopy = [];
+            foreach (var selectedRow in selectedItems)
+            {
+                if (selectedRow is DataGridViewRow row)
+                {
+                    var selectedFile = GetRowFileDisplay(row.Index);
+                    if (selectedFile != null)
+                    {
+                        filesToCopy.Add(selectedFile.FullPath);
+                    }
+                }
+            }
+
+            if (filesToCopy.Count > 0)
+            {
+                Clipboard.SetFileDropList(filesToCopy);
             }
         }
 

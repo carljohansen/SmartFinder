@@ -62,6 +62,7 @@
             txtDateFilterAmount = new TextBox();
             cmbDateFilterAmountType = new ComboBox();
             cmbRootDir = new ComboBox();
+            mnuCopyFiles = new ToolStripMenuItem();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -103,9 +104,9 @@
             // mnuFileItemContext
             // 
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
-            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuCopyPath, mnuShowInExplorer, mnuOpenWithTextEditor });
+            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuCopyPath, mnuShowInExplorer, mnuOpenWithTextEditor, mnuCopyFiles });
             mnuFileItemContext.Name = "mnuFileItemContext";
-            mnuFileItemContext.Size = new Size(237, 100);
+            mnuFileItemContext.Size = new Size(237, 152);
             // 
             // mnuOpenFile
             // 
@@ -395,6 +396,13 @@
             cmbRootDir.TextUpdate += cmbRootDir_TextUpdate;
             cmbRootDir.Enter += cmbRootDir_Enter;
             // 
+            // mnuCopyFiles
+            // 
+            mnuCopyFiles.Name = "mnuCopyFiles";
+            mnuCopyFiles.Size = new Size(236, 24);
+            mnuCopyFiles.Text = "Copy";
+            mnuCopyFiles.Click += mnuCopyFiles_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -468,5 +476,6 @@
         private DataGridViewTextBoxColumn colSize;
         private DataGridViewTextBoxColumn colLastModified;
         private ComboBox cmbRootDir;
+        private ToolStripMenuItem mnuCopyFiles;
     }
 }
