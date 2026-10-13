@@ -6,11 +6,18 @@ public class UserSearchDto
 
     public required string RawExcludeFilesPattern { get; set; }
 
+    public string GetExcludeFilesPattern()
+    {
+        return EnableFileExclusion ? RawExcludeFilesPattern : "";
+    }
+
     public string? TextSearchPattern { get; set; }
 
     public TextMatchingOptions TextMatchingOptions { get; set; } = TextMatchingOptions.None;
 
     public required string BaseDirectoriesPattern { get; set; }
+
+    public bool EnableFileExclusion { get; set; }
 
     public bool FilterByModifiedDate { get; set; }
 

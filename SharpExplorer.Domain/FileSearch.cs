@@ -126,7 +126,7 @@ public class FileSearch
         if (SearchCriteria == null)
             yield break; // Should not happen.
 
-        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building file list..." });
+        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building file list...", ProgressPercentage = 0 });
 
         var rawFiles = await Task.Run(() =>
         {
@@ -147,11 +147,13 @@ public class FileSearch
 
         if (TextSearches.Count > 0)
         {
-            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Searching in files..." });
+            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Searching in files...", ProgressPercentage = 0 });
         }
 
         var timer = Stopwatch.StartNew();
         FileDisplay? matchedItem = null;
+        var numFilesProcessed = 0;
+        var numFiles = rawFiles.Files.Count();
 
         foreach (var match in rawFiles.Files)
         {
@@ -209,16 +211,23 @@ public class FileSearch
             }
 
             if (passesTextCheck
-                && passesMetadataChecks)
+              && passesMetadataChecks)
             {
                 yield return matchedItem ?? new FileDisplay(match.Path, baseDirectory);
             }
+
+            numFilesProcessed++;
 
             if (timer.ElapsedMilliseconds > 100)
             {
                 await Task.Delay(1, cancellationToken);
                 timer.Restart();
-                SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = $"Searching in files ({GetDirectoryForStatusReport(match.Path, baseDirectory)})..." });
+                var percentComplete = (int)Math.Floor((numFilesProcessed * 100.0) / numFiles);
+                SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs
+                {
+                    StatusMessage = $"Searching in files ({GetDirectoryForStatusReport(match.Path, baseDirectory)})...",
+                    ProgressPercentage = percentComplete
+                });
             }
         }
     }

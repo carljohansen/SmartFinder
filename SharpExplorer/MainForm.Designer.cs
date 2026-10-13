@@ -38,6 +38,7 @@
             mnuCopyPath = new ToolStripMenuItem();
             mnuShowInExplorer = new ToolStripMenuItem();
             mnuOpenWithTextEditor = new ToolStripMenuItem();
+            mnuCopyFiles = new ToolStripMenuItem();
             chkMatchCase = new CheckBox();
             chkMatchWholeWord = new CheckBox();
             label1 = new Label();
@@ -56,13 +57,13 @@
             txtExceptFilePattern = new TextBox();
             chkEnableExclusions = new CheckBox();
             statusStrip1 = new StatusStrip();
+            searchProgressBar = new ToolStripProgressBar();
             lblStatus = new ToolStripStatusLabel();
             btnCancelSearch = new Button();
             chkFilterByDate = new CheckBox();
             txtDateFilterAmount = new TextBox();
             cmbDateFilterAmountType = new ComboBox();
             cmbRootDir = new ComboBox();
-            mnuCopyFiles = new ToolStripMenuItem();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -106,7 +107,7 @@
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
             mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuCopyPath, mnuShowInExplorer, mnuOpenWithTextEditor, mnuCopyFiles });
             mnuFileItemContext.Name = "mnuFileItemContext";
-            mnuFileItemContext.Size = new Size(237, 152);
+            mnuFileItemContext.Size = new Size(237, 124);
             // 
             // mnuOpenFile
             // 
@@ -136,6 +137,13 @@
             mnuOpenWithTextEditor.Size = new Size(236, 24);
             mnuOpenWithTextEditor.Text = "Open With Text Editor";
             mnuOpenWithTextEditor.Click += mnuOpenWithTextEditor_Click;
+            // 
+            // mnuCopyFiles
+            // 
+            mnuCopyFiles.Name = "mnuCopyFiles";
+            mnuCopyFiles.Size = new Size(236, 24);
+            mnuCopyFiles.Text = "Copy";
+            mnuCopyFiles.Click += mnuCopyFiles_Click;
             // 
             // chkMatchCase
             // 
@@ -220,6 +228,7 @@
             grdResult.RowHeadersVisible = false;
             grdResult.RowHeadersWidth = 51;
             grdResult.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            grdResult.ShowCellToolTips = false;
             grdResult.Size = new Size(707, 262);
             grdResult.TabIndex = 100;
             grdResult.CellContextMenuStripNeeded += grdResult_CellContextMenuStripNeeded;
@@ -228,15 +237,16 @@
             // 
             // colIcon
             // 
+            colIcon.DataPropertyName = "Icon";
             colIcon.HeaderText = "";
             colIcon.MinimumWidth = 6;
             colIcon.Name = "colIcon";
             colIcon.ReadOnly = true;
-            colIcon.Width = 125;
+            colIcon.Width = 22;
             // 
             // colName
             // 
-            colName.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colName.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             colName.DataPropertyName = "Name";
             colName.HeaderText = "Name";
             colName.MinimumWidth = 6;
@@ -246,7 +256,7 @@
             // 
             // colLocation
             // 
-            colLocation.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colLocation.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             colLocation.DataPropertyName = "Location";
             colLocation.HeaderText = "Location";
             colLocation.MinimumWidth = 6;
@@ -256,7 +266,7 @@
             // 
             // colFileType
             // 
-            colFileType.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colFileType.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             colFileType.DataPropertyName = "FileTypeDescription";
             colFileType.HeaderText = "Type";
             colFileType.MinimumWidth = 6;
@@ -332,17 +342,22 @@
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
-            statusStrip1.Items.AddRange(new ToolStripItem[] { lblStatus });
-            statusStrip1.Location = new Point(0, 542);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { searchProgressBar, lblStatus });
+            statusStrip1.Location = new Point(0, 540);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1008, 22);
+            statusStrip1.Size = new Size(1008, 24);
             statusStrip1.TabIndex = 103;
             statusStrip1.Text = "statusStrip1";
+            // 
+            // searchProgressBar
+            // 
+            searchProgressBar.Name = "searchProgressBar";
+            searchProgressBar.Size = new Size(100, 16);
             // 
             // lblStatus
             // 
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(0, 16);
+            lblStatus.Size = new Size(0, 18);
             lblStatus.Click += toolStripStatusLabel1_Click;
             // 
             // btnCancelSearch
@@ -393,15 +408,10 @@
             cmbRootDir.Name = "cmbRootDir";
             cmbRootDir.Size = new Size(903, 28);
             cmbRootDir.TabIndex = 7;
+            cmbRootDir.SelectedIndexChanged += cmbRootDir_SelectedIndexChanged;
             cmbRootDir.TextUpdate += cmbRootDir_TextUpdate;
+            cmbRootDir.SelectedValueChanged += cmbRootDir_SelectedValueChanged;
             cmbRootDir.Enter += cmbRootDir_Enter;
-            // 
-            // mnuCopyFiles
-            // 
-            mnuCopyFiles.Name = "mnuCopyFiles";
-            mnuCopyFiles.Size = new Size(236, 24);
-            mnuCopyFiles.Text = "Copy";
-            mnuCopyFiles.Click += mnuCopyFiles_Click;
             // 
             // MainForm
             // 
@@ -469,13 +479,14 @@
         private CheckBox chkFilterByDate;
         private TextBox txtDateFilterAmount;
         private ComboBox cmbDateFilterAmountType;
+        private ComboBox cmbRootDir;
+        private ToolStripMenuItem mnuCopyFiles;
+        private ToolStripProgressBar searchProgressBar;
         private DataGridViewImageColumn colIcon;
         private DataGridViewTextBoxColumn colName;
         private DataGridViewTextBoxColumn colLocation;
         private DataGridViewTextBoxColumn colFileType;
         private DataGridViewTextBoxColumn colSize;
         private DataGridViewTextBoxColumn colLastModified;
-        private ComboBox cmbRootDir;
-        private ToolStripMenuItem mnuCopyFiles;
     }
 }

@@ -44,21 +44,18 @@ public class FileDisplay
 
         var fullPath = Path.Combine(Location, Name);
 
-        if (File.Exists(fullPath))
-        {
-            Icon = null;// FileIconRepository.GetSmallIcon(FullPath);
+        //if (File.Exists(fullPath)) Should be optimistic; catch 404 on new FileInfo
+        //{
+            var extensionMetadata = ExtensionMetadataRepository.Instance.GetExtensionMetadata(fullPath);
+            Icon = extensionMetadata.Icon;
+            FileTypeDescription = extensionMetadata.FriendlyDocName ?? string.Empty;
             FileInfo fileInfo = new(FullPath);
 
             Size = fileInfo.Length; // File size in bytes
             SizeDisplay = BytesToString(Size);
             LastModified = fileInfo.LastWriteTime; // Last modified date/time
-        }
-
-        var fileTypeDesc = "too slow"; // FileExtensionHelper.GetFileExtensionInfo(AssocStr.FriendlyDocName, GetFileExtension());
-        FileTypeDescription = fileTypeDesc ?? string.Empty;
+        //}
     }
-
-
 
     private static String BytesToString(long byteCount)
     {

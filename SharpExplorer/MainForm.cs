@@ -10,12 +10,14 @@ namespace SharpExplorer
     public partial class MainForm : Form
     {
         private readonly FileSearch _currentSearch;
+        private readonly TextCriterionHistory _baseDirHistory = new(15);
 
         private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
         private readonly StringFormat _formatForMeasuring;
 
         private int contextMenuRowIndex = -1;
         private CancellationTokenSource? _searchCancellationTokenSource;
+        private bool _isClosing = false;
 
         public MainForm()
         {
@@ -68,6 +70,7 @@ namespace SharpExplorer
                 TextSearchPattern = query,
                 TextMatchingOptions = options,
                 BaseDirectoriesPattern = directoryPath,
+                EnableFileExclusion = chkEnableExclusions.Checked,
                 FilterByModifiedDate = chkFilterByDate.Checked,
                 ModifiedInLastQuantity = userSearchDateFilterQty,
                 ModifiedInLastQuantityType = cmbDateFilterAmountType.SelectedItem?.ToString(),
@@ -80,6 +83,7 @@ namespace SharpExplorer
             txtExceptFilePattern.Text = dto.RawExcludeFilesPattern ?? "";
             txtContainingText.Text = dto.TextSearchPattern ?? "";
             cmbRootDir.Text = dto.BaseDirectoriesPattern ?? "";
+            chkEnableExclusions.Checked = dto.EnableFileExclusion;
             chkMatchCase.Checked = dto.TextMatchingOptions.HasFlag(TextMatchingOptions.CaseSensitive);
             chkMatchWholeWord.Checked = dto.TextMatchingOptions.HasFlag(TextMatchingOptions.WholeWord);
             chkFilterByDate.Checked = dto.FilterByModifiedDate;
@@ -100,7 +104,12 @@ namespace SharpExplorer
 
         private void HandleSearchStatusUpdate(object? sender, SearchProgressEventArgs e)
         {
+            if (_isClosing)
+            {
+                return;
+            }
             SetStatusText(e.StatusMessage);
+            searchProgressBar.Value = Math.Min(Math.Max(e.ProgressPercentage, 0), 100);
         }
 
         private void SetStatusText(string text)
@@ -115,6 +124,8 @@ namespace SharpExplorer
             SetStatusText("Searching...");
             btnSearch.Enabled = false;
             btnCancelSearch.Enabled = true;
+            cmbRootDir.DroppedDown = false;
+            searchProgressBar.Visible = true;
             lstTextMatches.Items.Clear();
             contextMenuRowIndex = -1;
             _searchCancellationTokenSource = new CancellationTokenSource();
@@ -132,6 +143,8 @@ namespace SharpExplorer
             }
 
             UserSearchRepository.SaveLastSearchDto(searchDto);
+            _baseDirHistory.AddItem(searchDto.BaseDirectoriesPattern);
+            ApplyComboBoxHistory(cmbRootDir, _baseDirHistory);
 
             var numMatches = grdResult.Rows.Count;
             if (numMatches > 0)
@@ -145,6 +158,7 @@ namespace SharpExplorer
 
             btnSearch.Enabled = true;
             btnCancelSearch.Enabled = false;
+            searchProgressBar.Visible = false;
         }
 
         private void mnuCopyPath_Click(object sender, EventArgs e)
@@ -347,7 +361,34 @@ namespace SharpExplorer
                 ApplyUserSearchDto(lastSearch);
             }
 
+            SetInputFont(this);
+
             EnableDisableControls();
+        }
+
+        private void SetInputFont(Control parentControl)
+        {
+            var inputFontFamilyName = "Cascadia Mono";
+            foreach (var control in parentControl.Controls)
+            {
+                switch (control)
+                {
+                    case TextBox textBox:
+                        textBox.Font = new Font(inputFontFamilyName, this.Font.Size, this.Font.Style);
+                        break;
+                    case ComboBox comboBox:
+                        comboBox.Font = new Font(inputFontFamilyName, this.Font.Size, this.Font.Style);
+                        break;
+                    case ListView listView when listView.Name == nameof(lstTextMatches):
+                        listView.Font = new Font(inputFontFamilyName, this.Font.Size, this.Font.Style);
+                        break;
+                }
+
+                if (control is Control childControl)
+                {
+                    SetInputFont(childControl);
+                }
+            }
         }
 
         private void grdResult_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
@@ -458,15 +499,24 @@ namespace SharpExplorer
             }
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            _isClosing = true;
+            base.OnFormClosing(e);
+        }
+
         private void cmbRootDir_TextUpdate(object sender, EventArgs e)
         {
             var caretPos = cmbRootDir.SelectionStart;
             var currPath = cmbRootDir.Text;
             var possibleContinuations = DirectoryPredictiveTexter.GetPossibleContinuations(currPath);
 
-            cmbRootDir.Items.Clear();
-            cmbRootDir.Items.Add(currPath);
-            cmbRootDir.Items.AddRange(possibleContinuations);
+            if (!ApplyComboBoxHistory(cmbRootDir, _baseDirHistory))
+            {
+                cmbRootDir.Items.Clear();
+                cmbRootDir.Items.Add(currPath);
+                cmbRootDir.Items.AddRange(possibleContinuations);
+            }
 
             if (cmbRootDir.Items.Count > 0)
             {
@@ -481,7 +531,41 @@ namespace SharpExplorer
             if (sender is ComboBox cmbRootDir)
             {
                 cmbRootDir.SelectAll();
+                ApplyComboBoxHistory(cmbRootDir, _baseDirHistory);
             }
+        }
+
+        private static bool ApplyComboBoxHistory(ComboBox comboBox, TextCriterionHistory history)
+        {
+            if (comboBox.Text != "")
+            {
+                return false;
+            }
+            comboBox.Items.Clear();
+            foreach (var item in history.Items)
+            {
+                comboBox.Items.Add(item);
+            }
+            return true;
+        }
+
+        private void MoveComboBoxCaretToEnd(ComboBox comboBox)
+        {
+            BeginInvoke((MethodInvoker)(() =>
+            {
+                comboBox.SelectionStart = comboBox.Text.Length;
+                comboBox.SelectionLength = 0; // remove selection highlight
+            }));
+        }
+
+        private void cmbRootDir_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MoveComboBoxCaretToEnd(cmbRootDir);
+        }
+
+        private void cmbRootDir_SelectedValueChanged(object sender, EventArgs e)
+        {
+            MoveComboBoxCaretToEnd(cmbRootDir);
         }
     }
 }
