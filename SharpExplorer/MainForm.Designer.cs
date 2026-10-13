@@ -64,6 +64,7 @@
             txtDateFilterAmount = new TextBox();
             cmbDateFilterAmountType = new ComboBox();
             cmbRootDir = new ComboBox();
+            mnuSearchHere = new ToolStripMenuItem();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -105,9 +106,9 @@
             // mnuFileItemContext
             // 
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
-            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuCopyPath, mnuShowInExplorer, mnuOpenWithTextEditor, mnuCopyFiles });
+            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuCopyPath, mnuShowInExplorer, mnuOpenWithTextEditor, mnuCopyFiles, mnuSearchHere });
             mnuFileItemContext.Name = "mnuFileItemContext";
-            mnuFileItemContext.Size = new Size(237, 124);
+            mnuFileItemContext.Size = new Size(237, 176);
             // 
             // mnuOpenFile
             // 
@@ -413,6 +414,13 @@
             cmbRootDir.SelectedValueChanged += cmbRootDir_SelectedValueChanged;
             cmbRootDir.Enter += cmbRootDir_Enter;
             // 
+            // mnuSearchHere
+            // 
+            mnuSearchHere.Name = "mnuSearchHere";
+            mnuSearchHere.Size = new Size(236, 24);
+            mnuSearchHere.Text = "Search Here";
+            mnuSearchHere.Click += mnuSearchHere_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -488,5 +496,6 @@
         private DataGridViewTextBoxColumn colFileType;
         private DataGridViewTextBoxColumn colSize;
         private DataGridViewTextBoxColumn colLastModified;
+        private ToolStripMenuItem mnuSearchHere;
     }
 }

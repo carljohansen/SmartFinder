@@ -233,6 +233,29 @@ namespace SharpExplorer
             }
         }
 
+        private void mnuSearchHere_Click(object sender, EventArgs e)
+        {
+            var selectedFileDisplay = GetRowFileDisplay(contextMenuRowIndex);
+            if (selectedFileDisplay == null)
+                return;
+
+            var selectedFilePath = selectedFileDisplay.FullPath;
+            if (selectedFilePath == null
+                || !File.Exists(selectedFilePath))
+            {
+                return;
+            }
+
+            var containingFolder = Path.GetDirectoryName(selectedFilePath);
+            if (containingFolder != null)
+            {
+                cmbRootDir.Text = containingFolder;
+                cmbRootDir.Focus();
+                cmbRootDir.SelectionStart = cmbRootDir.Text.Length;
+                cmbRootDir.SelectionLength = 0;
+            }
+        }
+
         private void mnuOpenWithTextEditor_Click(object sender, EventArgs e)
         {
             var selectedFileDisplay = GetRowFileDisplay(contextMenuRowIndex);
