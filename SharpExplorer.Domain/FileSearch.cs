@@ -68,7 +68,7 @@ public class FileSearch
                                             : PathCollectionOptions.AddGeneralWildcardIfBlank;
 
         var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern, optionsForSearchPattern);
-        var excludeSearchPatternCollection = PathCollection.Create(searchDto.RawExcludeFilesPattern, PathCollectionOptions.None);
+        var excludeSearchPatternCollection = PathCollection.Create(searchDto.GetExcludeFilesPattern(), PathCollectionOptions.None);
 
         Reset();
         DataTable.Clear();
@@ -105,10 +105,13 @@ public class FileSearch
             throw new ArgumentException("Invalid directory path.", nameof(directoryPath));
         }
 
+        var locationRepo = new FileLocationRepository();
+
         return SearchFilesInternalAsync(directoryPath,
                                         includePatterns,
                                         excludePatterns,
                                         [.. TextSearches.Select(ts => new FileTextMatcher(directoryPath, ts))],
+                                        locationRepo,
                                         cancellationToken);
     }
 
@@ -116,6 +119,7 @@ public class FileSearch
                                                                         PathCollection includePatterns,
                                                                         PathCollection excludePatterns,
                                                                         FileTextMatcher[] textChecks,
+                                                                        FileLocationRepository locationRepository,
                                                                         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -165,7 +169,7 @@ public class FileSearch
             var passesMetadataChecks = true;
             if (SearchCriteria.HasMetadataCriteria)
             {
-                matchedItem = new FileDisplay(match.Path, baseDirectory);
+                matchedItem = new FileDisplay(match.Path, baseDirectory, locationRepository);
                 matchedItem.InitializeMetadata();
                 passesMetadataChecks = MeetsMetadataCriteria(matchedItem);
             }
@@ -207,13 +211,13 @@ public class FileSearch
                     }
                 }
 
-                passesTextCheck &= checkerState.All(x => x == true); // If any of the text checks were not satisfied, we fail the file.       
+                passesTextCheck &= checkerState.All(x => x == true); // If any of the text checks were not satisfied, we fail the file.
             }
 
             if (passesTextCheck
               && passesMetadataChecks)
             {
-                yield return matchedItem ?? new FileDisplay(match.Path, baseDirectory);
+                yield return matchedItem ?? new FileDisplay(match.Path, baseDirectory, locationRepository);
             }
 
             numFilesProcessed++;

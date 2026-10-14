@@ -19,19 +19,17 @@ public class FileDisplay
 
     public string FileTypeDescription { get; private set; } = string.Empty;
 
-    public string Location
-    {
-        get; init;
-    }
+    public FileLocation Location { get; init; }
 
-    public string DisplayLocation { get; init; }
+    public string DisplayLocation => Location.LocationDisplay ?? Location.Location;
 
-    public FileDisplay(string relativePath, string baseDirectory)
+    public string? LocationTooltip => Location.LocationDisplay != null ? Location.Location : null;
+
+    public FileDisplay(string relativePath, string baseDirectory, FileLocationRepository locationRepo)
     {
         FullPath = Path.GetFullPath(Path.Combine(baseDirectory, relativePath));
         Name = Path.GetFileName(FullPath);
-        Location = Path.GetDirectoryName(FullPath) ?? string.Empty;
-        DisplayLocation = ShortenPath(Location, 50);
+        Location = locationRepo.Get(FullPath);
         SizeDisplay = "";
     }
 
@@ -42,18 +40,18 @@ public class FileDisplay
             return; // Already done.
         }
 
-        var fullPath = Path.Combine(Location, Name);
+        var fullName = Path.Combine(Location.Location, Name);
 
         //if (File.Exists(fullPath)) Should be optimistic; catch 404 on new FileInfo
         //{
-            var extensionMetadata = ExtensionMetadataRepository.Instance.GetExtensionMetadata(fullPath);
-            Icon = extensionMetadata.Icon;
-            FileTypeDescription = extensionMetadata.FriendlyDocName ?? string.Empty;
-            FileInfo fileInfo = new(FullPath);
+        var extensionMetadata = ExtensionMetadataRepository.Instance.GetExtensionMetadata(fullName);
+        Icon = extensionMetadata.Icon;
+        FileTypeDescription = extensionMetadata.FriendlyDocName ?? string.Empty;
+        FileInfo fileInfo = new(FullPath);
 
-            Size = fileInfo.Length; // File size in bytes
-            SizeDisplay = BytesToString(Size);
-            LastModified = fileInfo.LastWriteTime; // Last modified date/time
+        Size = fileInfo.Length; // File size in bytes
+        SizeDisplay = BytesToString(Size);
+        LastModified = fileInfo.LastWriteTime; // Last modified date/time
         //}
     }
 
@@ -81,11 +79,12 @@ public class FileDisplay
         dataTable.Rows.Add(Icon, Name, new FileSizeDisplayComparable(Size, SizeDisplay), DisplayLocation, FileTypeDescription, LastModified, this);
     }
 
-    private static string ShortenPath(string path, int maxLength)
+    private static string? ShortenPath(string path, int maxLength)
     {
         if (path.Length <= maxLength)
-
-            return path;
+        {
+            return null;
+        }
 
         var pathElements = DirectorySplit(new DirectoryInfo(path)).Reverse().ToArray();
         var currLength = pathElements[0].Length;

@@ -39,6 +39,7 @@
             mnuShowInExplorer = new ToolStripMenuItem();
             mnuOpenWithTextEditor = new ToolStripMenuItem();
             mnuCopyFiles = new ToolStripMenuItem();
+            mnuSearchHere = new ToolStripMenuItem();
             chkMatchCase = new CheckBox();
             chkMatchWholeWord = new CheckBox();
             label1 = new Label();
@@ -64,7 +65,6 @@
             txtDateFilterAmount = new TextBox();
             cmbDateFilterAmountType = new ComboBox();
             cmbRootDir = new ComboBox();
-            mnuSearchHere = new ToolStripMenuItem();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -108,7 +108,7 @@
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
             mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuCopyPath, mnuShowInExplorer, mnuOpenWithTextEditor, mnuCopyFiles, mnuSearchHere });
             mnuFileItemContext.Name = "mnuFileItemContext";
-            mnuFileItemContext.Size = new Size(237, 176);
+            mnuFileItemContext.Size = new Size(237, 148);
             // 
             // mnuOpenFile
             // 
@@ -145,6 +145,13 @@
             mnuCopyFiles.Size = new Size(236, 24);
             mnuCopyFiles.Text = "Copy";
             mnuCopyFiles.Click += mnuCopyFiles_Click;
+            // 
+            // mnuSearchHere
+            // 
+            mnuSearchHere.Name = "mnuSearchHere";
+            mnuSearchHere.Size = new Size(236, 24);
+            mnuSearchHere.Text = "Search Here";
+            mnuSearchHere.Click += mnuSearchHere_Click;
             // 
             // chkMatchCase
             // 
@@ -234,6 +241,7 @@
             grdResult.TabIndex = 100;
             grdResult.CellContextMenuStripNeeded += grdResult_CellContextMenuStripNeeded;
             grdResult.CellMouseDoubleClick += grdResult_CellMouseDoubleClick;
+            grdResult.CellToolTipTextNeeded += grdResult_CellToolTipTextNeeded;
             grdResult.RowEnter += grdResult_RowEnter;
             // 
             // colIcon
@@ -336,7 +344,7 @@
             chkEnableExclusions.Name = "chkEnableExclusions";
             chkEnableExclusions.Size = new Size(76, 24);
             chkEnableExclusions.TabIndex = 13;
-            chkEnableExclusions.Text = "Enable";
+            chkEnableExclusions.Text = "E&nable";
             chkEnableExclusions.UseVisualStyleBackColor = true;
             chkEnableExclusions.CheckedChanged += chkEnableExclusions_CheckedChanged;
             // 
@@ -375,7 +383,7 @@
             // chkFilterByDate
             // 
             chkFilterByDate.AutoSize = true;
-            chkFilterByDate.Location = new Point(419, 222);
+            chkFilterByDate.Location = new Point(428, 222);
             chkFilterByDate.Name = "chkFilterByDate";
             chkFilterByDate.Size = new Size(160, 24);
             chkFilterByDate.TabIndex = 8;
@@ -389,6 +397,7 @@
             txtDateFilterAmount.Name = "txtDateFilterAmount";
             txtDateFilterAmount.Size = new Size(43, 27);
             txtDateFilterAmount.TabIndex = 9;
+            txtDateFilterAmount.TextAlign = HorizontalAlignment.Right;
             txtDateFilterAmount.Enter += txtDateFilterAmount_Enter;
             // 
             // cmbDateFilterAmountType
@@ -413,13 +422,6 @@
             cmbRootDir.TextUpdate += cmbRootDir_TextUpdate;
             cmbRootDir.SelectedValueChanged += cmbRootDir_SelectedValueChanged;
             cmbRootDir.Enter += cmbRootDir_Enter;
-            // 
-            // mnuSearchHere
-            // 
-            mnuSearchHere.Name = "mnuSearchHere";
-            mnuSearchHere.Size = new Size(236, 24);
-            mnuSearchHere.Text = "Search Here";
-            mnuSearchHere.Click += mnuSearchHere_Click;
             // 
             // MainForm
             // 
