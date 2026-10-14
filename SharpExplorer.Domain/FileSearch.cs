@@ -14,11 +14,14 @@ public class FileSearch
 
     public readonly DataTable DataTable;
 
+    private readonly FileLocationRepository _fileLocationRepository;
+
     public UserSearchDto? SearchCriteria { get; private set; }
 
-    public FileSearch(DataTable dataTable)
+    public FileSearch(DataTable dataTable, int locationDisplayLength)
     {
         DataTable = dataTable;
+        _fileLocationRepository = new(locationDisplayLength);
     }
 
     public void SetSearch(UserSearchDto search)
@@ -30,6 +33,11 @@ public class FileSearch
             var matchFragments = search.ParseTextSearchPattern();
             _textSearches.AddRange(matchFragments);
         }
+    }
+
+    public void SetLocationDisplayLength(int displayLength)
+    {
+        _fileLocationRepository.SetDisplayLength(displayLength);
     }
 
     private string? _currentStatusReportingPath = null;
@@ -105,13 +113,10 @@ public class FileSearch
             throw new ArgumentException("Invalid directory path.", nameof(directoryPath));
         }
 
-        var locationRepo = new FileLocationRepository();
-
         return SearchFilesInternalAsync(directoryPath,
                                         includePatterns,
                                         excludePatterns,
                                         [.. TextSearches.Select(ts => new FileTextMatcher(directoryPath, ts))],
-                                        locationRepo,
                                         cancellationToken);
     }
 
@@ -119,7 +124,6 @@ public class FileSearch
                                                                         PathCollection includePatterns,
                                                                         PathCollection excludePatterns,
                                                                         FileTextMatcher[] textChecks,
-                                                                        FileLocationRepository locationRepository,
                                                                         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -169,7 +173,7 @@ public class FileSearch
             var passesMetadataChecks = true;
             if (SearchCriteria.HasMetadataCriteria)
             {
-                matchedItem = new FileDisplay(match.Path, baseDirectory, locationRepository);
+                matchedItem = new FileDisplay(match.Path, baseDirectory, _fileLocationRepository);
                 matchedItem.InitializeMetadata();
                 passesMetadataChecks = MeetsMetadataCriteria(matchedItem);
             }
@@ -217,7 +221,7 @@ public class FileSearch
             if (passesTextCheck
               && passesMetadataChecks)
             {
-                yield return matchedItem ?? new FileDisplay(match.Path, baseDirectory, locationRepository);
+                yield return matchedItem ?? new FileDisplay(match.Path, baseDirectory, _fileLocationRepository);
             }
 
             numFilesProcessed++;

@@ -8,27 +8,20 @@ public class FileLocation
 
     public string? LocationDisplay { get; private set; }
 
-    public int CurrentDisplayLength
-    {
-        get => field;
-        set
-        {
-            field = value;
-            LocationDisplay = GetLocationDisplay(value);
-        }
-    }
+    public int CurrentDisplayLength { get; private set; }
 
     [SetsRequiredMembers]
-    public FileLocation(string location)
+    public FileLocation(string location, int initialDisplayLength)
     {
         Location = location;
+        SetDisplayLength(initialDisplayLength);
     }
 
-    public static FileLocation Create(string fullPath)
+    public void SetDisplayLength(int displayLength)
     {
-        string location = Path.GetDirectoryName(fullPath) ?? string.Empty;
-        return new FileLocation(location);
-    }
+        CurrentDisplayLength = displayLength;
+        LocationDisplay = GetLocationDisplay(displayLength);
+    }    
 
     public string? GetLocationDisplay(int maxLength) => ShortenPath(Location, maxLength);
 

@@ -236,7 +236,6 @@
             grdResult.RowHeadersVisible = false;
             grdResult.RowHeadersWidth = 51;
             grdResult.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            grdResult.ShowCellToolTips = false;
             grdResult.Size = new Size(707, 262);
             grdResult.TabIndex = 100;
             grdResult.CellContextMenuStripNeeded += grdResult_CellContextMenuStripNeeded;

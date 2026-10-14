@@ -26,7 +26,7 @@ public partial class MainForm : Form
 
         var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();
         var searchResultDataSource = new BindingSource(resultTable.DefaultView, null!);
-        _currentSearch = new(resultTable);
+        _currentSearch = new(resultTable, 50);
 
         grdResult.AutoGenerateColumns = false;
         grdResult.DataSource = searchResultDataSource;
@@ -42,8 +42,8 @@ public partial class MainForm : Form
 
     private UserSearchDto CreateUserSearchDto()
     {
-        var searchPatterns = txtFilePattern.Text;
-        var exceptSearchPatterns = txtExceptFilePattern.Text;
+        var searchPatterns = txtFilePattern.Text.Trim();
+        var exceptSearchPatterns = txtExceptFilePattern.Text.Trim();
         var directoryPath = string.IsNullOrEmpty(cmbRootDir.Text) ? "." : cmbRootDir.Text;
         var query = txtContainingText.Text;
         var doMatchCase = chkMatchCase.Checked;
