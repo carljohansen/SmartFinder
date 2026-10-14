@@ -134,12 +134,14 @@ public class FileSearch
         if (SearchCriteria == null)
             yield break; // Should not happen.
 
+        var hasTextChecks = textChecks.Length > 0;
+
         SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building file list...", ProgressPercentage = 0 });
 
         var rawFiles = await Task.Run(() =>
         {
             if (includePatterns.Paths.Count == 0
-                && textChecks.Length > 0)
+                && hasTextChecks)
             {
                 return FileSearcher.DoNotBinarySearch(baseDirectory, excludePatterns);
             }
@@ -153,9 +155,11 @@ public class FileSearch
             yield break;
         }
 
-        if (TextSearches.Count > 0)
+        var actionMsg = hasTextChecks ? "Searching in files" : "Annotating files";
+
+        if (hasTextChecks)
         {
-            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Searching in files...", ProgressPercentage = 0 });
+            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = $"{actionMsg}...", ProgressPercentage = 0 });
         }
 
         var timer = Stopwatch.StartNew();
@@ -179,7 +183,7 @@ public class FileSearch
             }
 
             var passesTextCheck = true;
-            if (textChecks.Length > 0)
+            if (hasTextChecks)
             {
                 var checkerState = new bool[textChecks.Length]; // false = still evaluating; true already found a match
 
@@ -233,7 +237,7 @@ public class FileSearch
                 var percentComplete = (int)Math.Floor((numFilesProcessed * 100.0) / numFiles);
                 SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs
                 {
-                    StatusMessage = $"Searching in files ({GetDirectoryForStatusReport(match.Path, baseDirectory)})...",
+                    StatusMessage = $"{actionMsg} ({GetDirectoryForStatusReport(match.Path, baseDirectory)})...",
                     ProgressPercentage = percentComplete
                 });
             }
