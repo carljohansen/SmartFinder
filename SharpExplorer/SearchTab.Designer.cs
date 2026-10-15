@@ -1,6 +1,6 @@
 ﻿namespace SharpExplorer
 {
-    partial class MainForm
+    partial class SearchTab
     {
         /// <summary>
         ///  Required designer variable.
@@ -261,6 +261,7 @@
             // 
             // colIcon
             // 
+            colIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             colIcon.DataPropertyName = "Icon";
             colIcon.HeaderText = "";
             colIcon.MinimumWidth = 6;

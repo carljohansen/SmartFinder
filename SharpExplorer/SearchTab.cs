@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace SharpExplorer;
 
-public partial class MainForm : UserControl
+public partial class SearchTab : UserControl
 {
     private readonly FileSearch _currentSearch;
     private readonly TextCriterionHistory _baseDirHistory = new(15);
@@ -16,11 +16,11 @@ public partial class MainForm : UserControl
     private readonly StringFormat _formatForMeasuring;
 
     private int contextMenuRowIndex = -1;
-    private int _locationColIndex;
+    private int _locationColIndex = -1;
     private CancellationTokenSource? _searchCancellationTokenSource;
     private bool _isClosing = false;
 
-    public MainForm()
+    public SearchTab()
     {
         InitializeComponent();
 
@@ -261,11 +261,6 @@ public partial class MainForm : UserControl
             return;
         }
 
-        //var containingFolder = Path.GetDirectoryName(selectedFilePath);
-        //if (containingFolder != null)
-        //{
-        //    Process.Start("explorer.exe", containingFolder);
-        //}
         ExploreFile(selectedFilePath);
     }
 
@@ -275,7 +270,7 @@ public partial class MainForm : UserControl
         {
             return false;
         }
-        //Clean up file path so it can be navigated OK
+        // Clean up file path so it can be navigated OK
         filePath = System.IO.Path.GetFullPath(filePath);
         System.Diagnostics.Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
         return true;
@@ -702,6 +697,11 @@ public partial class MainForm : UserControl
 
     private void ResizeResultsGrid()
     {
+        if (_locationColIndex < 0)
+        {
+            return;
+        }
+
         var newWidth = spltResultPanel.Panel1.Width - (SystemInformation.VerticalScrollBarWidth + 5);
         var fixedColWidths = 0;
         for (int i = 0; i < grdResult.Columns.Count; i++)

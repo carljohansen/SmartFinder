@@ -30,10 +30,10 @@
         {
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
-            mainForm3 = new MainForm();
+            mainForm3 = new SearchTab();
             tabPage2 = new TabPage();
-            mainForm1 = new MainForm();
-            mainForm2 = new MainForm();
+            mainForm1 = new SearchTab();
+            mainForm2 = new SearchTab();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             SuspendLayout();
@@ -46,7 +46,7 @@
             tabControl1.Location = new Point(5, 12);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(1512, 1071);
+            tabControl1.Size = new Size(1314, 692);
             tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -55,7 +55,7 @@
             tabPage1.Location = new Point(4, 29);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(1504, 1038);
+            tabPage1.Size = new Size(1306, 659);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "tabPage1";
             tabPage1.UseVisualStyleBackColor = true;
@@ -65,7 +65,7 @@
             mainForm3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             mainForm3.Location = new Point(4, 6);
             mainForm3.Name = "mainForm3";
-            mainForm3.Size = new Size(1495, 1026);
+            mainForm3.Size = new Size(1297, 647);
             mainForm3.TabIndex = 0;
             // 
             // tabPage2
@@ -98,7 +98,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1523, 1095);
+            ClientSize = new Size(1325, 716);
             Controls.Add(tabControl1);
             Name = "SearchForm";
             Text = "SearchForm";
@@ -112,8 +112,8 @@
         private TabControl tabControl1;
         private TabPage tabPage1;
         private TabPage tabPage2;
-        private MainForm mainForm1;
-        private MainForm mainForm2;
-        private MainForm mainForm3;
+        private SearchTab mainForm1;
+        private SearchTab mainForm2;
+        private SearchTab mainForm3;
     }
 }
