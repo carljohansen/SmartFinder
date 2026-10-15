@@ -30,8 +30,6 @@
         {
             tabsMain = new TabControl();
             tabPage1 = new TabPage();
-            mainForm1 = new SearchTab();
-            mainForm2 = new SearchTab();
             statusStrip1 = new StatusStrip();
             MainProgressBar = new ToolStripProgressBar();
             lblFormStatusMessage = new ToolStripStatusLabel();
@@ -65,22 +63,6 @@
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Search 1";
             tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // mainForm1
-            // 
-            mainForm1.Location = new Point(160, 160);
-            mainForm1.Name = "mainForm1";
-            mainForm1.Size = new Size(1008, 564);
-            mainForm1.TabIndex = 0;
-            mainForm1.Visible = false;
-            // 
-            // mainForm2
-            // 
-            mainForm2.Location = new Point(192, 192);
-            mainForm2.Name = "mainForm2";
-            mainForm2.Size = new Size(1008, 564);
-            mainForm2.TabIndex = 0;
-            mainForm2.Visible = false;
             // 
             // statusStrip1
             // 
@@ -173,8 +155,6 @@
 
         private TabControl tabsMain;
         private TabPage tabPage1;
-        private SearchTab mainForm1;
-        private SearchTab mainForm2;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel lblFormStatusMessage;
         private ToolStripProgressBar MainProgressBar;
