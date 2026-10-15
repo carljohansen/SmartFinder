@@ -488,7 +488,7 @@
             Controls.Add(txtContainingText);
             Controls.Add(txtFilePattern);
             Controls.Add(btnSearch);
-            KeyPreview = true;
+            //KeyPreview = true;
             Name = "MainForm";
             Text = "Sharp Explorer";
             Load += Form1_Load;

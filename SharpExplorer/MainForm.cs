@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace SharpExplorer;
 
-public partial class MainForm : Form
+public partial class MainForm : UserControl
 {
     private readonly FileSearch _currentSearch;
     private readonly TextCriterionHistory _baseDirHistory = new(15);
@@ -605,11 +605,11 @@ public partial class MainForm : Form
         }
     }
 
-    protected override void OnFormClosing(FormClosingEventArgs e)
-    {
-        _isClosing = true;
-        base.OnFormClosing(e);
-    }
+    //protected override void OnFormClosing(FormClosingEventArgs e)
+    //{
+    //    _isClosing = true;
+    //    base.OnFormClosing(e);
+    //}
 
     private void cmbRootDir_TextUpdate(object sender, EventArgs e)
     {
