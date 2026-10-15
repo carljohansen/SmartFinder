@@ -28,26 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
-            tabControl1 = new TabControl();
+            tabsMain = new TabControl();
             tabPage1 = new TabPage();
             mainForm3 = new SearchTab();
-            tabPage2 = new TabPage();
             mainForm1 = new SearchTab();
             mainForm2 = new SearchTab();
-            tabControl1.SuspendLayout();
+            tabsMain.SuspendLayout();
             tabPage1.SuspendLayout();
             SuspendLayout();
             // 
-            // tabControl1
+            // tabsMain
             // 
-            tabControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tabControl1.Controls.Add(tabPage1);
-            tabControl1.Controls.Add(tabPage2);
-            tabControl1.Location = new Point(5, 12);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(1314, 692);
-            tabControl1.TabIndex = 0;
+            tabsMain.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tabsMain.Controls.Add(tabPage1);
+            tabsMain.Location = new Point(5, 12);
+            tabsMain.Name = "tabsMain";
+            tabsMain.SelectedIndex = 0;
+            tabsMain.Size = new Size(1314, 692);
+            tabsMain.TabIndex = 0;
             // 
             // tabPage1
             // 
@@ -57,7 +55,7 @@
             tabPage1.Padding = new Padding(3);
             tabPage1.Size = new Size(1306, 659);
             tabPage1.TabIndex = 0;
-            tabPage1.Text = "tabPage1";
+            tabPage1.Text = "Search 1";
             tabPage1.UseVisualStyleBackColor = true;
             // 
             // mainForm3
@@ -67,16 +65,6 @@
             mainForm3.Name = "mainForm3";
             mainForm3.Size = new Size(1297, 647);
             mainForm3.TabIndex = 0;
-            // 
-            // tabPage2
-            // 
-            tabPage2.Location = new Point(4, 29);
-            tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(1504, 1038);
-            tabPage2.TabIndex = 1;
-            tabPage2.Text = "tabPage2";
-            tabPage2.UseVisualStyleBackColor = true;
             // 
             // mainForm1
             // 
@@ -99,19 +87,18 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1325, 716);
-            Controls.Add(tabControl1);
+            Controls.Add(tabsMain);
             Name = "SearchForm";
-            Text = "SearchForm";
-            tabControl1.ResumeLayout(false);
+            Text = "Forager";
+            tabsMain.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
 
-        private TabControl tabControl1;
+        private TabControl tabsMain;
         private TabPage tabPage1;
-        private TabPage tabPage2;
         private SearchTab mainForm1;
         private SearchTab mainForm2;
         private SearchTab mainForm3;
