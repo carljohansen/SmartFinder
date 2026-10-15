@@ -1,18 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-
-namespace SharpExplorer
+﻿namespace SharpExplorer
 {
     public partial class SearchForm : Form
     {
         public SearchForm()
         {
             InitializeComponent();
+        }
+
+        public void SetStatusText(string text)
+        {
+            lblFormStatusMessage.Text = text;
+        }
+
+        public void SetProgress(int progressPercentage)
+        {
+            MainProgressBar.Visible = true;
+            MainProgressBar.Value = Math.Min(Math.Max(progressPercentage, 0), 100);
+        }
+
+        public void HideProgressBar()
+        {
+            MainProgressBar.Visible = false;
         }
     }
 }

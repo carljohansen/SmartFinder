@@ -20,6 +20,8 @@ public partial class SearchTab : UserControl
     private CancellationTokenSource? _searchCancellationTokenSource;
     private bool _isClosing = false;
 
+    private SearchForm _parent;
+
     public SearchTab()
     {
         InitializeComponent();
@@ -112,12 +114,12 @@ public partial class SearchTab : UserControl
             return;
         }
         SetStatusText(e.StatusMessage);
-        searchProgressBar.Value = Math.Min(Math.Max(e.ProgressPercentage, 0), 100);
+        _parent.SetProgress(e.ProgressPercentage);
     }
 
     private void SetStatusText(string text)
     {
-        lblStatus.Text = text;
+        _parent.SetStatusText(text);
     }
 
     private void ClearStatusText() => SetStatusText("");
@@ -128,7 +130,7 @@ public partial class SearchTab : UserControl
         btnSearch.Enabled = false;
         btnCancelSearch.Enabled = true;
         cmbRootDir.DroppedDown = false;
-        searchProgressBar.Visible = true;
+        _parent.SetProgress(0);
         lstTextMatches.Items.Clear();
         contextMenuRowIndex = -1;
         _searchCancellationTokenSource = new CancellationTokenSource();
@@ -160,7 +162,7 @@ public partial class SearchTab : UserControl
 
         btnSearch.Enabled = true;
         btnCancelSearch.Enabled = false;
-        searchProgressBar.Visible = false;
+        _parent.HideProgressBar();
     }
 
     private void mnuCopyPath_Click(object sender, EventArgs e)
@@ -437,6 +439,8 @@ public partial class SearchTab : UserControl
 
     private void Form1_Load(object sender, EventArgs e)
     {
+        _parent = (this.Parent!.Parent!.Parent as SearchForm)!;
+
         ColumnHeader header = new()
         {
             Text = "",

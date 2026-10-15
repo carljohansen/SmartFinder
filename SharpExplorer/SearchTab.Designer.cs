@@ -60,9 +60,6 @@
             label4 = new Label();
             txtExceptFilePattern = new TextBox();
             chkEnableExclusions = new CheckBox();
-            statusStrip1 = new StatusStrip();
-            searchProgressBar = new ToolStripProgressBar();
-            lblStatus = new ToolStripStatusLabel();
             btnCancelSearch = new Button();
             chkFilterByDate = new CheckBox();
             txtDateFilterAmount = new TextBox();
@@ -76,7 +73,6 @@
             spltResultPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)grdResult).BeginInit();
             mnuTextMatchContext.SuspendLayout();
-            statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // btnSearch
@@ -379,27 +375,6 @@
             chkEnableExclusions.UseVisualStyleBackColor = true;
             chkEnableExclusions.CheckedChanged += chkEnableExclusions_CheckedChanged;
             // 
-            // statusStrip1
-            // 
-            statusStrip1.ImageScalingSize = new Size(20, 20);
-            statusStrip1.Items.AddRange(new ToolStripItem[] { searchProgressBar, lblStatus });
-            statusStrip1.Location = new Point(0, 537);
-            statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1008, 27);
-            statusStrip1.TabIndex = 103;
-            statusStrip1.Text = "statusStrip1";
-            // 
-            // searchProgressBar
-            // 
-            searchProgressBar.Name = "searchProgressBar";
-            searchProgressBar.Size = new Size(101, 19);
-            // 
-            // lblStatus
-            // 
-            lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(0, 21);
-            lblStatus.Click += toolStripStatusLabel1_Click;
-            // 
             // btnCancelSearch
             // 
             btnCancelSearch.Enabled = false;
@@ -465,18 +440,16 @@
             chkShowHidden.Text = "Hidden Items";
             chkShowHidden.UseVisualStyleBackColor = true;
             // 
-            // MainForm
+            // SearchTab
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1008, 564);
             Controls.Add(chkShowHidden);
             Controls.Add(cmbRootDir);
             Controls.Add(cmbDateFilterAmountType);
             Controls.Add(txtDateFilterAmount);
             Controls.Add(chkFilterByDate);
             Controls.Add(btnCancelSearch);
-            Controls.Add(statusStrip1);
             Controls.Add(chkEnableExclusions);
             Controls.Add(label4);
             Controls.Add(txtExceptFilePattern);
@@ -489,9 +462,8 @@
             Controls.Add(txtContainingText);
             Controls.Add(txtFilePattern);
             Controls.Add(btnSearch);
-            //KeyPreview = true;
-            Name = "MainForm";
-            Text = "Sharp Explorer";
+            Name = "SearchTab";
+            Size = new Size(1008, 526);
             Load += Form1_Load;
             mnuFileItemContext.ResumeLayout(false);
             spltResultPanel.Panel1.ResumeLayout(false);
@@ -500,8 +472,6 @@
             spltResultPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)grdResult).EndInit();
             mnuTextMatchContext.ResumeLayout(false);
-            statusStrip1.ResumeLayout(false);
-            statusStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -527,15 +497,12 @@
         private CheckBox chkEnableExclusions;
         private ToolStripMenuItem mnuOpenWithTextEditor;
         private ToolStripMenuItem mnuOpenFile;
-        private StatusStrip statusStrip1;
-        private ToolStripStatusLabel lblStatus;
         private Button btnCancelSearch;
         private CheckBox chkFilterByDate;
         private TextBox txtDateFilterAmount;
         private ComboBox cmbDateFilterAmountType;
         private ComboBox cmbRootDir;
         private ToolStripMenuItem mnuCopyFiles;
-        private ToolStripProgressBar searchProgressBar;
         private DataGridViewImageColumn colIcon;
         private DataGridViewTextBoxColumn colName;
         private DataGridViewTextBoxColumn colLocation;

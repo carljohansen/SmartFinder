@@ -33,8 +33,12 @@
             mainForm3 = new SearchTab();
             mainForm1 = new SearchTab();
             mainForm2 = new SearchTab();
+            statusStrip1 = new StatusStrip();
+            MainProgressBar = new ToolStripProgressBar();
+            lblFormStatusMessage = new ToolStripStatusLabel();
             tabsMain.SuspendLayout();
             tabPage1.SuspendLayout();
+            statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // tabsMain
@@ -44,7 +48,7 @@
             tabsMain.Location = new Point(5, 12);
             tabsMain.Name = "tabsMain";
             tabsMain.SelectedIndex = 0;
-            tabsMain.Size = new Size(1314, 692);
+            tabsMain.Size = new Size(1314, 658);
             tabsMain.TabIndex = 0;
             // 
             // tabPage1
@@ -53,7 +57,7 @@
             tabPage1.Location = new Point(4, 29);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(1306, 659);
+            tabPage1.Size = new Size(1306, 625);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Search 1";
             tabPage1.UseVisualStyleBackColor = true;
@@ -63,7 +67,7 @@
             mainForm3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             mainForm3.Location = new Point(4, 6);
             mainForm3.Name = "mainForm3";
-            mainForm3.Size = new Size(1297, 647);
+            mainForm3.Size = new Size(1297, 622);
             mainForm3.TabIndex = 0;
             // 
             // mainForm1
@@ -82,17 +86,41 @@
             mainForm2.TabIndex = 0;
             mainForm2.Visible = false;
             // 
+            // statusStrip1
+            // 
+            statusStrip1.ImageScalingSize = new Size(20, 20);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { MainProgressBar, lblFormStatusMessage });
+            statusStrip1.Location = new Point(0, 672);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(1325, 23);
+            statusStrip1.TabIndex = 1;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // MainProgressBar
+            // 
+            MainProgressBar.Name = "MainProgressBar";
+            MainProgressBar.Size = new Size(100, 15);
+            // 
+            // lblFormStatusMessage
+            // 
+            lblFormStatusMessage.Name = "lblFormStatusMessage";
+            lblFormStatusMessage.Size = new Size(0, 17);
+            // 
             // SearchForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1325, 716);
+            ClientSize = new Size(1325, 695);
+            Controls.Add(statusStrip1);
             Controls.Add(tabsMain);
             Name = "SearchForm";
             Text = "Forager";
             tabsMain.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -102,5 +130,8 @@
         private SearchTab mainForm1;
         private SearchTab mainForm2;
         private SearchTab mainForm3;
+        private StatusStrip statusStrip1;
+        private ToolStripStatusLabel lblFormStatusMessage;
+        private ToolStripProgressBar MainProgressBar;
     }
 }
