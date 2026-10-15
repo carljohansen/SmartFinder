@@ -26,17 +26,22 @@
         private void mnuNewSearchTab_Click(object sender, EventArgs e)
         {
             var newTab = new TabPage() { Text = "New 1" };
-            var newSearch = new SearchTab();
-            newTab.Controls.Add(newSearch);
-
             tabsMain.TabPages.Add(newTab);
+
+            InitializeSearchTab(newTab);
+            tabsMain.SelectedTab = newTab;
+        }
+
+        private void InitializeSearchTab(TabPage searchTabPage)
+        {
+            var newSearch = new SearchTab();
+            searchTabPage.Controls.Add(newSearch);
 
             newSearch.Left = 0;
             newSearch.Top = 0;
-            newSearch.Width = newTab.Width;
-            newSearch.Height = newTab.Height;
-
-            tabsMain.SelectedTab = newTab;
+            newSearch.Width = searchTabPage.Width;
+            newSearch.Height = searchTabPage.Height;
+            newSearch.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
         }
 
         private void closeTabToolStripMenuItem_Click(object sender, EventArgs e)
@@ -49,6 +54,17 @@
             var selectedTab = tabsMain.SelectedTab;
             tabsMain.SelectedIndex = tabsMain.SelectedIndex == 0 ? 1 : tabsMain.SelectedIndex - 1;
             tabsMain.TabPages.Remove(selectedTab!);
+        }
+
+        private void SearchForm_Load(object sender, EventArgs e)
+        {
+            if (tabsMain.TabCount == 0)
+            {
+                return;
+            }
+
+            var initialTab = tabsMain.TabPages[0];
+            InitializeSearchTab(initialTab);
         }
     }
 }

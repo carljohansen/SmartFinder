@@ -30,7 +30,6 @@
         {
             tabsMain = new TabControl();
             tabPage1 = new TabPage();
-            mainForm3 = new SearchTab();
             mainForm1 = new SearchTab();
             mainForm2 = new SearchTab();
             statusStrip1 = new StatusStrip();
@@ -43,7 +42,6 @@
             mnuNewSearchTab = new ToolStripMenuItem();
             closeTabToolStripMenuItem = new ToolStripMenuItem();
             tabsMain.SuspendLayout();
-            tabPage1.SuspendLayout();
             statusStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
@@ -60,7 +58,6 @@
             // 
             // tabPage1
             // 
-            tabPage1.Controls.Add(mainForm3);
             tabPage1.Location = new Point(4, 29);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
@@ -68,14 +65,6 @@
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Search 1";
             tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // mainForm3
-            // 
-            mainForm3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            mainForm3.Location = new Point(4, 6);
-            mainForm3.Name = "mainForm3";
-            mainForm3.Size = new Size(1297, 579);
-            mainForm3.TabIndex = 0;
             // 
             // mainForm1
             // 
@@ -147,7 +136,7 @@
             // 
             mnuNewSearchTab.Name = "mnuNewSearchTab";
             mnuNewSearchTab.ShortcutKeys = Keys.Control | Keys.T;
-            mnuNewSearchTab.Size = new Size(224, 26);
+            mnuNewSearchTab.Size = new Size(211, 26);
             mnuNewSearchTab.Text = "New Tab";
             mnuNewSearchTab.Click += mnuNewSearchTab_Click;
             // 
@@ -155,7 +144,7 @@
             // 
             closeTabToolStripMenuItem.Name = "closeTabToolStripMenuItem";
             closeTabToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.W;
-            closeTabToolStripMenuItem.Size = new Size(224, 26);
+            closeTabToolStripMenuItem.Size = new Size(211, 26);
             closeTabToolStripMenuItem.Text = "Close Tab";
             closeTabToolStripMenuItem.Click += closeTabToolStripMenuItem_Click;
             // 
@@ -170,8 +159,8 @@
             MainMenuStrip = menuStrip1;
             Name = "SearchForm";
             Text = "Forager";
+            Load += SearchForm_Load;
             tabsMain.ResumeLayout(false);
-            tabPage1.ResumeLayout(false);
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             menuStrip1.ResumeLayout(false);
@@ -186,7 +175,6 @@
         private TabPage tabPage1;
         private SearchTab mainForm1;
         private SearchTab mainForm2;
-        private SearchTab mainForm3;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel lblFormStatusMessage;
         private ToolStripProgressBar MainProgressBar;
