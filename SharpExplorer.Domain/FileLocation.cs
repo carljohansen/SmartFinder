@@ -10,10 +10,13 @@ public class FileLocation
 
     public int CurrentDisplayLength { get; private set; }
 
+    private string _baseDirectory;
+
     [SetsRequiredMembers]
-    public FileLocation(string location, int initialDisplayLength)
+    public FileLocation(string location, int initialDisplayLength, string baseDirectory)
     {
         Location = location;
+        _baseDirectory = baseDirectory;
         SetDisplayLength(initialDisplayLength);
     }
 
@@ -21,11 +24,34 @@ public class FileLocation
     {
         CurrentDisplayLength = displayLength;
         LocationDisplay = GetLocationDisplay(displayLength);
-    }    
+    }
 
     public string? GetLocationDisplay(int maxLength) => ShortenPath(Location, maxLength);
 
-    private static string? ShortenPath(string path, int maxLength)
+    private string? ShortenPath(string path, int maxLength)
+    {
+        var numCharsToRemove = path.Length - maxLength;
+        if (numCharsToRemove <= 0)
+        {
+            return null;
+        }
+
+        if (path.StartsWith(_baseDirectory))
+        {
+            path = path[_baseDirectory.Length..];
+        }
+
+        numCharsToRemove = path.Length - maxLength;
+        if (numCharsToRemove <= 0)
+        {
+            return path;
+        }
+
+        var startPos = (path.Length - numCharsToRemove) / 2;
+        return $"{path[0..startPos]}...{path[(startPos + numCharsToRemove)..]}";
+    }
+
+    private static string? ShortenPathOld(string path, int maxLength)
     {
         if (path.Length <= maxLength)
         {

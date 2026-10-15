@@ -28,6 +28,8 @@ public class UserSearchDto
 
     public bool FilterByModifiedDate { get; set; }
 
+    public bool ShowHiddenItems { get; set; }
+
     public float? ModifiedInLastQuantity { get; set; }
 
     public string? ModifiedInLastQuantityType { get; set; }

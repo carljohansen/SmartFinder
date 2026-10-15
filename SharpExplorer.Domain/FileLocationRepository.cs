@@ -6,13 +6,17 @@ public class FileLocationRepository
 
     public int CurrentDisplayLength { get; private set; }
 
+    public string BaseDirectory { get; private set; }
+
     public FileLocationRepository(int initialDisplayLength)
     {
         CurrentDisplayLength = initialDisplayLength;
+        BaseDirectory = "";
     }
 
-    public void Clear()
+    public void Start(string baseDirectory)
     {
+        BaseDirectory = baseDirectory;
         _fileLocations.Clear();
     }
 
@@ -26,7 +30,7 @@ public class FileLocationRepository
             return location;
         }
 
-        var newFileLocation = new FileLocation(directory, CurrentDisplayLength);
+        var newFileLocation = new FileLocation(directory, CurrentDisplayLength, BaseDirectory);
         _fileLocations[directory] = newFileLocation;
 
         return newFileLocation;

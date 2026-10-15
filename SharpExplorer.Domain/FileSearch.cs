@@ -28,6 +28,9 @@ public class FileSearch
     {
         SearchCriteria = search;
         _textSearches.Clear();
+
+        _fileLocationRepository.Start(search.BaseDirectoriesPattern);
+
         if (search.HasTextSearch())
         {
             var matchFragments = search.ParseTextSearchPattern();
@@ -35,9 +38,22 @@ public class FileSearch
         }
     }
 
+    private const int LocationDataTableColumnIndex = 3;
+
     public void SetLocationDisplayLength(int displayLength)
     {
         _fileLocationRepository.SetDisplayLength(displayLength);
+
+        foreach (var row in DataTable.Rows)
+        {
+            if (row is DataRow dataRow)
+            {
+                if (dataRow["FileDisplay"] is FileDisplay fileDisplay)
+                {
+                    dataRow[LocationDataTableColumnIndex] = new LocationDisplayComparable(fileDisplay.Location);
+                }
+            }
+        }
     }
 
     private string? _currentStatusReportingPath = null;
@@ -177,7 +193,7 @@ public class FileSearch
             var passesMetadataChecks = true;
             if (SearchCriteria.HasMetadataCriteria)
             {
-                matchedItem = new FileDisplay(match.Path, baseDirectory, _fileLocationRepository);
+                matchedItem = new FileDisplay(match.Path, _fileLocationRepository);
                 matchedItem.InitializeMetadata();
                 passesMetadataChecks = MeetsMetadataCriteria(matchedItem);
             }
@@ -187,7 +203,7 @@ public class FileSearch
             {
                 var checkerState = new bool[textChecks.Length]; // false = still evaluating; true already found a match
 
-                foreach (var line in File.ReadLines(Path.Combine(baseDirectory, match.Path)))
+                foreach (var line in File.ReadLines(Path.Combine(_fileLocationRepository.BaseDirectory, match.Path)))
                 {
                     for (var i = 0; i < textChecks.Length; i++)
                     {
@@ -225,7 +241,7 @@ public class FileSearch
             if (passesTextCheck
               && passesMetadataChecks)
             {
-                yield return matchedItem ?? new FileDisplay(match.Path, baseDirectory, _fileLocationRepository);
+                yield return matchedItem ?? new FileDisplay(match.Path, _fileLocationRepository);
             }
 
             numFilesProcessed++;
@@ -253,6 +269,11 @@ public class FileSearch
         }
         if (SearchCriteria!.ModifiedAfter.HasValue
             && item.LastModified < SearchCriteria.ModifiedAfter)
+        {
+            return false;
+        }
+        if (!SearchCriteria.ShowHiddenItems
+            && item.Attributes.HasFlag(FileAttributes.Hidden))
         {
             return false;
         }

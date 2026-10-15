@@ -73,6 +73,7 @@ public partial class MainForm : Form
             BaseDirectoriesPattern = UserSearchDto.NormalizeDirectoryName(directoryPath),
             EnableFileExclusion = chkEnableExclusions.Checked,
             FilterByModifiedDate = chkFilterByDate.Checked,
+            ShowHiddenItems = chkShowHidden.Checked,
             ModifiedInLastQuantity = userSearchDateFilterQty,
             ModifiedInLastQuantityType = cmbDateFilterAmountType.SelectedItem?.ToString(),
         };
@@ -85,6 +86,7 @@ public partial class MainForm : Form
         txtContainingText.Text = dto.TextSearchPattern ?? "";
         cmbRootDir.Text = dto.BaseDirectoriesPattern ?? "";
         chkEnableExclusions.Checked = dto.EnableFileExclusion;
+        chkShowHidden.Checked = dto.ShowHiddenItems;
         chkMatchCase.Checked = dto.TextMatchingOptions.HasFlag(TextMatchingOptions.CaseSensitive);
         chkMatchWholeWord.Checked = dto.TextMatchingOptions.HasFlag(TextMatchingOptions.WholeWord);
         chkFilterByDate.Checked = dto.FilterByModifiedDate;
@@ -132,6 +134,7 @@ public partial class MainForm : Form
         _searchCancellationTokenSource = new CancellationTokenSource();
 
         var searchDto = CreateUserSearchDto();
+        spltResultPanel.FixedPanel = searchDto.HasTextSearch() ? FixedPanel.Panel1 : FixedPanel.Panel2;
 
         try
         {
@@ -153,8 +156,6 @@ public partial class MainForm : Form
             grdResult.Rows[0].Selected = true;
             grdResult.CurrentCell = grdResult.Rows[0].Cells[0];
             grdResult.Focus();
-
-            spltResultPanel.FixedPanel = searchDto.HasTextSearch() ? FixedPanel.Panel1 : FixedPanel.Panel2;
         }
 
         btnSearch.Enabled = true;
@@ -188,9 +189,42 @@ public partial class MainForm : Form
             }
         }
 
-        var pathsText = string.Join(Environment.NewLine, filesToCopy.Select(f => $"\"{f}\""));
+        var pathsText = string.Join(Environment.NewLine, filesToCopy.Select(GetSafeFileName));
         Clipboard.SetText(pathsText);
     }
+
+
+    private void mnuCopyFolderPath_Click(object sender, EventArgs e)
+    {
+        var selectedItems = grdResult.SelectedRows;
+        if (selectedItems.Count == 0)
+        {
+            return;
+        }
+        List<string> filesToCopy = [];
+        List<int> selectedRowIndexes = [];
+        foreach (var selectedRow in selectedItems)
+        {
+            if (selectedRow is DataGridViewRow row)
+            {
+                selectedRowIndexes.Add(row.Index);
+            }
+        }
+        selectedRowIndexes.Sort();
+        foreach (var rowIndex in selectedRowIndexes)
+        {
+            var selectedFile = GetRowFileDisplay(rowIndex);
+            if (selectedFile != null)
+            {
+                filesToCopy.Add(selectedFile.Location.Location);
+            }
+        }
+
+        var pathsText = string.Join(Environment.NewLine, filesToCopy.Select(GetSafeFileName).Distinct());
+        Clipboard.SetText(pathsText);
+    }
+
+    private static string GetSafeFileName(string filePath) => filePath.Contains(' ') ? $"\"{filePath}\"" : filePath;
 
     private void mnuCopyFiles_Click(object sender, EventArgs e)
     {
@@ -227,11 +261,24 @@ public partial class MainForm : Form
             return;
         }
 
-        var containingFolder = Path.GetDirectoryName(selectedFilePath);
-        if (containingFolder != null)
+        //var containingFolder = Path.GetDirectoryName(selectedFilePath);
+        //if (containingFolder != null)
+        //{
+        //    Process.Start("explorer.exe", containingFolder);
+        //}
+        ExploreFile(selectedFilePath);
+    }
+
+    public bool ExploreFile(string filePath)
+    {
+        if (!System.IO.File.Exists(filePath))
         {
-            Process.Start("explorer.exe", containingFolder);
+            return false;
         }
+        //Clean up file path so it can be navigated OK
+        filePath = System.IO.Path.GetFullPath(filePath);
+        System.Diagnostics.Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
+        return true;
     }
 
     private void mnuSearchHere_Click(object sender, EventArgs e)
@@ -339,6 +386,30 @@ public partial class MainForm : Form
         }
 
         e.DrawFocusRectangle();
+    }
+
+    private float _gridTextBenchmarkWidth = 0; // The width of a benchmark 10-character string.
+
+    private int GetGridCellCapacity(int cellWidth)
+    {
+        // Return the number of characters that can fit in a cell of the given width, based on the benchmark width.
+        if (_gridTextBenchmarkWidth == 0)
+        {
+            using Graphics g = grdResult.CreateGraphics();
+            _gridTextBenchmarkWidth = g.MeasureString(@"C:\Wapita\", grdResult.Font, 0, _formatForMeasuring).Width;
+        }
+
+        return (int)(cellWidth / _gridTextBenchmarkWidth * 10) - 4; // Allow for some padding and ellipsis.
+    }
+
+    private int GetCurrentGridCellCapacity(int colIndex)
+    {
+        return GetGridCellCapacity(grdResult.Columns[colIndex].Width);
+    }
+
+    private int GetCurrentLocationColumnCapacity()
+    {
+        return GetCurrentGridCellCapacity(_locationColIndex);
     }
 
     private void grdResult_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -621,16 +692,6 @@ public partial class MainForm : Form
 
     private void lstTextMatches_SelectedIndexChanged(object sender, EventArgs e)
     {
-        var selectedTextMatchItem = lstTextMatches.SelectedItems.Cast<ListViewItem>().FirstOrDefault();
-        if (selectedTextMatchItem == null)
-        {
-            return;
-        }
-
-        if (selectedTextMatchItem.Tag is FileLineTextMatch match)
-        {
-            Debug.WriteLine(match.Line);
-        }
     }
 
 
@@ -661,6 +722,33 @@ public partial class MainForm : Form
 
     private void spltResultPanel_SizeChanged(object sender, EventArgs e)
     {
+    }
 
+    private void grdResult_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+    {
+        if (e.Column.Index == _locationColIndex)
+        {
+            RefreshLocationDisplayStringsAfterColumnResize();
+        }
+    }
+
+    private void RefreshLocationDisplayStringsAfterColumnResize()
+    {
+        var maxLocationLength = GetCurrentLocationColumnCapacity();
+        _currentSearch?.SetLocationDisplayLength(maxLocationLength);
+    }
+
+    private void mnuTextMatchLineCopy_Click(object sender, EventArgs e)
+    {
+        var selectedTextMatchItem = lstTextMatches.SelectedItems.Cast<ListViewItem>().FirstOrDefault();
+        if (selectedTextMatchItem == null)
+        {
+            return;
+        }
+
+        if (selectedTextMatchItem.Tag is FileLineTextMatch match)
+        {
+            Clipboard.SetText(match.Line);
+        }
     }
 }

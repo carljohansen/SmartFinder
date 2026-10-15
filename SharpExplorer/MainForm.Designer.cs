@@ -35,10 +35,11 @@
             txtContainingText = new TextBox();
             mnuFileItemContext = new ContextMenuStrip(components);
             mnuOpenFile = new ToolStripMenuItem();
-            mnuCopyPath = new ToolStripMenuItem();
             mnuShowInExplorer = new ToolStripMenuItem();
-            mnuOpenWithTextEditor = new ToolStripMenuItem();
+            mnuCopyPath = new ToolStripMenuItem();
+            mnuCopyFolderPath = new ToolStripMenuItem();
             mnuCopyFiles = new ToolStripMenuItem();
+            mnuOpenWithTextEditor = new ToolStripMenuItem();
             mnuSearchHere = new ToolStripMenuItem();
             chkMatchCase = new CheckBox();
             chkMatchWholeWord = new CheckBox();
@@ -54,6 +55,8 @@
             colSize = new DataGridViewTextBoxColumn();
             colLastModified = new DataGridViewTextBoxColumn();
             lstTextMatches = new ListView();
+            mnuTextMatchContext = new ContextMenuStrip(components);
+            mnuTextMatchLineCopy = new ToolStripMenuItem();
             label4 = new Label();
             txtExceptFilePattern = new TextBox();
             chkEnableExclusions = new CheckBox();
@@ -65,12 +68,14 @@
             txtDateFilterAmount = new TextBox();
             cmbDateFilterAmountType = new ComboBox();
             cmbRootDir = new ComboBox();
+            chkShowHidden = new CheckBox();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
             spltResultPanel.Panel2.SuspendLayout();
             spltResultPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)grdResult).BeginInit();
+            mnuTextMatchContext.SuspendLayout();
             statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -87,7 +92,7 @@
             // txtFilePattern
             // 
             txtFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtFilePattern.Location = new Point(140, 35);
+            txtFilePattern.Location = new Point(139, 35);
             txtFilePattern.Name = "txtFilePattern";
             txtFilePattern.Size = new Size(834, 27);
             txtFilePattern.TabIndex = 1;
@@ -97,7 +102,7 @@
             // txtContainingText
             // 
             txtContainingText.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtContainingText.Location = new Point(140, 125);
+            txtContainingText.Location = new Point(139, 125);
             txtContainingText.Name = "txtContainingText";
             txtContainingText.Size = new Size(714, 27);
             txtContainingText.TabIndex = 5;
@@ -106,50 +111,58 @@
             // mnuFileItemContext
             // 
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
-            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuCopyPath, mnuShowInExplorer, mnuOpenWithTextEditor, mnuCopyFiles, mnuSearchHere });
+            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuShowInExplorer, mnuCopyPath, mnuCopyFolderPath, mnuCopyFiles, mnuOpenWithTextEditor, mnuSearchHere });
             mnuFileItemContext.Name = "mnuFileItemContext";
-            mnuFileItemContext.Size = new Size(237, 148);
+            mnuFileItemContext.Size = new Size(225, 172);
             // 
             // mnuOpenFile
             // 
             mnuOpenFile.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             mnuOpenFile.Name = "mnuOpenFile";
-            mnuOpenFile.Size = new Size(236, 24);
+            mnuOpenFile.Size = new Size(224, 24);
             mnuOpenFile.Text = "Open";
             mnuOpenFile.Click += mnuOpenFile_Click;
-            // 
-            // mnuCopyPath
-            // 
-            mnuCopyPath.Name = "mnuCopyPath";
-            mnuCopyPath.Size = new Size(236, 24);
-            mnuCopyPath.Text = "Copy Full Path";
-            mnuCopyPath.Click += mnuCopyPath_Click;
             // 
             // mnuShowInExplorer
             // 
             mnuShowInExplorer.Name = "mnuShowInExplorer";
-            mnuShowInExplorer.Size = new Size(236, 24);
-            mnuShowInExplorer.Text = "Open Containing Folder";
+            mnuShowInExplorer.Size = new Size(224, 24);
+            mnuShowInExplorer.Text = "Open In File Explorer";
             mnuShowInExplorer.Click += mnuShowInExplorer_Click;
             // 
-            // mnuOpenWithTextEditor
+            // mnuCopyPath
             // 
-            mnuOpenWithTextEditor.Name = "mnuOpenWithTextEditor";
-            mnuOpenWithTextEditor.Size = new Size(236, 24);
-            mnuOpenWithTextEditor.Text = "Open With Text Editor";
-            mnuOpenWithTextEditor.Click += mnuOpenWithTextEditor_Click;
+            mnuCopyPath.Name = "mnuCopyPath";
+            mnuCopyPath.ShortcutKeys = Keys.Control | Keys.C;
+            mnuCopyPath.Size = new Size(224, 24);
+            mnuCopyPath.Text = "Copy Full Path";
+            mnuCopyPath.Click += mnuCopyPath_Click;
+            // 
+            // mnuCopyFolderPath
+            // 
+            mnuCopyFolderPath.Name = "mnuCopyFolderPath";
+            mnuCopyFolderPath.Size = new Size(224, 24);
+            mnuCopyFolderPath.Text = "Copy Folder Path";
+            mnuCopyFolderPath.Click += mnuCopyFolderPath_Click;
             // 
             // mnuCopyFiles
             // 
             mnuCopyFiles.Name = "mnuCopyFiles";
-            mnuCopyFiles.Size = new Size(236, 24);
+            mnuCopyFiles.Size = new Size(224, 24);
             mnuCopyFiles.Text = "Copy";
             mnuCopyFiles.Click += mnuCopyFiles_Click;
+            // 
+            // mnuOpenWithTextEditor
+            // 
+            mnuOpenWithTextEditor.Name = "mnuOpenWithTextEditor";
+            mnuOpenWithTextEditor.Size = new Size(224, 24);
+            mnuOpenWithTextEditor.Text = "Open With Text Editor";
+            mnuOpenWithTextEditor.Click += mnuOpenWithTextEditor_Click;
             // 
             // mnuSearchHere
             // 
             mnuSearchHere.Name = "mnuSearchHere";
-            mnuSearchHere.Size = new Size(236, 24);
+            mnuSearchHere.Size = new Size(224, 24);
             mnuSearchHere.Text = "Search Here";
             mnuSearchHere.Click += mnuSearchHere_Click;
             // 
@@ -178,7 +191,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(27, 38);
+            label1.Location = new Point(27, 37);
             label1.Name = "label1";
             label1.Size = new Size(76, 20);
             label1.TabIndex = 0;
@@ -206,18 +219,20 @@
             // 
             spltResultPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             spltResultPanel.FixedPanel = FixedPanel.Panel1;
-            spltResultPanel.Location = new Point(12, 254);
+            spltResultPanel.Location = new Point(11, 253);
             spltResultPanel.Name = "spltResultPanel";
             // 
             // spltResultPanel.Panel1
             // 
             spltResultPanel.Panel1.Controls.Add(grdResult);
+            spltResultPanel.Panel1.Resize += spltResultPanel_Panel1_Resize;
             // 
             // spltResultPanel.Panel2
             // 
             spltResultPanel.Panel2.Controls.Add(lstTextMatches);
             spltResultPanel.Size = new Size(984, 268);
             spltResultPanel.SplitterDistance = 710;
+            spltResultPanel.SplitterWidth = 5;
             spltResultPanel.TabIndex = 101;
             // 
             // grdResult
@@ -236,11 +251,12 @@
             grdResult.RowHeadersVisible = false;
             grdResult.RowHeadersWidth = 51;
             grdResult.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            grdResult.Size = new Size(707, 262);
+            grdResult.Size = new Size(707, 261);
             grdResult.TabIndex = 100;
             grdResult.CellContextMenuStripNeeded += grdResult_CellContextMenuStripNeeded;
             grdResult.CellMouseDoubleClick += grdResult_CellMouseDoubleClick;
             grdResult.CellToolTipTextNeeded += grdResult_CellToolTipTextNeeded;
+            grdResult.ColumnWidthChanged += grdResult_ColumnWidthChanged;
             grdResult.RowEnter += grdResult_RowEnter;
             // 
             // colIcon
@@ -306,16 +322,31 @@
             // 
             // lstTextMatches
             // 
+            lstTextMatches.ContextMenuStrip = mnuTextMatchContext;
             lstTextMatches.Dock = DockStyle.Fill;
             lstTextMatches.HeaderStyle = ColumnHeaderStyle.None;
             lstTextMatches.Location = new Point(0, 0);
             lstTextMatches.Name = "lstTextMatches";
             lstTextMatches.OwnerDraw = true;
-            lstTextMatches.Size = new Size(270, 268);
+            lstTextMatches.Size = new Size(269, 268);
             lstTextMatches.TabIndex = 102;
             lstTextMatches.UseCompatibleStateImageBehavior = false;
             lstTextMatches.View = View.Details;
             lstTextMatches.DrawItem += lstTextMatches_DrawItem;
+            // 
+            // mnuTextMatchContext
+            // 
+            mnuTextMatchContext.ImageScalingSize = new Size(20, 20);
+            mnuTextMatchContext.Items.AddRange(new ToolStripItem[] { mnuTextMatchLineCopy });
+            mnuTextMatchContext.Name = "mnuTextMatchContext";
+            mnuTextMatchContext.Size = new Size(113, 28);
+            // 
+            // mnuTextMatchLineCopy
+            // 
+            mnuTextMatchLineCopy.Name = "mnuTextMatchLineCopy";
+            mnuTextMatchLineCopy.Size = new Size(112, 24);
+            mnuTextMatchLineCopy.Text = "Copy";
+            mnuTextMatchLineCopy.Click += mnuTextMatchLineCopy_Click;
             // 
             // label4
             // 
@@ -329,7 +360,7 @@
             // txtExceptFilePattern
             // 
             txtExceptFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtExceptFilePattern.Location = new Point(140, 77);
+            txtExceptFilePattern.Location = new Point(139, 77);
             txtExceptFilePattern.Name = "txtExceptFilePattern";
             txtExceptFilePattern.Size = new Size(748, 27);
             txtExceptFilePattern.TabIndex = 3;
@@ -339,7 +370,7 @@
             // 
             chkEnableExclusions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chkEnableExclusions.AutoSize = true;
-            chkEnableExclusions.Location = new Point(902, 79);
+            chkEnableExclusions.Location = new Point(901, 79);
             chkEnableExclusions.Name = "chkEnableExclusions";
             chkEnableExclusions.Size = new Size(76, 24);
             chkEnableExclusions.TabIndex = 13;
@@ -351,21 +382,21 @@
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
             statusStrip1.Items.AddRange(new ToolStripItem[] { searchProgressBar, lblStatus });
-            statusStrip1.Location = new Point(0, 540);
+            statusStrip1.Location = new Point(0, 537);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1008, 24);
+            statusStrip1.Size = new Size(1008, 27);
             statusStrip1.TabIndex = 103;
             statusStrip1.Text = "statusStrip1";
             // 
             // searchProgressBar
             // 
             searchProgressBar.Name = "searchProgressBar";
-            searchProgressBar.Size = new Size(100, 16);
+            searchProgressBar.Size = new Size(101, 19);
             // 
             // lblStatus
             // 
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(0, 18);
+            lblStatus.Size = new Size(0, 21);
             lblStatus.Click += toolStripStatusLabel1_Click;
             // 
             // btnCancelSearch
@@ -382,7 +413,7 @@
             // chkFilterByDate
             // 
             chkFilterByDate.AutoSize = true;
-            chkFilterByDate.Location = new Point(428, 222);
+            chkFilterByDate.Location = new Point(429, 223);
             chkFilterByDate.Name = "chkFilterByDate";
             chkFilterByDate.Size = new Size(160, 24);
             chkFilterByDate.TabIndex = 8;
@@ -422,11 +453,23 @@
             cmbRootDir.SelectedValueChanged += cmbRootDir_SelectedValueChanged;
             cmbRootDir.Enter += cmbRootDir_Enter;
             // 
+            // chkShowHidden
+            // 
+            chkShowHidden.AutoSize = true;
+            chkShowHidden.Location = new Point(843, 225);
+            chkShowHidden.Margin = new Padding(3, 4, 3, 4);
+            chkShowHidden.Name = "chkShowHidden";
+            chkShowHidden.Size = new Size(120, 24);
+            chkShowHidden.TabIndex = 104;
+            chkShowHidden.Text = "Hidden Items";
+            chkShowHidden.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1008, 564);
+            Controls.Add(chkShowHidden);
             Controls.Add(cmbRootDir);
             Controls.Add(cmbDateFilterAmountType);
             Controls.Add(txtDateFilterAmount);
@@ -455,6 +498,7 @@
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).EndInit();
             spltResultPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)grdResult).EndInit();
+            mnuTextMatchContext.ResumeLayout(false);
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             ResumeLayout(false);
@@ -498,5 +542,9 @@
         private DataGridViewTextBoxColumn colSize;
         private DataGridViewTextBoxColumn colLastModified;
         private ToolStripMenuItem mnuSearchHere;
+        private ToolStripMenuItem mnuCopyFolderPath;
+        private ContextMenuStrip mnuTextMatchContext;
+        private ToolStripMenuItem mnuTextMatchLineCopy;
+        private CheckBox chkShowHidden;
     }
 }
