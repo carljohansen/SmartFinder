@@ -1,3 +1,4 @@
+using SharpExplorer.Controls;
 using SharpExplorer.Domain;
 using SharpExplorer.Domain.FileType;
 using SharpExplorer.Domain.TextSearch;
@@ -158,7 +159,7 @@ public partial class SearchTab : UserControl
 
         UserSearchRepository.SaveLastSearchDto(searchDto);
         _baseDirHistory.AddItem(searchDto.BaseDirectoriesPattern);
-        ApplyComboBoxHistory(cmbRootDir, _baseDirHistory);
+        cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
 
         var numMatches = grdResult.Rows.Count;
         if (numMatches > 0)
@@ -303,9 +304,7 @@ public partial class SearchTab : UserControl
         if (containingFolder != null)
         {
             cmbRootDir.Text = containingFolder;
-            cmbRootDir.Focus();
-            cmbRootDir.SelectionStart = cmbRootDir.Text.Length;
-            cmbRootDir.SelectionLength = 0;
+            cmbRootDir.FocusWithEndCursor();
         }
     }
 
@@ -640,54 +639,26 @@ public partial class SearchTab : UserControl
 
     private void cmbRootDir_TextUpdate(object sender, EventArgs e)
     {
-        var caretPos = cmbRootDir.SelectionStart;
         var currPath = cmbRootDir.Text;
+
         var possibleContinuations = DirectoryPredictiveTexter.GetPossibleContinuations(currPath);
-
-        if (!ApplyComboBoxHistory(cmbRootDir, _baseDirHistory))
-        {
-            cmbRootDir.Items.Clear();
-            cmbRootDir.Items.Add(currPath);
-            cmbRootDir.Items.AddRange(possibleContinuations);
-        }
-
-        if (cmbRootDir.Items.Count > 0)
-        {
-            cmbRootDir.DroppedDown = true;
-        }
-
-        cmbRootDir.SelectionStart = Math.Min(caretPos, cmbRootDir.Text.Length);
+        cmbRootDir.PopulateDropdown(_baseDirHistory, possibleContinuations);
     }
 
     private void cmbRootDir_Enter(object sender, EventArgs e)
     {
-        if (sender is ComboBox cmbRootDir)
+        if (sender is PredictiveComboBox cmbRootDir)
         {
             cmbRootDir.SelectAll();
-            ApplyComboBoxHistory(cmbRootDir, _baseDirHistory);
+            cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
         }
     }
 
-    private static bool ApplyComboBoxHistory(ComboBox comboBox, TextCriterionHistory history)
-    {
-        if (comboBox.Text != "")
-        {
-            return false;
-        }
-        comboBox.Items.Clear();
-        foreach (var item in history.Items)
-        {
-            comboBox.Items.Add(item);
-        }
-        return true;
-    }
-
-    private void MoveComboBoxCaretToEnd(ComboBox comboBox)
+    private void MoveComboBoxCaretToEnd(PredictiveComboBox comboBox)
     {
         BeginInvoke((MethodInvoker)(() =>
         {
-            comboBox.SelectionStart = comboBox.Text.Length;
-            comboBox.SelectionLength = 0; // remove selection highlight
+            comboBox.MoveCursorToEnd();
         }));
     }
 

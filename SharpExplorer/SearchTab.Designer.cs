@@ -1,4 +1,6 @@
-﻿namespace SharpExplorer
+﻿using SharpExplorer.Controls;
+
+namespace SharpExplorer
 {
     partial class SearchTab
     {
@@ -59,7 +61,7 @@
             chkFilterByDate = new CheckBox();
             txtDateFilterAmount = new TextBox();
             cmbDateFilterAmountType = new ComboBox();
-            cmbRootDir = new ComboBox();
+            cmbRootDir = new PredictiveComboBox();
             chkShowHidden = new CheckBox();
             colIcon = new DataGridViewImageColumn();
             colName = new DataGridViewTextBoxColumn();
@@ -512,7 +514,7 @@
         private CheckBox chkFilterByDate;
         private TextBox txtDateFilterAmount;
         private ComboBox cmbDateFilterAmountType;
-        private ComboBox cmbRootDir;
+        private PredictiveComboBox cmbRootDir;
         private ToolStripMenuItem mnuCopyFiles;
         private ToolStripMenuItem mnuSearchHere;
         private ToolStripMenuItem mnuCopyFolderPath;

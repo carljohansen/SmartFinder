@@ -36,6 +36,14 @@ public static class DirectoryPredictiveTexter
 
     private static string[] GetSubdirectories(string userPath)
     {
-        return Directory.GetDirectories(userPath);
+        try
+        {
+            return Directory.GetDirectories(userPath);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // TODO: handle this better.
+            return [];
+        }
     }
 }
