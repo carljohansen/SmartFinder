@@ -489,9 +489,11 @@ public partial class SearchTab : UserControl
             switch (control)
             {
                 case TextBox textBox:
+                    textBox.AutoSize = false;
                     textBox.Font = new Font(inputFontFamilyName, this.Font.Size, this.Font.Style);
                     break;
                 case ComboBox comboBox:
+                    comboBox.AutoSize = false;
                     comboBox.Font = new Font(inputFontFamilyName, this.Font.Size, this.Font.Style);
                     break;
                 case ListView listView when listView.Name == nameof(lstTextMatches):
