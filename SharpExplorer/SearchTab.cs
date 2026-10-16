@@ -43,7 +43,7 @@ public partial class SearchTab : UserControl
     public UserSearchDto GetCurrentSettings()
     {
         var searchPatterns = txtFilePattern.Text.Trim();
-        var exceptSearchPatterns = txtExceptFilePattern.Text.Trim();
+        var exceptSearchPatterns = cmbExceptFilePattern.Text.Trim();
         var directoryPath = string.IsNullOrEmpty(cmbRootDir.Text) ? "." : cmbRootDir.Text;
         var query = txtContainingText.Text;
         var doMatchCase = chkMatchCase.Checked;
@@ -82,7 +82,7 @@ public partial class SearchTab : UserControl
     private void ApplyUserSearchDto(UserSearchDto dto)
     {
         txtFilePattern.Text = dto.RawIncludeFilesPattern ?? "";
-        txtExceptFilePattern.Text = dto.RawExcludeFilesPattern ?? "";
+        cmbExceptFilePattern.Text = dto.RawExcludeFilesPattern ?? "";
         txtContainingText.Text = dto.TextSearchPattern ?? "";
         cmbRootDir.Text = dto.BaseDirectoriesPattern ?? "";
         chkEnableExclusions.Checked = dto.EnableFileExclusion;
@@ -124,6 +124,7 @@ public partial class SearchTab : UserControl
         SetStatusText("Searching...");
         btnSearch.Enabled = false;
         btnCancelSearch.Enabled = true;
+        cmbExceptFilePattern.DroppedDown = false;
         cmbRootDir.DroppedDown = false;
         _parent.SetProgress(0);
         lstTextMatches.Items.Clear();
@@ -149,6 +150,7 @@ public partial class SearchTab : UserControl
         UserSearchRepository.SaveLastSearchDto(searchDto);
         _baseDirHistory.AddItem(searchDto.BaseDirectoriesPattern);
         cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
+        cmbExceptFilePattern.ApplyComboBoxHistory(_baseDirHistory);
 
         grdResult.FocusAfterSearch();
 
@@ -325,7 +327,7 @@ public partial class SearchTab : UserControl
         var exclusionsPlusNew = _currentSearch.SearchCriteria?.AddFolderExclusion(folderToExclude);
         if (exclusionsPlusNew != null)
         {
-            txtExceptFilePattern.Text = exclusionsPlusNew;
+            cmbExceptFilePattern.Text = exclusionsPlusNew;
             chkEnableExclusions.Checked = true;
         }
     }
@@ -501,10 +503,8 @@ public partial class SearchTab : UserControl
 
     private void txtExceptFilePattern_Enter(object sender, EventArgs e)
     {
-        if (sender is TextBox textBox)
-        {
-            textBox.SelectAll();
-        }
+        cmbExceptFilePattern.SelectAll();
+        cmbExceptFilePattern.ApplyComboBoxHistory(_baseDirHistory);
     }
 
     private void txtRootDir_Enter(object sender, EventArgs e)
@@ -530,7 +530,7 @@ public partial class SearchTab : UserControl
 
     private void EnableDisableExclusions()
     {
-        txtExceptFilePattern.Enabled = chkEnableExclusions.Checked;
+        cmbExceptFilePattern.Enabled = chkEnableExclusions.Checked;
     }
 
     private void EnableDisableDateFiltering()
@@ -579,9 +579,9 @@ public partial class SearchTab : UserControl
         }
         else if (keyData == (Keys.Alt | Keys.X))
         {
-            txtExceptFilePattern.Enabled = true;
+            cmbExceptFilePattern.Enabled = true;
             chkEnableExclusions.Checked = true;
-            txtExceptFilePattern.Focus();
+            cmbExceptFilePattern.Focus();
             return true;
         }
         else
@@ -727,5 +727,21 @@ public partial class SearchTab : UserControl
     private void grdResult_MouseLeave(object sender, EventArgs e)
     {
         grdResult.ShowCellToolTips = false;
+    }
+
+    private void cmbExceptFilePattern_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        MoveComboBoxCaretToEnd(cmbExceptFilePattern);
+    }
+
+    private void cmbExceptFilePattern_SelectedValueChanged(object sender, EventArgs e)
+    {
+        MoveComboBoxCaretToEnd(cmbExceptFilePattern);
+    }
+
+    private void cmbExceptFilePattern_TextUpdate(object sender, EventArgs e)
+    {
+        var possibleContinuations = new[] { "hello", "word" };
+        cmbExceptFilePattern.PopulateDropdown(_baseDirHistory, possibleContinuations);
     }
 }
