@@ -59,6 +59,7 @@ public class UserSearchDto
             {
                 "hours" => referenceTime.AddHours(dateFilterQty),
                 "days" => referenceTime.AddDays(dateFilterQty),
+                "weeks" => referenceTime.AddDays(dateFilterQty * 7),
                 "months" => referenceTime.AddMonths((int)dateFilterQty),
                 "years" => referenceTime.AddYears((int)dateFilterQty),
                 _ => throw new InvalidOperationException()
@@ -97,5 +98,57 @@ public class UserSearchDto
         }
 
         return result;
+    }
+
+    public readonly static UserSearchDto Default = new()
+    {
+        BaseDirectoriesPattern = "",
+        RawIncludeFilesPattern = "",
+        RawExcludeFilesPattern = "",
+        EnableFileExclusion = false,
+        ShowHiddenItems = false,
+        FilterByModifiedDate = false
+    };
+
+    public string? AddFolderExclusion(string folderPath)
+    {
+        var folderRelativePath = GetRelativePath(folderPath);
+        var currentExclusions = this.RawExcludeFilesPattern;
+        if (folderRelativePath == null)
+        {
+            return currentExclusions;
+        }
+        if (string.IsNullOrWhiteSpace(currentExclusions))
+        {
+            return folderRelativePath;
+        }
+        if (currentExclusions.Contains(folderRelativePath))
+        {
+            return currentExclusions;
+        }
+        else
+        {
+            return $"{currentExclusions};{folderRelativePath}";
+        }
+    }
+
+    public string? GetRelativePath(string folderPath)
+    {
+        var baseDir = Path.GetFullPath(BaseDirectoriesPattern);
+        var relativeFolder = Path.GetRelativePath(baseDir, folderPath);
+
+        if (relativeFolder == ".")
+        {
+            // Excluding the base dir itself is not allowed (would guarantee no results).
+            // To exclude the base dir, use the _inclusion_ pattern /*/**
+            return null;
+        }
+
+        var normalized = relativeFolder.Replace(Path.DirectorySeparatorChar, '/');
+        if (!normalized.EndsWith('/'))
+        {
+            normalized += "/";
+        }
+        return normalized;
     }
 }

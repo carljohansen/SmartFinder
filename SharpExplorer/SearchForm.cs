@@ -1,13 +1,18 @@
-﻿namespace SharpExplorer
+﻿using SharpExplorer.Domain;
+using SharpExplorer.Domain.TextSearch;
+
+namespace SharpExplorer
 {
     public partial class SearchForm : Form
     {
+        private int _newTabCounter = 1;
+
         public SearchForm()
         {
             InitializeComponent();
         }
 
-        public void SetStatusText(string text)
+        public void SetStatusText(string? text)
         {
             lblFormStatusMessage.Text = text;
         }
@@ -25,46 +30,65 @@
 
         private void mnuNewSearchTab_Click(object sender, EventArgs e)
         {
-            var newTab = new TabPage() { Text = "New 1" };
-            tabsMain.TabPages.Add(newTab);
+            AddNewTab(UserSearchDto.Default);
+        }
 
-            InitializeSearchTab(newTab);
+        private void AddNewTab(UserSearchDto? initialSearchSettings)
+        {
+            var searchControl = CreateSearchTabControl(initialSearchSettings);
+            var newTab = new SearchTabPage(this, searchControl) { Text = $"Search {_newTabCounter++}" };
+
+            tabsMain.TabPages.Add(newTab);
             tabsMain.SelectedTab = newTab;
         }
 
-        private void InitializeSearchTab(TabPage searchTabPage)
+        private SearchTab CreateSearchTabControl(UserSearchDto? initialSearchControlState) => new(initialSearchControlState)
         {
-            var newSearch = new SearchTab();
-            searchTabPage.Controls.Add(newSearch);
-
-            newSearch.Left = 0;
-            newSearch.Top = 0;
-            newSearch.Width = searchTabPage.Width;
-            newSearch.Height = searchTabPage.Height;
-            newSearch.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
-        }
+            Left = 0,
+            Top = 0,
+            Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom
+        };
 
         private void closeTabToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (tabsMain.TabPages.Count == 1)
             {
-                Application.Exit();
+                return; // Can't close the last tab
             }
 
-            var selectedTab = tabsMain.SelectedTab;
-            tabsMain.SelectedIndex = tabsMain.SelectedIndex == 0 ? 1 : tabsMain.SelectedIndex - 1;
-            tabsMain.TabPages.Remove(selectedTab!);
+            if (tabsMain.SelectedTab is SearchTabPage selectedTabPage)
+            {
+                tabsMain.SelectedIndex = tabsMain.SelectedIndex == 0 ? 1 : tabsMain.SelectedIndex - 1;
+                selectedTabPage.CancelSearch();
+                tabsMain.TabPages.Remove(selectedTabPage);
+            }
         }
 
         private void SearchForm_Load(object sender, EventArgs e)
         {
-            if (tabsMain.TabCount == 0)
+            var lastSearch = UserSearchRepository.GetLastSearchDto();
+
+            AddNewTab(lastSearch);
+        }
+
+        private void duplicateTabToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var currentTab = tabsMain.SelectedTab as SearchTabPage;
+            var currentTabSearchSettings = currentTab?.GetCurrentSearchSettings();
+            if (currentTabSearchSettings != null)
             {
-                return;
+                AddNewTab(currentTabSearchSettings);
+            }
+        }
+
+        private void mnuQuit_Click(object sender, EventArgs e)
+        {
+            if (tabsMain.SelectedTab is SearchTabPage selectedTabPage)
+            {
+                selectedTabPage.CancelSearch();
             }
 
-            var initialTab = tabsMain.TabPages[0];
-            InitializeSearchTab(initialTab);
+            Application.Exit();
         }
     }
 }

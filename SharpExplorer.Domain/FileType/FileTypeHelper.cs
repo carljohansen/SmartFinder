@@ -20,9 +20,9 @@ public static class FileTypeHelper
         // Add more known binary file extensions as needed
     ];
 
-    public static bool IsKnownTextFile(string fileExtension)
+    public static bool IsKnownTextFile(string? fileExtension)
     {
-        return KnownTextFileExtensions.Contains(fileExtension.ToLower());
+        return fileExtension == null ? false : KnownTextFileExtensions.Contains(fileExtension.ToLower());
     }
 
     public static bool IsKnownBinaryFile(string fileExtension)

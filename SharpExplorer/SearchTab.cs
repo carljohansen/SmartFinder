@@ -22,7 +22,7 @@ public partial class SearchTab : UserControl
 
     private SearchForm _parent;
 
-    public SearchTab()
+    public SearchTab(UserSearchDto? initialSearchControlState)
     {
         InitializeComponent();
 
@@ -40,9 +40,14 @@ public partial class SearchTab : UserControl
         };
         _formatForMeasuring.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
         _currentSearch.SearchProgressUpdate += HandleSearchStatusUpdate;
+
+        if (initialSearchControlState != null)
+        {
+            ApplyUserSearchDto(initialSearchControlState);
+        }
     }
 
-    private UserSearchDto CreateUserSearchDto()
+    public UserSearchDto GetCurrentSettings()
     {
         var searchPatterns = txtFilePattern.Text.Trim();
         var exceptSearchPatterns = txtExceptFilePattern.Text.Trim();
@@ -135,13 +140,16 @@ public partial class SearchTab : UserControl
         contextMenuRowIndex = -1;
         _searchCancellationTokenSource = new CancellationTokenSource();
 
-        var searchDto = CreateUserSearchDto();
+        var searchDto = GetCurrentSettings();
         spltResultPanel.FixedPanel = searchDto.HasTextSearch() ? FixedPanel.Panel1 : FixedPanel.Panel2;
 
         try
         {
             var finalStatusMsg = await _currentSearch.SearchAndPopulateTableAsync(searchDto, _searchCancellationTokenSource.Token);
-            SetStatusText(finalStatusMsg);
+            if (!_isClosing)
+            {
+                SetStatusText(finalStatusMsg);
+            }
         }
         catch
         {
@@ -266,7 +274,7 @@ public partial class SearchTab : UserControl
         ExploreFile(selectedFilePath);
     }
 
-    public bool ExploreFile(string filePath)
+    private static bool ExploreFile(string filePath)
     {
         if (!System.IO.File.Exists(filePath))
         {
@@ -323,6 +331,21 @@ public partial class SearchTab : UserControl
     private void mnuOpenFile_Click(object sender, EventArgs e)
     {
         _ = OpenFileInRegisteredApp(contextMenuRowIndex);
+    }
+
+    private void mnuExcludeThisFolder_Click(object sender, EventArgs e)
+    {
+        var selectedFileDisplay = GetRowFileDisplay(contextMenuRowIndex);
+        if (selectedFileDisplay == null)
+            return;
+
+        var folderToExclude = selectedFileDisplay.Location.Location;
+        var exclusionsPlusNew = _currentSearch.SearchCriteria?.AddFolderExclusion(folderToExclude);
+        if (exclusionsPlusNew != null)
+        {
+            txtExceptFilePattern.Text = exclusionsPlusNew;
+            chkEnableExclusions.Checked = true;
+        }
     }
 
     private bool OpenFileInRegisteredApp(int rowIndex)
@@ -449,12 +472,6 @@ public partial class SearchTab : UserControl
         };
         lstTextMatches.Columns.Add(header);
 
-        var lastSearch = UserSearchRepository.GetLastSearchDto();
-        if (lastSearch != null)
-        {
-            ApplyUserSearchDto(lastSearch);
-        }
-
         SetInputFont(this);
 
         EnableDisableControls();
@@ -493,13 +510,20 @@ public partial class SearchTab : UserControl
     {
         contextMenuRowIndex = e.RowIndex;
 
-        var selectedRow = grdResult.Rows[contextMenuRowIndex];
-
         var enableOpenWithTextEditor = false;
-        if (selectedRow.DataBoundItem is FileDisplay selectedFileDisplay
-            && FileTypeHelper.IsKnownTextFile(selectedFileDisplay.GetFileExtension()))
+
+        if (_currentSearch?.SearchCriteria?.HasTextSearch() ?? false)
         {
-            enableOpenWithTextEditor = true;
+            enableOpenWithTextEditor = true; // We found the text in it, so we assume it's a text file.
+        }
+        else
+        {
+            var selectedFileDisplay = GetRowFileDisplay(contextMenuRowIndex);
+            if (FileTypeHelper.IsKnownTextFile(selectedFileDisplay?.GetFileExtension()))
+            {
+                // They didn't do a text search,  but the file extension is known to be a text file.
+                enableOpenWithTextEditor = true;
+            }
         }
 
         mnuOpenWithTextEditor.Enabled = enableOpenWithTextEditor;
@@ -604,11 +628,13 @@ public partial class SearchTab : UserControl
         }
     }
 
-    //protected override void OnFormClosing(FormClosingEventArgs e)
-    //{
-    //    _isClosing = true;
-    //    base.OnFormClosing(e);
-    //}
+    public void CancelSearch()
+    {
+        _isClosing = true;
+        _searchCancellationTokenSource?.Cancel();
+        _searchCancellationTokenSource?.Dispose();
+        _searchCancellationTokenSource = null;
+    }
 
     private void cmbRootDir_TextUpdate(object sender, EventArgs e)
     {
@@ -675,6 +701,8 @@ public partial class SearchTab : UserControl
 
     private void grdResult_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
     {
+        // Our tooltips are *mouse only*.
+
         if (e.ColumnIndex == _locationColIndex)
         {
             var fileDisplay = GetRowFileDisplay(e.RowIndex);
@@ -754,5 +782,15 @@ public partial class SearchTab : UserControl
         {
             Clipboard.SetText(match.Line);
         }
+    }
+
+    private void grdResult_MouseEnter(object sender, EventArgs e)
+    {
+        grdResult.ShowCellToolTips = true;
+    }
+
+    private void grdResult_MouseLeave(object sender, EventArgs e)
+    {
+        grdResult.ShowCellToolTips = false;
     }
 }

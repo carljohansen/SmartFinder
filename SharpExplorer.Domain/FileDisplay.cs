@@ -75,7 +75,7 @@ public class FileDisplay
 
     public string GetFileExtension()
     {
-        return Path.GetExtension(Name);
+        return Path.GetExtension(FullPath);
     }
 
     public void AddToDataTable(DataTable dataTable)
