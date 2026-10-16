@@ -14,10 +14,8 @@ public partial class SearchTab : UserControl
     private readonly TextCriterionHistory _baseDirHistory = new(15);
 
     private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
-    private readonly StringFormat _formatForMeasuring;
 
     private int contextMenuRowIndex = -1;
-    private int _locationColIndex = -1;
     private CancellationTokenSource? _searchCancellationTokenSource;
     private bool _isClosing = false;
 
@@ -34,12 +32,6 @@ public partial class SearchTab : UserControl
         grdResult.AutoGenerateColumns = false;
         grdResult.DataSource = searchResultDataSource;
 
-        _formatForMeasuring = new(StringFormat.GenericTypographic)
-        {
-            Alignment = StringAlignment.Center,
-            Trimming = StringTrimming.None
-        };
-        _formatForMeasuring.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
         _currentSearch.SearchProgressUpdate += HandleSearchStatusUpdate;
 
         if (initialSearchControlState != null)
@@ -107,10 +99,7 @@ public partial class SearchTab : UserControl
 
     private FileDisplay? GetRowFileDisplay(int rowIndex)
     {
-        if (rowIndex < 0)
-            return null;
-        var selectedRow = grdResult.Rows[rowIndex];
-        return (selectedRow.DataBoundItem is DataRowView view && view.Row["FileDisplay"] is FileDisplay fileDisplay) ? fileDisplay : null;
+        return grdResult.GetRowFileDisplay(rowIndex);
     }
 
     private void HandleSearchStatusUpdate(object? sender, SearchProgressEventArgs e)
@@ -161,13 +150,7 @@ public partial class SearchTab : UserControl
         _baseDirHistory.AddItem(searchDto.BaseDirectoriesPattern);
         cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
 
-        var numMatches = grdResult.Rows.Count;
-        if (numMatches > 0)
-        {
-            grdResult.Rows[0].Selected = true;
-            grdResult.CurrentCell = grdResult.Rows[0].Cells[0];
-            grdResult.Focus();
-        }
+        grdResult.FocusAfterSearch();
 
         btnSearch.Enabled = true;
         btnCancelSearch.Enabled = false;
@@ -401,35 +384,13 @@ public partial class SearchTab : UserControl
             brush = _brushes[Math.Min(segment.SegmentColourIndex, _brushes.Length - 1)];
             var segmentFont = segment.SegmentColourIndex == 0 ? font : highlightFont;
             g.DrawString(segmentText, segmentFont, brush, xPos, e.Bounds.Top, StringFormat.GenericTypographic);
-            xPos += g.MeasureString(segmentText, segmentFont, 0, _formatForMeasuring).Width;
+            xPos += g.MeasureString(segmentText, segmentFont, 0, MeasuringHelper.FormatForMeasuring).Width;
         }
 
         e.DrawFocusRectangle();
     }
 
-    private float _gridTextBenchmarkWidth = 0; // The width of a benchmark 10-character string.
 
-    private int GetGridCellCapacity(int cellWidth)
-    {
-        // Return the number of characters that can fit in a cell of the given width, based on the benchmark width.
-        if (_gridTextBenchmarkWidth == 0)
-        {
-            using Graphics g = grdResult.CreateGraphics();
-            _gridTextBenchmarkWidth = g.MeasureString(@"C:\Wapita\", grdResult.Font, 0, _formatForMeasuring).Width;
-        }
-
-        return (int)(cellWidth / _gridTextBenchmarkWidth * 10) - 4; // Allow for some padding and ellipsis.
-    }
-
-    private int GetCurrentGridCellCapacity(int colIndex)
-    {
-        return GetGridCellCapacity(grdResult.Columns[colIndex].Width);
-    }
-
-    private int GetCurrentLocationColumnCapacity()
-    {
-        return GetCurrentGridCellCapacity(_locationColIndex);
-    }
 
     private void grdResult_RowEnter(object sender, DataGridViewCellEventArgs e)
     {
@@ -475,7 +436,7 @@ public partial class SearchTab : UserControl
 
         EnableDisableControls();
 
-        _locationColIndex = grdResult.Columns["colLocation"].Index!;
+        grdResult.Initialize();
 
         ResizeResultsGrid();
     }
@@ -676,7 +637,7 @@ public partial class SearchTab : UserControl
     {
         // Our tooltips are *mouse only*.
 
-        if (e.ColumnIndex == _locationColIndex)
+        if (e.ColumnIndex == grdResult.LocationColumnIndex)
         {
             var fileDisplay = GetRowFileDisplay(e.RowIndex);
             if (fileDisplay != null)
@@ -702,27 +663,28 @@ public partial class SearchTab : UserControl
 
     private void ResizeResultsGrid()
     {
-        if (_locationColIndex < 0)
+        if (grdResult.LocationColumnIndex < 0)
         {
             return;
         }
 
         var newWidth = spltResultPanel.Panel1.Width - (SystemInformation.VerticalScrollBarWidth + 5);
-        var fixedColWidths = 0;
-        for (int i = 0; i < grdResult.Columns.Count; i++)
-        {
-            if (i != _locationColIndex)
-            {
-                fixedColWidths += grdResult.Columns[i].Width;
-            }
-        }
+        grdResult.ResizeResultsGrid(newWidth);
+        //var fixedColWidths = 0;
+        //for (int i = 0; i < grdResult.Columns.Count; i++)
+        //{
+        //    if (i != _locationColIndex)
+        //    {
+        //        fixedColWidths += grdResult.Columns[i].Width;
+        //    }
+        //}
 
-        if (fixedColWidths == 0)
-        {
-            return;
-        }
+        //if (fixedColWidths == 0)
+        //{
+        //    return;
+        //}
 
-        grdResult.Columns[_locationColIndex].Width = Math.Max(50, newWidth - fixedColWidths);
+        //grdResult.Columns[_locationColIndex].Width = Math.Max(50, newWidth - fixedColWidths);
     }
 
     private void spltResultPanel_SizeChanged(object sender, EventArgs e)
@@ -731,7 +693,7 @@ public partial class SearchTab : UserControl
 
     private void grdResult_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
     {
-        if (e.Column.Index == _locationColIndex)
+        if (e.Column.Index == grdResult.LocationColumnIndex)
         {
             RefreshLocationDisplayStringsAfterColumnResize();
         }
@@ -739,7 +701,7 @@ public partial class SearchTab : UserControl
 
     private void RefreshLocationDisplayStringsAfterColumnResize()
     {
-        var maxLocationLength = GetCurrentLocationColumnCapacity();
+        var maxLocationLength = grdResult.GetCurrentLocationColumnCapacity();
         _currentSearch?.SetLocationDisplayLength(maxLocationLength);
     }
 

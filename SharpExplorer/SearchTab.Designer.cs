@@ -50,7 +50,7 @@ namespace SharpExplorer
             label2 = new Label();
             label3 = new Label();
             spltResultPanel = new SplitContainer();
-            grdResult = new DataGridView();
+            grdResult = new SearchResultDataGridView();
             lstTextMatches = new ListView();
             mnuTextMatchContext = new ContextMenuStrip(components);
             mnuTextMatchLineCopy = new ToolStripMenuItem();
@@ -502,7 +502,7 @@ namespace SharpExplorer
         private ContextMenuStrip mnuFileItemContext;
         private ToolStripMenuItem mnuCopyPath;
         private SplitContainer spltResultPanel;
-        private DataGridView grdResult;
+        private SearchResultDataGridView grdResult;
         private ListView lstTextMatches;
         private Label label4;
         private TextBox txtExceptFilePattern;
