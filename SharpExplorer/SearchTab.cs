@@ -732,16 +732,4 @@ public partial class SearchTab : UserControl
     {
         grdResult.ShowCellToolTips = false;
     }
-
-    private void cmbExceptFilePattern_SelectedIndexChanged(object sender, EventArgs e)
-    {
-    }
-
-    private void cmbExceptFilePattern_SelectedValueChanged(object sender, EventArgs e)
-    {
-    }
-
-    private void cmbExceptFilePattern_TextUpdate(object sender, EventArgs e)
-    {
-    }
 }

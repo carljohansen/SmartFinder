@@ -375,9 +375,6 @@ namespace SharpExplorer
             cmbExceptFilePattern.Name = "cmbExceptFilePattern";
             cmbExceptFilePattern.Size = new Size(772, 28);
             cmbExceptFilePattern.TabIndex = 3;
-            cmbExceptFilePattern.SelectedIndexChanged += cmbExceptFilePattern_SelectedIndexChanged;
-            cmbExceptFilePattern.TextUpdate += cmbExceptFilePattern_TextUpdate;
-            cmbExceptFilePattern.SelectedValueChanged += cmbExceptFilePattern_SelectedValueChanged;
             cmbExceptFilePattern.Enter += txtExceptFilePattern_Enter;
             // 
             // chkEnableExclusions
