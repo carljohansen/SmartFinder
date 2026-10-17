@@ -80,7 +80,7 @@ namespace SharpExplorer
             // 
             // btnSearch
             // 
-            btnSearch.Location = new Point(23, 219);
+            btnSearch.Location = new Point(23, 190);
             btnSearch.Name = "btnSearch";
             btnSearch.Size = new Size(94, 29);
             btnSearch.TabIndex = 14;
@@ -91,7 +91,7 @@ namespace SharpExplorer
             // txtFilePattern
             // 
             txtFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtFilePattern.Location = new Point(123, 35);
+            txtFilePattern.Location = new Point(123, 6);
             txtFilePattern.Name = "txtFilePattern";
             txtFilePattern.Size = new Size(872, 27);
             txtFilePattern.TabIndex = 1;
@@ -101,7 +101,7 @@ namespace SharpExplorer
             // txtContainingText
             // 
             txtContainingText.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtContainingText.Location = new Point(123, 125);
+            txtContainingText.Location = new Point(123, 96);
             txtContainingText.Name = "txtContainingText";
             txtContainingText.Size = new Size(729, 27);
             txtContainingText.TabIndex = 5;
@@ -176,7 +176,7 @@ namespace SharpExplorer
             // 
             chkMatchCase.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chkMatchCase.AutoSize = true;
-            chkMatchCase.Location = new Point(864, 115);
+            chkMatchCase.Location = new Point(864, 86);
             chkMatchCase.Name = "chkMatchCase";
             chkMatchCase.Size = new Size(107, 24);
             chkMatchCase.TabIndex = 11;
@@ -187,7 +187,7 @@ namespace SharpExplorer
             // 
             chkMatchWholeWord.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chkMatchWholeWord.AutoSize = true;
-            chkMatchWholeWord.Location = new Point(864, 141);
+            chkMatchWholeWord.Location = new Point(864, 112);
             chkMatchWholeWord.Name = "chkMatchWholeWord";
             chkMatchWholeWord.Size = new Size(114, 24);
             chkMatchWholeWord.TabIndex = 12;
@@ -197,7 +197,7 @@ namespace SharpExplorer
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(6, 37);
+            label1.Location = new Point(6, 8);
             label1.Name = "label1";
             label1.Size = new Size(76, 20);
             label1.TabIndex = 0;
@@ -206,7 +206,7 @@ namespace SharpExplorer
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(6, 128);
+            label2.Location = new Point(6, 99);
             label2.Name = "label2";
             label2.Size = new Size(113, 20);
             label2.TabIndex = 4;
@@ -215,7 +215,7 @@ namespace SharpExplorer
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(6, 188);
+            label3.Location = new Point(6, 159);
             label3.Name = "label3";
             label3.Size = new Size(60, 20);
             label3.TabIndex = 6;
@@ -225,7 +225,7 @@ namespace SharpExplorer
             // 
             spltResultPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             spltResultPanel.FixedPanel = FixedPanel.Panel1;
-            spltResultPanel.Location = new Point(11, 253);
+            spltResultPanel.Location = new Point(11, 224);
             spltResultPanel.Name = "spltResultPanel";
             // 
             // spltResultPanel.Panel1
@@ -236,7 +236,7 @@ namespace SharpExplorer
             // spltResultPanel.Panel2
             // 
             spltResultPanel.Panel2.Controls.Add(lstTextMatches);
-            spltResultPanel.Size = new Size(984, 268);
+            spltResultPanel.Size = new Size(984, 290);
             spltResultPanel.SplitterDistance = 710;
             spltResultPanel.SplitterWidth = 5;
             spltResultPanel.TabIndex = 101;
@@ -258,7 +258,7 @@ namespace SharpExplorer
             grdResult.RowHeadersWidth = 51;
             grdResult.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             grdResult.ShowCellToolTips = false;
-            grdResult.Size = new Size(710, 268);
+            grdResult.Size = new Size(710, 290);
             grdResult.TabIndex = 100;
             grdResult.CellContextMenuStripNeeded += grdResult_CellContextMenuStripNeeded;
             grdResult.CellMouseDoubleClick += grdResult_CellMouseDoubleClick;
@@ -338,7 +338,7 @@ namespace SharpExplorer
             lstTextMatches.Location = new Point(0, 0);
             lstTextMatches.Name = "lstTextMatches";
             lstTextMatches.OwnerDraw = true;
-            lstTextMatches.Size = new Size(269, 268);
+            lstTextMatches.Size = new Size(269, 290);
             lstTextMatches.TabIndex = 102;
             lstTextMatches.UseCompatibleStateImageBehavior = false;
             lstTextMatches.View = View.Details;
@@ -361,7 +361,7 @@ namespace SharpExplorer
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(6, 80);
+            label4.Location = new Point(6, 51);
             label4.Name = "label4";
             label4.Size = new Size(56, 20);
             label4.TabIndex = 2;
@@ -371,7 +371,7 @@ namespace SharpExplorer
             // 
             cmbExceptFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cmbExceptFilePattern.FormattingEnabled = true;
-            cmbExceptFilePattern.Location = new Point(123, 77);
+            cmbExceptFilePattern.Location = new Point(123, 48);
             cmbExceptFilePattern.Name = "cmbExceptFilePattern";
             cmbExceptFilePattern.Size = new Size(772, 28);
             cmbExceptFilePattern.TabIndex = 3;
@@ -384,7 +384,7 @@ namespace SharpExplorer
             // 
             chkEnableExclusions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chkEnableExclusions.AutoSize = true;
-            chkEnableExclusions.Location = new Point(901, 79);
+            chkEnableExclusions.Location = new Point(901, 50);
             chkEnableExclusions.Name = "chkEnableExclusions";
             chkEnableExclusions.Size = new Size(76, 24);
             chkEnableExclusions.TabIndex = 13;
@@ -395,7 +395,7 @@ namespace SharpExplorer
             // btnCancelSearch
             // 
             btnCancelSearch.Enabled = false;
-            btnCancelSearch.Location = new Point(123, 219);
+            btnCancelSearch.Location = new Point(123, 190);
             btnCancelSearch.Name = "btnCancelSearch";
             btnCancelSearch.Size = new Size(94, 29);
             btnCancelSearch.TabIndex = 15;
@@ -406,7 +406,7 @@ namespace SharpExplorer
             // chkFilterByDate
             // 
             chkFilterByDate.AutoSize = true;
-            chkFilterByDate.Location = new Point(429, 223);
+            chkFilterByDate.Location = new Point(429, 194);
             chkFilterByDate.Name = "chkFilterByDate";
             chkFilterByDate.Size = new Size(160, 24);
             chkFilterByDate.TabIndex = 8;
@@ -416,7 +416,7 @@ namespace SharpExplorer
             // 
             // txtDateFilterAmount
             // 
-            txtDateFilterAmount.Location = new Point(585, 221);
+            txtDateFilterAmount.Location = new Point(585, 192);
             txtDateFilterAmount.Name = "txtDateFilterAmount";
             txtDateFilterAmount.Size = new Size(43, 27);
             txtDateFilterAmount.TabIndex = 9;
@@ -428,7 +428,7 @@ namespace SharpExplorer
             cmbDateFilterAmountType.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbDateFilterAmountType.FormattingEnabled = true;
             cmbDateFilterAmountType.Items.AddRange(new object[] { "hours", "days", "weeks", "months", "years" });
-            cmbDateFilterAmountType.Location = new Point(634, 219);
+            cmbDateFilterAmountType.Location = new Point(634, 190);
             cmbDateFilterAmountType.Name = "cmbDateFilterAmountType";
             cmbDateFilterAmountType.Size = new Size(85, 28);
             cmbDateFilterAmountType.TabIndex = 10;
@@ -437,7 +437,7 @@ namespace SharpExplorer
             // 
             cmbRootDir.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cmbRootDir.FormattingEnabled = true;
-            cmbRootDir.Location = new Point(77, 185);
+            cmbRootDir.Location = new Point(77, 156);
             cmbRootDir.Name = "cmbRootDir";
             cmbRootDir.Size = new Size(919, 28);
             cmbRootDir.TabIndex = 7;
@@ -449,7 +449,7 @@ namespace SharpExplorer
             // chkShowHidden
             // 
             chkShowHidden.AutoSize = true;
-            chkShowHidden.Location = new Point(843, 225);
+            chkShowHidden.Location = new Point(843, 196);
             chkShowHidden.Margin = new Padding(3, 4, 3, 4);
             chkShowHidden.Name = "chkShowHidden";
             chkShowHidden.Size = new Size(120, 24);
@@ -480,7 +480,7 @@ namespace SharpExplorer
             Controls.Add(txtFilePattern);
             Controls.Add(btnSearch);
             Name = "SearchTab";
-            Size = new Size(1008, 526);
+            Size = new Size(1008, 517);
             Load += Form1_Load;
             mnuFileItemContext.ResumeLayout(false);
             spltResultPanel.Panel1.ResumeLayout(false);
