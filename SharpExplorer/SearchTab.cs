@@ -154,7 +154,7 @@ public partial class SearchTab : UserControl
         if (searchDto.EnableFileExclusion)
         {
             _exclusionsHistory.AddItem(searchDto.RawExcludeFilesPattern);
-            cmbExceptFilePattern.ApplyComboBoxHistory(_exclusionsHistory);
+            cmbExceptFilePattern.SetHistory(_exclusionsHistory);
         }
 
         grdResult.FocusAfterSearch();
@@ -509,7 +509,6 @@ public partial class SearchTab : UserControl
     private void txtExceptFilePattern_Enter(object sender, EventArgs e)
     {
         cmbExceptFilePattern.SelectAll();
-        cmbExceptFilePattern.ApplyComboBoxHistory(_exclusionsHistory);
     }
 
     private void txtRootDir_Enter(object sender, EventArgs e)
@@ -736,16 +735,13 @@ public partial class SearchTab : UserControl
 
     private void cmbExceptFilePattern_SelectedIndexChanged(object sender, EventArgs e)
     {
-        MoveComboBoxCaretToEnd(cmbExceptFilePattern);
     }
 
     private void cmbExceptFilePattern_SelectedValueChanged(object sender, EventArgs e)
     {
-        MoveComboBoxCaretToEnd(cmbExceptFilePattern);
     }
 
     private void cmbExceptFilePattern_TextUpdate(object sender, EventArgs e)
     {
-        cmbExceptFilePattern.PopulateDropdown(_exclusionsHistory, []);
     }
 }

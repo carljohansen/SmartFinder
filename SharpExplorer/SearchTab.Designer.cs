@@ -61,7 +61,7 @@ namespace SharpExplorer
             mnuTextMatchContext = new ContextMenuStrip(components);
             mnuTextMatchLineCopy = new ToolStripMenuItem();
             label4 = new Label();
-            cmbExceptFilePattern = new PredictiveComboBox();
+            cmbExceptFilePattern = new ComboBox();
             chkEnableExclusions = new CheckBox();
             btnCancelSearch = new Button();
             chkFilterByDate = new CheckBox();
@@ -509,7 +509,7 @@ namespace SharpExplorer
         private SearchResultDataGridView grdResult;
         private ListView lstTextMatches;
         private Label label4;
-        private PredictiveComboBox cmbExceptFilePattern;
+        private ComboBox cmbExceptFilePattern;
         private ToolStripMenuItem mnuShowInExplorer;
         private CheckBox chkEnableExclusions;
         private ToolStripMenuItem mnuOpenWithTextEditor;
