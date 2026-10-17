@@ -12,6 +12,7 @@ public partial class SearchTab : UserControl
 {
     private readonly FileSearch _currentSearch;
     private readonly TextCriterionHistory _baseDirHistory = new(15);
+    private readonly TextCriterionHistory _exclusionsHistory = new(15);
 
     private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
 
@@ -150,7 +151,11 @@ public partial class SearchTab : UserControl
         UserSearchRepository.SaveLastSearchDto(searchDto);
         _baseDirHistory.AddItem(searchDto.BaseDirectoriesPattern);
         cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
-        cmbExceptFilePattern.ApplyComboBoxHistory(_baseDirHistory);
+        if (searchDto.EnableFileExclusion)
+        {
+            _exclusionsHistory.AddItem(searchDto.RawExcludeFilesPattern);
+            cmbExceptFilePattern.ApplyComboBoxHistory(_exclusionsHistory);
+        }
 
         grdResult.FocusAfterSearch();
 
@@ -504,7 +509,7 @@ public partial class SearchTab : UserControl
     private void txtExceptFilePattern_Enter(object sender, EventArgs e)
     {
         cmbExceptFilePattern.SelectAll();
-        cmbExceptFilePattern.ApplyComboBoxHistory(_baseDirHistory);
+        cmbExceptFilePattern.ApplyComboBoxHistory(_exclusionsHistory);
     }
 
     private void txtRootDir_Enter(object sender, EventArgs e)
@@ -741,7 +746,6 @@ public partial class SearchTab : UserControl
 
     private void cmbExceptFilePattern_TextUpdate(object sender, EventArgs e)
     {
-        var possibleContinuations = new[] { "hello", "word" };
-        cmbExceptFilePattern.PopulateDropdown(_baseDirHistory, possibleContinuations);
+        cmbExceptFilePattern.PopulateDropdown(_exclusionsHistory, []);
     }
 }

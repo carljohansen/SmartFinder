@@ -225,7 +225,7 @@ namespace SharpExplorer
             // 
             spltResultPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             spltResultPanel.FixedPanel = FixedPanel.Panel1;
-            spltResultPanel.Location = new Point(11, 224);
+            spltResultPanel.Location = new Point(5, 224);
             spltResultPanel.Name = "spltResultPanel";
             // 
             // spltResultPanel.Panel1
@@ -236,7 +236,7 @@ namespace SharpExplorer
             // spltResultPanel.Panel2
             // 
             spltResultPanel.Panel2.Controls.Add(lstTextMatches);
-            spltResultPanel.Size = new Size(984, 290);
+            spltResultPanel.Size = new Size(996, 290);
             spltResultPanel.SplitterDistance = 710;
             spltResultPanel.SplitterWidth = 5;
             spltResultPanel.TabIndex = 101;
@@ -338,7 +338,7 @@ namespace SharpExplorer
             lstTextMatches.Location = new Point(0, 0);
             lstTextMatches.Name = "lstTextMatches";
             lstTextMatches.OwnerDraw = true;
-            lstTextMatches.Size = new Size(269, 290);
+            lstTextMatches.Size = new Size(281, 290);
             lstTextMatches.TabIndex = 102;
             lstTextMatches.UseCompatibleStateImageBehavior = false;
             lstTextMatches.View = View.Details;
