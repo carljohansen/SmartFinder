@@ -31,9 +31,9 @@ namespace SharpExplorer
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             btnSearch = new Button();
-            txtFilePattern = new TextBox();
+            cmbFilePattern = new ComboBox();
             txtContainingText = new TextBox();
             mnuFileItemContext = new ContextMenuStrip(components);
             mnuOpenFile = new ToolStripMenuItem();
@@ -88,15 +88,14 @@ namespace SharpExplorer
             btnSearch.UseVisualStyleBackColor = true;
             btnSearch.Click += btnSearch_Click;
             // 
-            // txtFilePattern
+            // cmbFilePattern
             // 
-            txtFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtFilePattern.Location = new Point(123, 6);
-            txtFilePattern.Name = "txtFilePattern";
-            txtFilePattern.Size = new Size(872, 27);
-            txtFilePattern.TabIndex = 1;
-            txtFilePattern.Text = "*.txt";
-            txtFilePattern.Enter += txtFilePattern_Enter;
+            cmbFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbFilePattern.Location = new Point(123, 6);
+            cmbFilePattern.Name = "cmbFilePattern";
+            cmbFilePattern.Size = new Size(872, 28);
+            cmbFilePattern.TabIndex = 1;
+            cmbFilePattern.Text = "*.txt";
             // 
             // txtContainingText
             // 
@@ -312,8 +311,8 @@ namespace SharpExplorer
             // 
             colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             colSize.DataPropertyName = "SizeDisplay";
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
-            colSize.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleRight;
+            colSize.DefaultCellStyle = dataGridViewCellStyle2;
             colSize.HeaderText = "Size";
             colSize.MinimumWidth = 6;
             colSize.Name = "colSize";
@@ -474,11 +473,11 @@ namespace SharpExplorer
             Controls.Add(chkMatchWholeWord);
             Controls.Add(chkMatchCase);
             Controls.Add(txtContainingText);
-            Controls.Add(txtFilePattern);
+            Controls.Add(cmbFilePattern);
             Controls.Add(btnSearch);
             Name = "SearchTab";
             Size = new Size(1008, 517);
-            Load += Form1_Load;
+            Load += SearchTab_Load;
             mnuFileItemContext.ResumeLayout(false);
             spltResultPanel.Panel1.ResumeLayout(false);
             spltResultPanel.Panel2.ResumeLayout(false);
@@ -493,7 +492,7 @@ namespace SharpExplorer
         #endregion
 
         private Button btnSearch;
-        private TextBox txtFilePattern;
+        private ComboBox cmbFilePattern;
         private TextBox txtContainingText;
         private CheckBox chkMatchCase;
         private CheckBox chkMatchWholeWord;

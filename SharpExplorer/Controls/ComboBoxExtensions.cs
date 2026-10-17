@@ -6,7 +6,7 @@ internal static class ComboBoxExtensions
 {
     extension(ComboBox comboBox)
     {
-        public void SetHistory(TextCriterionHistory history)
+        public void ApplyComboBoxHistory(TextCriterionHistory history)
         {
             comboBox.Items.Clear();
             foreach (var item in history.Items)

@@ -13,6 +13,7 @@ public partial class SearchTab : UserControl
     private readonly FileSearch _currentSearch;
     private readonly TextCriterionHistory _baseDirHistory = new(15);
     private readonly TextCriterionHistory _exclusionsHistory = new(15);
+    private readonly TextCriterionHistory _inclusionsHistory = new(15);
 
     private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
 
@@ -43,7 +44,7 @@ public partial class SearchTab : UserControl
 
     public UserSearchDto GetCurrentSettings()
     {
-        var searchPatterns = txtFilePattern.Text.Trim();
+        var searchPatterns = cmbFilePattern.Text.Trim();
         var exceptSearchPatterns = cmbExceptFilePattern.Text.Trim();
         var directoryPath = string.IsNullOrEmpty(cmbRootDir.Text) ? "." : cmbRootDir.Text;
         var query = txtContainingText.Text;
@@ -82,7 +83,7 @@ public partial class SearchTab : UserControl
 
     private void ApplyUserSearchDto(UserSearchDto dto)
     {
-        txtFilePattern.Text = dto.RawIncludeFilesPattern ?? "";
+        cmbFilePattern.Text = dto.RawIncludeFilesPattern ?? "";
         cmbExceptFilePattern.Text = dto.RawExcludeFilesPattern ?? "";
         txtContainingText.Text = dto.TextSearchPattern ?? "";
         cmbRootDir.Text = dto.BaseDirectoriesPattern ?? "";
@@ -151,10 +152,12 @@ public partial class SearchTab : UserControl
         UserSearchRepository.SaveLastSearchDto(searchDto);
         _baseDirHistory.AddItem(searchDto.BaseDirectoriesPattern);
         cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
+        _inclusionsHistory.AddItem(searchDto.RawIncludeFilesPattern);
+        cmbFilePattern.ApplyComboBoxHistory(_inclusionsHistory);
         if (searchDto.EnableFileExclusion)
         {
             _exclusionsHistory.AddItem(searchDto.RawExcludeFilesPattern);
-            cmbExceptFilePattern.SetHistory(_exclusionsHistory);
+            cmbExceptFilePattern.ApplyComboBoxHistory(_exclusionsHistory);
         }
 
         grdResult.FocusAfterSearch();
@@ -427,7 +430,7 @@ public partial class SearchTab : UserControl
         }
     }
 
-    private void Form1_Load(object sender, EventArgs e)
+    private void SearchTab_Load(object sender, EventArgs e)
     {
         _parent = (this.Parent!.Parent!.Parent as SearchForm)!;
 
@@ -446,6 +449,8 @@ public partial class SearchTab : UserControl
         grdResult.Initialize();
 
         ResizeResultsGrid();
+
+        cmbFilePattern.Select();
     }
 
     private void SetInputFont(Control parentControl)
