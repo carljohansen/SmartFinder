@@ -33,20 +33,19 @@ namespace SharpExplorer
             AddNewTab(UserSearchDto.Default);
         }
 
-        private void AddNewTab(UserSearchDto? initialSearchSettings)
+        private SearchTabPage AddNewTab(UserSearchDto? initialSearchSettings)
         {
             var searchControl = CreateSearchTabControl(initialSearchSettings);
             var newTab = new SearchTabPage(this, searchControl) { Text = $"Search {_newTabCounter++}" };
 
             tabsMain.TabPages.Add(newTab);
             tabsMain.SelectedTab = newTab;
+            return newTab;
         }
 
         private SearchTab CreateSearchTabControl(UserSearchDto? initialSearchControlState) => new(initialSearchControlState)
         {
-            Left = 0,
-            Top = 0,
-            Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom
+            Dock = DockStyle.Fill
         };
 
         private void closeTabToolStripMenuItem_Click(object sender, EventArgs e)
@@ -67,8 +66,10 @@ namespace SharpExplorer
         private void SearchForm_Load(object sender, EventArgs e)
         {
             var lastSearch = UserSearchRepository.GetLastSearchDto();
-
-            AddNewTab(lastSearch);
+            _ = AddNewTab(lastSearch);
+            // HACK: this is my workaround for the bug where right-anchored combobox is not initially drawn.
+            this.Width += 1;
+            this.Width -= 1;
         }
 
         private void duplicateTabToolStripMenuItem_Click(object sender, EventArgs e)
