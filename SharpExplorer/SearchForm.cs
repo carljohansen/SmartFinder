@@ -1,5 +1,4 @@
 ﻿using SharpExplorer.Domain;
-using SharpExplorer.Domain.TextSearch;
 
 namespace SharpExplorer
 {

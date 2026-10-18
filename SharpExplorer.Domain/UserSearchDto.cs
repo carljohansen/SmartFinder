@@ -1,4 +1,6 @@
-﻿namespace SharpExplorer.Domain.TextSearch;
+﻿using SharpExplorer.Domain.TextSearch;
+
+namespace SharpExplorer.Domain;
 
 public class UserSearchDto
 {
