@@ -9,13 +9,13 @@ public class UserSearchDto
             : directoryName;
     }
 
-    public required string RawIncludeFilesPattern { get; set; }
+    public required string? RawIncludeFilesPattern { get; set; }
 
-    public required string RawExcludeFilesPattern { get; set; }
+    public required string? RawExcludeFilesPattern { get; set; }
 
     public string GetExcludeFilesPattern()
     {
-        return EnableFileExclusion ? RawExcludeFilesPattern : "";
+        return EnableFileExclusion ? RawExcludeFilesPattern ?? "" : "";
     }
 
     public string? TextSearchPattern { get; set; }

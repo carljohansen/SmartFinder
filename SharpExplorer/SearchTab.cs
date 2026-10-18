@@ -14,6 +14,7 @@ public partial class SearchTab : UserControl
     private readonly TextCriterionHistory _baseDirHistory = new(15);
     private readonly TextCriterionHistory _exclusionsHistory = new(15);
     private readonly TextCriterionHistory _inclusionsHistory = new(15);
+    private readonly TextCriterionHistory _searchTextHistory = new(15);
 
     private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
 
@@ -47,7 +48,7 @@ public partial class SearchTab : UserControl
         var searchPatterns = cmbFilePattern.Text.Trim();
         var exceptSearchPatterns = cmbExceptFilePattern.Text.Trim();
         var directoryPath = string.IsNullOrEmpty(cmbRootDir.Text) ? "." : cmbRootDir.Text;
-        var query = txtContainingText.Text;
+        var query = cmbContainingText.Text;
         var doMatchCase = chkMatchCase.Checked;
         var doMatchWholeWord = chkMatchWholeWord.Checked;
         var options = TextMatchingOptions.None;
@@ -85,7 +86,7 @@ public partial class SearchTab : UserControl
     {
         cmbFilePattern.Text = dto.RawIncludeFilesPattern ?? "";
         cmbExceptFilePattern.Text = dto.RawExcludeFilesPattern ?? "";
-        txtContainingText.Text = dto.TextSearchPattern ?? "";
+        cmbContainingText.Text = dto.TextSearchPattern ?? "";
         cmbRootDir.Text = dto.BaseDirectoriesPattern ?? "";
         chkEnableExclusions.Checked = dto.EnableFileExclusion;
         chkShowHidden.Checked = dto.ShowHiddenItems;
@@ -154,6 +155,8 @@ public partial class SearchTab : UserControl
         cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
         _inclusionsHistory.AddItem(searchDto.RawIncludeFilesPattern);
         cmbFilePattern.ApplyComboBoxHistory(_inclusionsHistory);
+        _searchTextHistory.AddItem(searchDto.TextSearchPattern);
+        cmbContainingText.ApplyComboBoxHistory(_searchTextHistory);
         if (searchDto.EnableFileExclusion)
         {
             _exclusionsHistory.AddItem(searchDto.RawExcludeFilesPattern);

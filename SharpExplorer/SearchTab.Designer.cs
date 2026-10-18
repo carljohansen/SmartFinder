@@ -34,7 +34,7 @@ namespace SharpExplorer
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             btnSearch = new Button();
             cmbFilePattern = new ComboBox();
-            txtContainingText = new TextBox();
+            cmbContainingText = new ComboBox();
             mnuFileItemContext = new ContextMenuStrip(components);
             mnuOpenFile = new ToolStripMenuItem();
             mnuOpenWithTextEditor = new ToolStripMenuItem();
@@ -97,14 +97,14 @@ namespace SharpExplorer
             cmbFilePattern.TabIndex = 1;
             cmbFilePattern.Text = "*.txt";
             // 
-            // txtContainingText
+            // cmbContainingText
             // 
-            txtContainingText.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtContainingText.Location = new Point(123, 96);
-            txtContainingText.Name = "txtContainingText";
-            txtContainingText.Size = new Size(729, 27);
-            txtContainingText.TabIndex = 5;
-            txtContainingText.Enter += txtContainingText_Enter;
+            cmbContainingText.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbContainingText.Location = new Point(123, 96);
+            cmbContainingText.Name = "cmbContainingText";
+            cmbContainingText.Size = new Size(729, 28);
+            cmbContainingText.TabIndex = 5;
+            cmbContainingText.Enter += txtContainingText_Enter;
             // 
             // mnuFileItemContext
             // 
@@ -472,7 +472,7 @@ namespace SharpExplorer
             Controls.Add(label1);
             Controls.Add(chkMatchWholeWord);
             Controls.Add(chkMatchCase);
-            Controls.Add(txtContainingText);
+            Controls.Add(cmbContainingText);
             Controls.Add(cmbFilePattern);
             Controls.Add(btnSearch);
             Name = "SearchTab";
@@ -493,7 +493,7 @@ namespace SharpExplorer
 
         private Button btnSearch;
         private ComboBox cmbFilePattern;
-        private TextBox txtContainingText;
+        private ComboBox cmbContainingText;
         private CheckBox chkMatchCase;
         private CheckBox chkMatchWholeWord;
         private Label label1;

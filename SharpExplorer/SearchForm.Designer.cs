@@ -42,18 +42,18 @@
             statusStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
-            //
+            // 
             // tabsMain
-            //
+            // 
             tabsMain.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tabsMain.Location = new Point(5, 33);
             tabsMain.Name = "tabsMain";
             tabsMain.SelectedIndex = 0;
             tabsMain.Size = new Size(1314, 630);
             tabsMain.TabIndex = 0;
-            //
+            // 
             // statusStrip1
-            //
+            // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
             statusStrip1.Items.AddRange(new ToolStripItem[] { MainProgressBar, lblFormStatusMessage });
             statusStrip1.Location = new Point(0, 671);
@@ -61,20 +61,20 @@
             statusStrip1.Size = new Size(1325, 24);
             statusStrip1.TabIndex = 1;
             statusStrip1.Text = "statusStrip1";
-            //
+            // 
             // MainProgressBar
-            //
+            // 
             MainProgressBar.Margin = new Padding(11, 4, 1, 4);
             MainProgressBar.Name = "MainProgressBar";
             MainProgressBar.Size = new Size(100, 16);
-            //
+            // 
             // lblFormStatusMessage
-            //
+            // 
             lblFormStatusMessage.Name = "lblFormStatusMessage";
             lblFormStatusMessage.Size = new Size(0, 18);
-            //
+            // 
             // menuStrip1
-            //
+            // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
             menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, searchToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
@@ -82,54 +82,54 @@
             menuStrip1.Size = new Size(1325, 28);
             menuStrip1.TabIndex = 2;
             menuStrip1.Text = "menuStrip1";
-            //
+            // 
             // fileToolStripMenuItem
-            //
+            // 
             fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuQuit });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(46, 24);
             fileToolStripMenuItem.Text = "File";
-            //
+            // 
             // mnuQuit
-            //
+            // 
             mnuQuit.Name = "mnuQuit";
-            mnuQuit.Size = new Size(224, 26);
+            mnuQuit.Size = new Size(116, 26);
             mnuQuit.Text = "E&xit";
             mnuQuit.Click += mnuQuit_Click;
-            //
+            // 
             // searchToolStripMenuItem
-            //
+            // 
             searchToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuNewSearchTab, closeTabToolStripMenuItem, duplicateTabToolStripMenuItem });
             searchToolStripMenuItem.Name = "searchToolStripMenuItem";
             searchToolStripMenuItem.Size = new Size(67, 24);
             searchToolStripMenuItem.Text = "Search";
-            //
+            // 
             // mnuNewSearchTab
-            //
+            // 
             mnuNewSearchTab.Name = "mnuNewSearchTab";
             mnuNewSearchTab.ShortcutKeys = Keys.Control | Keys.T;
             mnuNewSearchTab.Size = new Size(274, 26);
             mnuNewSearchTab.Text = "New Tab";
             mnuNewSearchTab.Click += mnuNewSearchTab_Click;
-            //
+            // 
             // closeTabToolStripMenuItem
-            //
+            // 
             closeTabToolStripMenuItem.Name = "closeTabToolStripMenuItem";
             closeTabToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.W;
             closeTabToolStripMenuItem.Size = new Size(274, 26);
             closeTabToolStripMenuItem.Text = "Close Tab";
             closeTabToolStripMenuItem.Click += closeTabToolStripMenuItem_Click;
-            //
+            // 
             // duplicateTabToolStripMenuItem
-            //
+            // 
             duplicateTabToolStripMenuItem.Name = "duplicateTabToolStripMenuItem";
             duplicateTabToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.K;
             duplicateTabToolStripMenuItem.Size = new Size(274, 26);
             duplicateTabToolStripMenuItem.Text = "Duplicate Tab";
             duplicateTabToolStripMenuItem.Click += duplicateTabToolStripMenuItem_Click;
-            //
+            // 
             // SearchForm
-            //
+            // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1325, 695);
@@ -138,7 +138,7 @@
             Controls.Add(tabsMain);
             MainMenuStrip = menuStrip1;
             Name = "SearchForm";
-            Text = "Forager";
+            Text = "RangeFinder";
             Load += SearchForm_Load;
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();

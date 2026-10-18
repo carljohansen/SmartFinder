@@ -15,8 +15,12 @@ public class TextCriterionHistory
         MaxItems = maxItems;
     }
 
-    public void AddItem(string text)
+    public void AddItem(string? text)
     {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
         _items.Remove(text);
         _items.Insert(0, text);
         if (_items.Count > MaxItems)
