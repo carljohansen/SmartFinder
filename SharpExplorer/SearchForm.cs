@@ -1,4 +1,4 @@
-﻿using SharpExplorer.Domain;
+﻿using SharpExplorer.Domain.History;
 
 namespace SharpExplorer
 {
@@ -39,6 +39,11 @@ namespace SharpExplorer
 
             tabsMain.TabPages.Add(newTab);
             tabsMain.SelectedTab = newTab;
+
+            // HACK: this is my workaround for the bug where right-anchored combobox is not initially drawn.
+            this.Width += 1;
+            this.Width -= 1;
+
             return newTab;
         }
 

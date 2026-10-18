@@ -1,4 +1,5 @@
-﻿using SharpExplorer.Domain.TextSearch;
+﻿using SharpExplorer.Domain.History;
+using SharpExplorer.Domain.TextSearch;
 
 namespace SharpExplorer.Domain.Tests;
 

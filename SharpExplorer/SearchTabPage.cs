@@ -1,5 +1,5 @@
 ﻿using SharpExplorer;
-using SharpExplorer.Domain;
+using SharpExplorer.Domain.History;
 
 public class SearchTabPage : TabPage
 {

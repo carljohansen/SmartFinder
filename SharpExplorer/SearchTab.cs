@@ -1,6 +1,7 @@
 using SharpExplorer.Controls;
 using SharpExplorer.Domain;
 using SharpExplorer.Domain.FileType;
+using SharpExplorer.Domain.History;
 using SharpExplorer.Domain.TextSearch;
 using System.Collections.Specialized;
 using System.Data;
@@ -11,11 +12,12 @@ namespace SharpExplorer;
 public partial class SearchTab : UserControl
 {
     private readonly FileSearch _currentSearch;
-    private readonly TextCriterionHistory _baseDirHistory = new(15);
-    private readonly TextCriterionHistory _exclusionsHistory = new(15);
-    private readonly TextCriterionHistory _inclusionsHistory = new(15);
-    private readonly TextCriterionHistory _searchTextHistory = new(15);
+    private readonly TextCriterionHistory _baseDirHistory = new(15, UserSearchRepository.GetDtoFileName(nameof(_baseDirHistory)));
+    private readonly TextCriterionHistory _exclusionsHistory = new(15, UserSearchRepository.GetDtoFileName(nameof(_exclusionsHistory)));
+    private readonly TextCriterionHistory _inclusionsHistory = new(15, UserSearchRepository.GetDtoFileName(nameof(_inclusionsHistory)));
+    private readonly TextCriterionHistory _searchTextHistory = new(15, UserSearchRepository.GetDtoFileName(nameof(_searchTextHistory)));
 
+    private readonly TextCriterionHistory[] _histories;
     private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
 
     private int contextMenuRowIndex = -1;
@@ -28,6 +30,8 @@ public partial class SearchTab : UserControl
     {
         InitializeComponent();
 
+        _histories = [_baseDirHistory, _exclusionsHistory, _inclusionsHistory, _searchTextHistory];
+
         var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();
         var searchResultDataSource = new BindingSource(resultTable.DefaultView, null!);
         _currentSearch = new(resultTable, 50);
@@ -36,6 +40,11 @@ public partial class SearchTab : UserControl
         grdResult.DataSource = searchResultDataSource;
 
         _currentSearch.SearchProgressUpdate += HandleSearchStatusUpdate;
+
+        foreach (var historyList in _histories)
+        {
+            historyList.Initialize();
+        }
 
         if (initialSearchControlState != null)
         {
@@ -98,6 +107,8 @@ public partial class SearchTab : UserControl
         {
             cmbDateFilterAmountType.SelectedItem = dto.ModifiedInLastQuantityType;
         }
+
+        PopulateHistoryDropdowns(dto.EnableFileExclusion);
     }
 
     private FileDisplay? GetRowFileDisplay(int rowIndex)
@@ -152,22 +163,31 @@ public partial class SearchTab : UserControl
 
         UserSearchRepository.SaveLastSearchDto(searchDto);
         _baseDirHistory.AddItem(searchDto.BaseDirectoriesPattern);
-        cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
         _inclusionsHistory.AddItem(searchDto.RawIncludeFilesPattern);
-        cmbFilePattern.ApplyComboBoxHistory(_inclusionsHistory);
         _searchTextHistory.AddItem(searchDto.TextSearchPattern);
-        cmbContainingText.ApplyComboBoxHistory(_searchTextHistory);
         if (searchDto.EnableFileExclusion)
         {
             _exclusionsHistory.AddItem(searchDto.RawExcludeFilesPattern);
-            cmbExceptFilePattern.ApplyComboBoxHistory(_exclusionsHistory);
         }
+
+        PopulateHistoryDropdowns(searchDto.EnableFileExclusion);
 
         grdResult.FocusAfterSearch();
 
         btnSearch.Enabled = true;
         btnCancelSearch.Enabled = false;
         _parent.HideProgressBar();
+    }
+
+    private void PopulateHistoryDropdowns(bool updateExclusions)
+    {
+        cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
+        cmbFilePattern.ApplyComboBoxHistory(_inclusionsHistory);
+        cmbContainingText.ApplyComboBoxHistory(_searchTextHistory);
+        if (updateExclusions)
+        {
+            cmbExceptFilePattern.ApplyComboBoxHistory(_exclusionsHistory);
+        }
     }
 
     private void mnuCopyPath_Click(object sender, EventArgs e)
@@ -423,15 +443,7 @@ public partial class SearchTab : UserControl
                 newItem.Tag = match;
             }
         }
-    }
-
-    private void txtContainingText_Enter(object sender, EventArgs e)
-    {
-        if (sender is TextBox textBox)
-        {
-            textBox.SelectAll();
-        }
-    }
+    }  
 
     private void SearchTab_Load(object sender, EventArgs e)
     {

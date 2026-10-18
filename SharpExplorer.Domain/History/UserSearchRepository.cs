@@ -2,7 +2,7 @@ using SharpExplorer.Domain.TextSearch;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace SharpExplorer.Domain;
+namespace SharpExplorer.Domain.History;
 
 public static class UserSearchRepository
 {
@@ -25,7 +25,7 @@ public static class UserSearchRepository
         return storageDir;
     }
 
-    private static string GetDtoFileName(string name)
+    public static string GetDtoFileName(string name)
     {
         var path = Path.ChangeExtension(Path.Combine(GetStorageDirectory(), name), "json");
         return path;

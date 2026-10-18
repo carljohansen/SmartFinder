@@ -1,4 +1,4 @@
-﻿using SharpExplorer.Domain;
+﻿using SharpExplorer.Domain.History;
 
 namespace SharpExplorer.Controls;
 

@@ -1,6 +1,6 @@
 ﻿using SharpExplorer.Domain.TextSearch;
 
-namespace SharpExplorer.Domain;
+namespace SharpExplorer.Domain.History;
 
 public class UserSearchDto
 {

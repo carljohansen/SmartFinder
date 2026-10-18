@@ -104,7 +104,6 @@ namespace SharpExplorer
             cmbContainingText.Name = "cmbContainingText";
             cmbContainingText.Size = new Size(729, 28);
             cmbContainingText.TabIndex = 5;
-            cmbContainingText.Enter += txtContainingText_Enter;
             // 
             // mnuFileItemContext
             // 
