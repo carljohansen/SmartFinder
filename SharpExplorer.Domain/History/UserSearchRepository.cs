@@ -6,6 +6,14 @@ namespace SharpExplorer.Domain.History;
 
 public static class UserSearchRepository
 {
+    public static string BaseDirHistoryFileName => GetDtoFileName("baseDirHistory");
+
+    public static string ExclusionsHistoryFileName => GetDtoFileName("exclusionsHistory");
+
+    public static string InclusionsHistoryFileName => GetDtoFileName("inclusionsHistory");
+
+    public static string SearchTextHistoryFileName => GetDtoFileName("searchTextHistory");
+
     private static readonly JsonSerializerOptions SerializationOptions = new()
     {
         WriteIndented = false,
@@ -74,5 +82,25 @@ public static class UserSearchRepository
             FilterByModifiedDate = false,
             TextMatchingOptions = TextMatchingOptions.None
         };
+    }
+
+    public static void DeleteHistoryFiles()
+    {
+        var historyFiles = new[]
+        {
+            BaseDirHistoryFileName,
+            ExclusionsHistoryFileName,
+            InclusionsHistoryFileName,
+            SearchTextHistoryFileName,
+            GetDtoFileName("last")
+        };
+
+        foreach (var file in historyFiles)
+        {
+            if (File.Exists(file))
+            {
+                File.Delete(file);
+            }
+        }
     }
 }

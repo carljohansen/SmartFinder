@@ -34,8 +34,8 @@ namespace SharpExplorer
 
         private SearchTabPage AddNewTab(UserSearchDto? initialSearchSettings)
         {
-            var searchControl = CreateSearchTabControl(initialSearchSettings);
-            var newTab = new SearchTabPage(this, searchControl) { Text = $"Search {_newTabCounter++}" };
+            var searchControl = CreateSearchTabControl(initialSearchSettings, _newTabCounter++);
+            var newTab = new SearchTabPage(this, searchControl) { Text = $"Search {searchControl.Index}" };
 
             tabsMain.TabPages.Add(newTab);
             tabsMain.SelectedTab = newTab;
@@ -47,7 +47,7 @@ namespace SharpExplorer
             return newTab;
         }
 
-        private SearchTab CreateSearchTabControl(UserSearchDto? initialSearchControlState) => new(initialSearchControlState)
+        private SearchTab CreateSearchTabControl(UserSearchDto? initialSearchControlState, int index) => new(initialSearchControlState, index)
         {
             Dock = DockStyle.Fill
         };

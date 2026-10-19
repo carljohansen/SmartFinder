@@ -6,16 +6,20 @@ using SharpExplorer.Domain.TextSearch;
 using System.Collections.Specialized;
 using System.Data;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace SharpExplorer;
 
 public partial class SearchTab : UserControl
 {
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int Index { get; init; }
+
     private readonly FileSearch _currentSearch;
-    private readonly TextCriterionHistory _baseDirHistory = new(15, UserSearchRepository.GetDtoFileName(nameof(_baseDirHistory)));
-    private readonly TextCriterionHistory _exclusionsHistory = new(15, UserSearchRepository.GetDtoFileName(nameof(_exclusionsHistory)));
-    private readonly TextCriterionHistory _inclusionsHistory = new(15, UserSearchRepository.GetDtoFileName(nameof(_inclusionsHistory)));
-    private readonly TextCriterionHistory _searchTextHistory = new(15, UserSearchRepository.GetDtoFileName(nameof(_searchTextHistory)));
+    private readonly TextCriterionHistory _baseDirHistory = new(15, UserSearchRepository.BaseDirHistoryFileName);
+    private readonly TextCriterionHistory _exclusionsHistory = new(15, UserSearchRepository.ExclusionsHistoryFileName);
+    private readonly TextCriterionHistory _inclusionsHistory = new(15, UserSearchRepository.InclusionsHistoryFileName);
+    private readonly TextCriterionHistory _searchTextHistory = new(15, UserSearchRepository.SearchTextHistoryFileName);
 
     private readonly TextCriterionHistory[] _histories;
     private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
@@ -26,10 +30,11 @@ public partial class SearchTab : UserControl
 
     private SearchForm _parent;
 
-    public SearchTab(UserSearchDto? initialSearchControlState)
+    public SearchTab(UserSearchDto? initialSearchControlState, int index)
     {
         InitializeComponent();
 
+        Index = index;
         _histories = [_baseDirHistory, _exclusionsHistory, _inclusionsHistory, _searchTextHistory];
 
         var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();
@@ -184,10 +189,7 @@ public partial class SearchTab : UserControl
         cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
         cmbFilePattern.ApplyComboBoxHistory(_inclusionsHistory);
         cmbContainingText.ApplyComboBoxHistory(_searchTextHistory);
-        if (updateExclusions)
-        {
-            cmbExceptFilePattern.ApplyComboBoxHistory(_exclusionsHistory);
-        }
+        cmbExceptFilePattern.ApplyComboBoxHistory(_exclusionsHistory);
     }
 
     private void mnuCopyPath_Click(object sender, EventArgs e)
@@ -443,7 +445,7 @@ public partial class SearchTab : UserControl
                 newItem.Tag = match;
             }
         }
-    }  
+    }
 
     private void SearchTab_Load(object sender, EventArgs e)
     {
