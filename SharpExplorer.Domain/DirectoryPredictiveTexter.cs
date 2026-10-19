@@ -11,23 +11,28 @@ public static class DirectoryPredictiveTexter
         else
         {
             var possibleSplit = Path.GetDirectoryName(userPath);
-            var split2 = Path.GetFileName(userPath);
+            var userLeafDirName = Path.GetFileName(userPath);
 
             if (Directory.Exists(possibleSplit))
             {
                 var subdirs = GetSubdirectories(possibleSplit);
                 var result = new List<string>();
+                var fuzzyResult = new List<string>();
 
                 foreach (var subdir in subdirs)
                 {
-                    var terminalName = Path.GetFileName(subdir);
-                    if (terminalName.StartsWith(split2, StringComparison.OrdinalIgnoreCase))
+                    var subDirLeafName = Path.GetFileName(subdir);
+                    if (subDirLeafName.StartsWith(userLeafDirName, StringComparison.OrdinalIgnoreCase))
                     {
                         result.Add(subdir);
                     }
+                    else if (subDirLeafName.Contains(userLeafDirName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        fuzzyResult.Add(subdir);
+                    }
                 }
 
-                return [.. result];
+                return [.. result, .. fuzzyResult];
             }
         }
 
