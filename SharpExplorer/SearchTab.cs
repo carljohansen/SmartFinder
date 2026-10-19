@@ -25,6 +25,10 @@ public partial class SearchTab : UserControl
     private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
 
     private int contextMenuRowIndex = -1;
+
+    private readonly int _cmbExcludeFixedLeft, _cmbExcludeFixedRight, _chkEnableFixedRight;
+    private readonly int _cmbContainingTextFixedLeft, _cmbContainingTextFixedRight;
+    private readonly int _chkMatchCaseFixedRight, _chkMatchWholeWordFixedRight;
     private CancellationTokenSource? _searchCancellationTokenSource;
     private bool _isClosing = false;
 
@@ -36,6 +40,14 @@ public partial class SearchTab : UserControl
 
         Index = index;
         _histories = [_baseDirHistory, _exclusionsHistory, _inclusionsHistory, _searchTextHistory];
+
+        _chkEnableFixedRight = Width - chkEnableExclusions.Right;
+        _cmbExcludeFixedLeft = cmbExceptFilePattern.Left;
+        _cmbExcludeFixedRight = Width - cmbExceptFilePattern.Right;
+        _cmbContainingTextFixedLeft = cmbContainingText.Left;
+        _cmbContainingTextFixedRight = Width - cmbContainingText.Right;
+        _chkMatchCaseFixedRight = Width - chkMatchCase.Right;
+        _chkMatchWholeWordFixedRight = Width - chkMatchWholeWord.Right;
 
         var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();
         var searchResultDataSource = new BindingSource(resultTable.DefaultView, null!);
@@ -753,5 +765,22 @@ public partial class SearchTab : UserControl
     private void grdResult_MouseLeave(object sender, EventArgs e)
     {
         grdResult.ShowCellToolTips = false;
+    }
+
+    private void AnchorByHand()
+    {
+        // HACK: this is my workaround for the bug where right-anchored combobox is not initially drawn.
+        cmbExceptFilePattern.Width = this.Width - (_cmbExcludeFixedLeft + _cmbExcludeFixedRight);
+        cmbExceptFilePattern.Left = _cmbExcludeFixedLeft;
+        chkEnableExclusions.Left = this.Width - (_chkEnableFixedRight + chkEnableExclusions.Width);
+        cmbContainingText.Width = this.Width - (_cmbContainingTextFixedLeft + _cmbContainingTextFixedRight);
+        cmbContainingText.Left = _cmbContainingTextFixedLeft;
+        chkMatchCase.Left = this.Width - (_chkMatchCaseFixedRight + chkMatchCase.Width);
+        chkMatchWholeWord.Left = this.Width - (_chkMatchWholeWordFixedRight + chkMatchWholeWord.Width);
+    }
+
+    private void SearchTab_Resize(object sender, EventArgs e)
+    {
+        AnchorByHand();
     }
 }

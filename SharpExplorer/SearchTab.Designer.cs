@@ -31,7 +31,7 @@ namespace SharpExplorer
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             btnSearch = new Button();
             cmbFilePattern = new ComboBox();
             cmbContainingText = new ComboBox();
@@ -99,7 +99,7 @@ namespace SharpExplorer
             // 
             // cmbContainingText
             // 
-            cmbContainingText.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbContainingText.Anchor = AnchorStyles.Top;
             cmbContainingText.Location = new Point(123, 96);
             cmbContainingText.Name = "cmbContainingText";
             cmbContainingText.Size = new Size(729, 28);
@@ -172,7 +172,7 @@ namespace SharpExplorer
             // 
             // chkMatchCase
             // 
-            chkMatchCase.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            chkMatchCase.Anchor = AnchorStyles.Top;
             chkMatchCase.AutoSize = true;
             chkMatchCase.Location = new Point(864, 86);
             chkMatchCase.Name = "chkMatchCase";
@@ -183,7 +183,7 @@ namespace SharpExplorer
             // 
             // chkMatchWholeWord
             // 
-            chkMatchWholeWord.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            chkMatchWholeWord.Anchor = AnchorStyles.Top;
             chkMatchWholeWord.AutoSize = true;
             chkMatchWholeWord.Location = new Point(864, 112);
             chkMatchWholeWord.Name = "chkMatchWholeWord";
@@ -310,8 +310,8 @@ namespace SharpExplorer
             // 
             colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             colSize.DataPropertyName = "SizeDisplay";
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleRight;
-            colSize.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
+            colSize.DefaultCellStyle = dataGridViewCellStyle1;
             colSize.HeaderText = "Size";
             colSize.MinimumWidth = 6;
             colSize.Name = "colSize";
@@ -367,7 +367,7 @@ namespace SharpExplorer
             // 
             // cmbExceptFilePattern
             // 
-            cmbExceptFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbExceptFilePattern.Anchor = AnchorStyles.Top;
             cmbExceptFilePattern.FormattingEnabled = true;
             cmbExceptFilePattern.Location = new Point(123, 48);
             cmbExceptFilePattern.Name = "cmbExceptFilePattern";
@@ -377,7 +377,7 @@ namespace SharpExplorer
             // 
             // chkEnableExclusions
             // 
-            chkEnableExclusions.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            chkEnableExclusions.Anchor = AnchorStyles.Top;
             chkEnableExclusions.AutoSize = true;
             chkEnableExclusions.Location = new Point(901, 50);
             chkEnableExclusions.Name = "chkEnableExclusions";
@@ -477,6 +477,7 @@ namespace SharpExplorer
             Name = "SearchTab";
             Size = new Size(1008, 517);
             Load += SearchTab_Load;
+            Resize += SearchTab_Resize;
             mnuFileItemContext.ResumeLayout(false);
             spltResultPanel.Panel1.ResumeLayout(false);
             spltResultPanel.Panel2.ResumeLayout(false);

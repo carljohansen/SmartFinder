@@ -40,10 +40,6 @@ namespace SharpExplorer
             tabsMain.TabPages.Add(newTab);
             tabsMain.SelectedTab = newTab;
 
-            // HACK: this is my workaround for the bug where right-anchored combobox is not initially drawn.
-            this.Width += 1;
-            this.Width -= 1;
-
             return newTab;
         }
 
@@ -71,9 +67,6 @@ namespace SharpExplorer
         {
             var lastSearch = UserSearchRepository.GetLastSearchDto();
             _ = AddNewTab(lastSearch);
-            // HACK: this is my workaround for the bug where right-anchored combobox is not initially drawn.
-            this.Width += 1;
-            this.Width -= 1;
         }
 
         private void duplicateTabToolStripMenuItem_Click(object sender, EventArgs e)
