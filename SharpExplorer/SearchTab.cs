@@ -159,12 +159,23 @@ public partial class SearchTab : UserControl
             return;
         }
         SetStatusText(e.StatusMessage);
-        _parent.SetProgress(e.ProgressPercentage);
+        SetProgress(e.ProgressPercentage);
     }
 
     private void SetStatusText(string text)
     {
-        _parent.SetStatusText(text);
+        lblTabStatus.Text = text;
+    }
+
+    public void SetProgress(int progressPercentage)
+    {
+        TabProgressBar.Visible = true;
+        TabProgressBar.Value = Math.Min(Math.Max(progressPercentage, 0), 100);
+    }
+
+    public void HideProgressBar()
+    {
+        TabProgressBar.Visible = false;
     }
 
     private void ClearStatusText() => SetStatusText("");
@@ -176,7 +187,7 @@ public partial class SearchTab : UserControl
         btnCancelSearch.Enabled = true;
         cmbExceptFilePattern.DroppedDown = false;
         cmbRootDir.DroppedDown = false;
-        _parent.SetProgress(0);
+        SetProgress(0);
         lstTextMatches.Items.Clear();
         contextMenuRowIndex = -1;
         _searchCancellationTokenSource = new CancellationTokenSource();
@@ -212,7 +223,7 @@ public partial class SearchTab : UserControl
 
         btnSearch.Enabled = true;
         btnCancelSearch.Enabled = false;
-        _parent.HideProgressBar();
+        HideProgressBar();
     }
 
     private void PopulateHistoryDropdowns(bool updateExclusions)
@@ -655,6 +666,8 @@ public partial class SearchTab : UserControl
         _searchCancellationTokenSource?.Cancel();
         _searchCancellationTokenSource?.Dispose();
         _searchCancellationTokenSource = null;
+        ClearStatusText();
+        HideProgressBar();
     }
 
     private void cmbRootDir_TextUpdate(object sender, EventArgs e)

@@ -69,6 +69,9 @@ namespace SharpExplorer
             cmbDateFilterAmountType = new ComboBox();
             cmbRootDir = new PredictiveComboBox();
             chkShowHidden = new CheckBox();
+            statusStrip1 = new StatusStrip();
+            TabProgressBar = new ToolStripProgressBar();
+            lblTabStatus = new ToolStripStatusLabel();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -76,6 +79,7 @@ namespace SharpExplorer
             spltResultPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)grdResult).BeginInit();
             mnuTextMatchContext.SuspendLayout();
+            statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // btnSearch
@@ -240,7 +244,7 @@ namespace SharpExplorer
             // spltResultPanel.Panel2
             // 
             spltResultPanel.Panel2.Controls.Add(lstTextMatches);
-            spltResultPanel.Size = new Size(874, 218);
+            spltResultPanel.Size = new Size(874, 196);
             spltResultPanel.SplitterDistance = 621;
             spltResultPanel.TabIndex = 101;
             // 
@@ -262,7 +266,7 @@ namespace SharpExplorer
             grdResult.RowHeadersWidth = 51;
             grdResult.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             grdResult.ShowCellToolTips = false;
-            grdResult.Size = new Size(621, 218);
+            grdResult.Size = new Size(621, 196);
             grdResult.TabIndex = 100;
             grdResult.CellContextMenuStripNeeded += grdResult_CellContextMenuStripNeeded;
             grdResult.CellMouseDoubleClick += grdResult_CellMouseDoubleClick;
@@ -343,7 +347,7 @@ namespace SharpExplorer
             lstTextMatches.Margin = new Padding(3, 2, 3, 2);
             lstTextMatches.Name = "lstTextMatches";
             lstTextMatches.OwnerDraw = true;
-            lstTextMatches.Size = new Size(249, 218);
+            lstTextMatches.Size = new Size(249, 196);
             lstTextMatches.TabIndex = 102;
             lstTextMatches.UseCompatibleStateImageBehavior = false;
             lstTextMatches.View = View.Details;
@@ -465,10 +469,33 @@ namespace SharpExplorer
             chkShowHidden.Text = "Hidden Items";
             chkShowHidden.UseVisualStyleBackColor = true;
             // 
+            // statusStrip1
+            // 
+            statusStrip1.AutoSize = false;
+            statusStrip1.Items.AddRange(new ToolStripItem[] { TabProgressBar, lblTabStatus });
+            statusStrip1.Location = new Point(0, 366);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(884, 22);
+            statusStrip1.SizingGrip = false;
+            statusStrip1.TabIndex = 105;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // TabProgressBar
+            // 
+            TabProgressBar.Name = "TabProgressBar";
+            TabProgressBar.Size = new Size(100, 16);
+            TabProgressBar.Visible = false;
+            // 
+            // lblTabStatus
+            // 
+            lblTabStatus.Name = "lblTabStatus";
+            lblTabStatus.Size = new Size(0, 17);
+            // 
             // SearchTab
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(statusStrip1);
             Controls.Add(chkShowHidden);
             Controls.Add(cmbRootDir);
             Controls.Add(cmbExceptFilePattern);
@@ -499,6 +526,8 @@ namespace SharpExplorer
             spltResultPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)grdResult).EndInit();
             mnuTextMatchContext.ResumeLayout(false);
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -542,5 +571,8 @@ namespace SharpExplorer
         private DataGridViewTextBoxColumn colFileType;
         private DataGridViewTextBoxColumn colSize;
         private DataGridViewTextBoxColumn colLastModified;
+        private StatusStrip statusStrip1;
+        private ToolStripProgressBar TabProgressBar;
+        private ToolStripStatusLabel lblTabStatus;
     }
 }

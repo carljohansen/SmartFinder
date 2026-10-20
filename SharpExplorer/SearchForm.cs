@@ -11,22 +11,6 @@ public partial class SearchForm : Form
         InitializeComponent();
     }
 
-    public void SetStatusText(string? text)
-    {
-        lblFormStatusMessage.Text = text;
-    }
-
-    public void SetProgress(int progressPercentage)
-    {
-        MainProgressBar.Visible = true;
-        MainProgressBar.Value = Math.Min(Math.Max(progressPercentage, 0), 100);
-    }
-
-    public void HideProgressBar()
-    {
-        MainProgressBar.Visible = false;
-    }
-
     private void mnuNewSearchTab_Click(object sender, EventArgs e)
     {
         AddNewTab(UserSearchDto.Default);

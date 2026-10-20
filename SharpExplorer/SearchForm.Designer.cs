@@ -29,9 +29,6 @@
         private void InitializeComponent()
         {
             tabsMain = new TabControl();
-            statusStrip1 = new StatusStrip();
-            MainProgressBar = new ToolStripProgressBar();
-            lblFormStatusMessage = new ToolStripStatusLabel();
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             mnuQuit = new ToolStripMenuItem();
@@ -40,45 +37,21 @@
             mnuNewSearchTab = new ToolStripMenuItem();
             closeTabToolStripMenuItem = new ToolStripMenuItem();
             duplicateTabToolStripMenuItem = new ToolStripMenuItem();
-            statusStrip1.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
-            //
+            // 
             // tabsMain
-            //
-            tabsMain.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tabsMain.Location = new Point(4, 25);
+            // 
+            tabsMain.Dock = DockStyle.Bottom;
+            tabsMain.Location = new Point(0, 26);
             tabsMain.Margin = new Padding(3, 2, 3, 2);
             tabsMain.Name = "tabsMain";
             tabsMain.SelectedIndex = 0;
-            tabsMain.Size = new Size(1150, 472);
+            tabsMain.Size = new Size(1159, 495);
             tabsMain.TabIndex = 0;
-            //
-            // statusStrip1
-            //
-            statusStrip1.ImageScalingSize = new Size(20, 20);
-            statusStrip1.Items.AddRange(new ToolStripItem[] { MainProgressBar, lblFormStatusMessage });
-            statusStrip1.Location = new Point(0, 499);
-            statusStrip1.Name = "statusStrip1";
-            statusStrip1.Padding = new Padding(1, 0, 12, 0);
-            statusStrip1.Size = new Size(1159, 22);
-            statusStrip1.TabIndex = 1;
-            statusStrip1.Text = "statusStrip1";
-            //
-            // MainProgressBar
-            //
-            MainProgressBar.Margin = new Padding(11, 4, 1, 4);
-            MainProgressBar.Name = "MainProgressBar";
-            MainProgressBar.Size = new Size(88, 14);
-            MainProgressBar.Visible = false;
-            //
-            // lblFormStatusMessage
-            //
-            lblFormStatusMessage.Name = "lblFormStatusMessage";
-            lblFormStatusMessage.Size = new Size(0, 17);
-            //
+            // 
             // menuStrip1
-            //
+            // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
             menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, searchToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
@@ -87,65 +60,64 @@
             menuStrip1.Size = new Size(1159, 24);
             menuStrip1.TabIndex = 2;
             menuStrip1.Text = "menuStrip1";
-            //
+            // 
             // fileToolStripMenuItem
-            //
+            // 
             fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuQuit, mnuClearSearchHistory });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "File";
-            //
+            // 
             // mnuQuit
-            //
+            // 
             mnuQuit.Name = "mnuQuit";
             mnuQuit.Size = new Size(180, 22);
             mnuQuit.Text = "E&xit";
             mnuQuit.Click += mnuQuit_Click;
-            //
+            // 
             // mnuClearSearchHistory
-            //
+            // 
             mnuClearSearchHistory.Name = "mnuClearSearchHistory";
             mnuClearSearchHistory.Size = new Size(180, 22);
             mnuClearSearchHistory.Text = "Clear Search &History";
             mnuClearSearchHistory.Click += mnuClearSearchHistory_Click;
-            //
+            // 
             // searchToolStripMenuItem
-            //
+            // 
             searchToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuNewSearchTab, closeTabToolStripMenuItem, duplicateTabToolStripMenuItem });
             searchToolStripMenuItem.Name = "searchToolStripMenuItem";
             searchToolStripMenuItem.Size = new Size(54, 20);
             searchToolStripMenuItem.Text = "Search";
-            //
+            // 
             // mnuNewSearchTab
-            //
+            // 
             mnuNewSearchTab.Name = "mnuNewSearchTab";
             mnuNewSearchTab.ShortcutKeys = Keys.Control | Keys.T;
             mnuNewSearchTab.Size = new Size(219, 22);
             mnuNewSearchTab.Text = "New Tab";
             mnuNewSearchTab.Click += mnuNewSearchTab_Click;
-            //
+            // 
             // closeTabToolStripMenuItem
-            //
+            // 
             closeTabToolStripMenuItem.Name = "closeTabToolStripMenuItem";
             closeTabToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.W;
             closeTabToolStripMenuItem.Size = new Size(219, 22);
             closeTabToolStripMenuItem.Text = "Close Tab";
             closeTabToolStripMenuItem.Click += closeTabToolStripMenuItem_Click;
-            //
+            // 
             // duplicateTabToolStripMenuItem
-            //
+            // 
             duplicateTabToolStripMenuItem.Name = "duplicateTabToolStripMenuItem";
             duplicateTabToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.K;
             duplicateTabToolStripMenuItem.Size = new Size(219, 22);
             duplicateTabToolStripMenuItem.Text = "Duplicate Tab";
             duplicateTabToolStripMenuItem.Click += duplicateTabToolStripMenuItem_Click;
-            //
+            // 
             // SearchForm
-            //
+            // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1159, 521);
-            Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
             Controls.Add(tabsMain);
             MainMenuStrip = menuStrip1;
@@ -153,8 +125,6 @@
             Name = "SearchForm";
             Text = "RangeFinder";
             Load += SearchForm_Load;
-            statusStrip1.ResumeLayout(false);
-            statusStrip1.PerformLayout();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);
@@ -164,9 +134,6 @@
         #endregion
 
         private TabControl tabsMain;
-        private StatusStrip statusStrip1;
-        private ToolStripStatusLabel lblFormStatusMessage;
-        private ToolStripProgressBar MainProgressBar;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem mnuQuit;

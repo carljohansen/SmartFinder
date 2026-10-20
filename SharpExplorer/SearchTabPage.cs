@@ -22,17 +22,13 @@ public class SearchTabPage : TabPage
 
     public void ClearHistory() => _searchTab.ClearHistory();
 
-    public void SetStatusText(string text) => _parentForm.SetStatusText(text);
-
-    public void SetProgress(int progressPercentage) => _parentForm.SetProgress(progressPercentage);
+    public void SetProgress(int progressPercentage) => SetProgress(progressPercentage);
 
     public void SetParentTabTitle(string title) => this.Text = title;
 
     public void CancelSearch()
     {
         _searchTab.CancelSearch();
-        _parentForm.HideProgressBar();
-        _parentForm.SetStatusText(null);
     }
 
     public void InitialFocus() => _searchTab.InitialFocus();
