@@ -27,6 +27,7 @@ public partial class SearchTab : UserControl
     private int contextMenuRowIndex = -1;
 
     private bool _anchorByHandInitialized = false;
+    private bool _readyToInitializeAnchorByHand = false;
     private int _cmbExcludeFixedLeft, _cmbExcludeFixedRight, _chkEnableFixedRight;
     private int _cmbContainingTextFixedLeft, _cmbContainingTextFixedRight;
     private int _chkMatchCaseFixedRight;
@@ -39,10 +40,11 @@ public partial class SearchTab : UserControl
     {
         InitializeComponent();
 
+        _readyToInitializeAnchorByHand = true;
+        AnchorByHand();
+
         Index = initialSearchControlState.Id;
         _histories = [_baseDirHistory, _exclusionsHistory, _inclusionsHistory, _searchTextHistory];
-
-       // EnsureAnchorByHandInitialized();
 
         var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();
         var searchResultDataSource = new BindingSource(resultTable.DefaultView, null!);
@@ -496,6 +498,8 @@ public partial class SearchTab : UserControl
 
         ResizeResultsGrid();
 
+        AnchorByHand();
+
         cmbFilePattern.Select();
     }
 
@@ -524,6 +528,8 @@ public partial class SearchTab : UserControl
                 SetInputFont(childControl);
             }
         }
+
+        _readyToInitializeAnchorByHand = true;
     }
 
     private void grdResult_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
@@ -786,6 +792,11 @@ public partial class SearchTab : UserControl
 
     private void AnchorByHand()
     {
+        if (!_readyToInitializeAnchorByHand)
+        {
+            return;
+        }
+
         // HACK: this is my workaround for the bug where right-anchored combobox is not initially drawn.
         EnsureAnchorByHandInitialized();
 
@@ -800,18 +811,16 @@ public partial class SearchTab : UserControl
 
     private void EnsureAnchorByHandInitialized()
     {
-        // Look for these lines:
-        // Name = "SearchTab";
-        // Size = new Size(882, 388);
-        const int thisWidth = 900;
-        if (!_anchorByHandInitialized)
+        if (_readyToInitializeAnchorByHand
+            && !_anchorByHandInitialized)
         {
+            var thisWidth = this.Width;
             _cmbExcludeFixedLeft = cmbExceptFilePattern.Left;
-            _cmbExcludeFixedRight = thisWidth - (cmbExceptFilePattern.Left + cmbExceptFilePattern.Width);
-            _chkEnableFixedRight = thisWidth - (chkEnableExclusions.Left + chkEnableExclusions.Width);
+            _cmbExcludeFixedRight = thisWidth - (cmbExceptFilePattern.Right);
+            _chkEnableFixedRight = thisWidth - (chkEnableExclusions.Right);
             _cmbContainingTextFixedLeft = cmbContainingText.Left;
-            _cmbContainingTextFixedRight = thisWidth - (cmbContainingText.Left + cmbContainingText.Width);
-            _chkMatchCaseFixedRight = thisWidth - (chkMatchCase.Left + chkMatchCase.Width);
+            _cmbContainingTextFixedRight = thisWidth - (cmbContainingText.Right);
+            _chkMatchCaseFixedRight = thisWidth - (chkMatchCase.Right);
             _anchorByHandInitialized = true;
         }
     }
