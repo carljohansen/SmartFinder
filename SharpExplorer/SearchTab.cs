@@ -498,8 +498,6 @@ public partial class SearchTab : UserControl
 
         ResizeResultsGrid();
 
-        AnchorByHand();
-
         cmbFilePattern.Select();
     }
 
