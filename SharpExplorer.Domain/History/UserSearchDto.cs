@@ -20,6 +20,8 @@ public class UserSearchDto
         return EnableFileExclusion ? RawExcludeFilesPattern ?? "" : "";
     }
 
+    public int Id { get; set; }
+
     public string? TextSearchPattern { get; set; }
 
     public TextMatchingOptions TextMatchingOptions { get; set; } = TextMatchingOptions.None;

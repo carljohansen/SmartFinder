@@ -17,7 +17,7 @@ public class TextCriterionHistory
     public TextCriterionHistory(int maxItems, string? fileName)
     {
         MaxItems = maxItems;
-        _fileName = fileName;    
+        _fileName = fileName;
     }
 
     public void Initialize()
@@ -26,6 +26,11 @@ public class TextCriterionHistory
         {
             EnsureRefreshed();
         }
+    }
+
+    public void Clear()
+    {
+        _items.Clear();
     }
 
     private bool HasBackingFile() => _fileName != null && File.Exists(_fileName);

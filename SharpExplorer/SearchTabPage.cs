@@ -16,7 +16,11 @@ public class SearchTabPage : TabPage
         _searchTab.Height = this.Height;
     }
 
+    public int Index => _searchTab.Index;
+
     public UserSearchDto GetCurrentSearchSettings() => _searchTab.GetCurrentSettings();
+
+    public void ClearHistory() => _searchTab.ClearHistory();
 
     public void SetStatusText(string text) => _parentForm.SetStatusText(text);
 
@@ -30,4 +34,6 @@ public class SearchTabPage : TabPage
         _parentForm.HideProgressBar();
         _parentForm.SetStatusText(null);
     }
+
+    public void InitialFocus() => _searchTab.InitialFocus();
 }

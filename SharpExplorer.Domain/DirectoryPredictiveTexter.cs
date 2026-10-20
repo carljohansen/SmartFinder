@@ -4,7 +4,7 @@ public static class DirectoryPredictiveTexter
 {
     public static string[] GetPossibleContinuations(string userPath)
     {
-        if (Directory.Exists(userPath))
+        if (Directory.Exists(userPath) && userPath.EndsWith(Path.DirectorySeparatorChar))
         {
             return GetSubdirectories(userPath);
         }

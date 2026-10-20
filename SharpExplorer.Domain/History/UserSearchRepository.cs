@@ -50,9 +50,34 @@ public static class UserSearchRepository
         File.WriteAllText(fileName, jsonString);
     }
 
-    public static void SaveLastSearchDto(UserSearchDto dto)
+    public static void SaveSearchDto(UserSearchDto dto)
     {
-        SaveSearchDto(dto, "last");
+        SaveSearchDto(dto, $"tab_{dto.Id}");
+    }
+
+    public static void DeleteSearchDto(int index)
+    {
+        var fileName = GetDtoFileName($"tab_{index}");
+        if (File.Exists(fileName))
+        {
+            File.Delete(fileName);
+        }
+    }
+
+    public static UserSearchDto[] LoadSavedSearches()
+    {
+        var storageDir = GetStorageDirectory();
+        var searchFiles = Directory.GetFiles(storageDir, "tab_*.json");
+        var savedSearches = new List<UserSearchDto>();
+        foreach (var fileName in searchFiles)
+        {
+            var dto = GetSearchDto(fileName);
+            if (dto != null)
+            {
+                savedSearches.Add(dto);
+            }
+        }
+        return [.. savedSearches];
     }
 
     public static UserSearchDto? GetSearchDto(string name)

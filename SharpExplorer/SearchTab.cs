@@ -26,28 +26,23 @@ public partial class SearchTab : UserControl
 
     private int contextMenuRowIndex = -1;
 
-    private readonly int _cmbExcludeFixedLeft, _cmbExcludeFixedRight, _chkEnableFixedRight;
-    private readonly int _cmbContainingTextFixedLeft, _cmbContainingTextFixedRight;
-    private readonly int _chkMatchCaseFixedRight, _chkMatchWholeWordFixedRight;
+    private bool _anchorByHandInitialized = false;
+    private int _cmbExcludeFixedLeft, _cmbExcludeFixedRight, _chkEnableFixedRight;
+    private int _cmbContainingTextFixedLeft, _cmbContainingTextFixedRight;
+    private int _chkMatchCaseFixedRight;
     private CancellationTokenSource? _searchCancellationTokenSource;
     private bool _isClosing = false;
 
     private SearchForm _parent;
 
-    public SearchTab(UserSearchDto? initialSearchControlState, int index)
+    public SearchTab(UserSearchDto initialSearchControlState)
     {
         InitializeComponent();
 
-        Index = index;
+        Index = initialSearchControlState.Id;
         _histories = [_baseDirHistory, _exclusionsHistory, _inclusionsHistory, _searchTextHistory];
 
-        _chkEnableFixedRight = Width - chkEnableExclusions.Right;
-        _cmbExcludeFixedLeft = cmbExceptFilePattern.Left;
-        _cmbExcludeFixedRight = Width - cmbExceptFilePattern.Right;
-        _cmbContainingTextFixedLeft = cmbContainingText.Left;
-        _cmbContainingTextFixedRight = Width - cmbContainingText.Right;
-        _chkMatchCaseFixedRight = Width - chkMatchCase.Right;
-        _chkMatchWholeWordFixedRight = Width - chkMatchWholeWord.Right;
+       // EnsureAnchorByHandInitialized();
 
         var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();
         var searchResultDataSource = new BindingSource(resultTable.DefaultView, null!);
@@ -67,6 +62,26 @@ public partial class SearchTab : UserControl
         {
             ApplyUserSearchDto(initialSearchControlState);
         }
+    }
+
+    public void InitialFocus()
+    {
+        cmbFilePattern.Focus();
+        cmbContainingText.SelectionLength = 0;
+        cmbExceptFilePattern.SelectionLength = 0;
+    }
+
+    public void ClearHistory()
+    {
+        foreach (var historyList in _histories)
+        {
+            historyList.Clear();
+        }
+
+        cmbFilePattern.Items.Clear();
+        cmbExceptFilePattern.Items.Clear();
+        cmbRootDir.Items.Clear();
+        cmbContainingText.Items.Clear();
     }
 
     public UserSearchDto GetCurrentSettings()
@@ -95,6 +110,7 @@ public partial class SearchTab : UserControl
 
         return new UserSearchDto
         {
+            Id = Index,
             RawIncludeFilesPattern = searchPatterns,
             RawExcludeFilesPattern = exceptSearchPatterns,
             TextSearchPattern = query,
@@ -113,6 +129,7 @@ public partial class SearchTab : UserControl
         cmbFilePattern.Text = dto.RawIncludeFilesPattern ?? "";
         cmbExceptFilePattern.Text = dto.RawExcludeFilesPattern ?? "";
         cmbContainingText.Text = dto.TextSearchPattern ?? "";
+        cmbContainingText.SelectionLength = 0;
         cmbRootDir.Text = dto.BaseDirectoriesPattern ?? "";
         chkEnableExclusions.Checked = dto.EnableFileExclusion;
         chkShowHidden.Checked = dto.ShowHiddenItems;
@@ -178,7 +195,7 @@ public partial class SearchTab : UserControl
             SetStatusText("Invalid search criteria");
         }
 
-        UserSearchRepository.SaveLastSearchDto(searchDto);
+        UserSearchRepository.SaveSearchDto(searchDto);
         _baseDirHistory.AddItem(searchDto.BaseDirectoriesPattern);
         _inclusionsHistory.AddItem(searchDto.RawIncludeFilesPattern);
         _searchTextHistory.AddItem(searchDto.TextSearchPattern);
@@ -770,13 +787,33 @@ public partial class SearchTab : UserControl
     private void AnchorByHand()
     {
         // HACK: this is my workaround for the bug where right-anchored combobox is not initially drawn.
+        EnsureAnchorByHandInitialized();
+
         cmbExceptFilePattern.Width = this.Width - (_cmbExcludeFixedLeft + _cmbExcludeFixedRight);
         cmbExceptFilePattern.Left = _cmbExcludeFixedLeft;
         chkEnableExclusions.Left = this.Width - (_chkEnableFixedRight + chkEnableExclusions.Width);
         cmbContainingText.Width = this.Width - (_cmbContainingTextFixedLeft + _cmbContainingTextFixedRight);
         cmbContainingText.Left = _cmbContainingTextFixedLeft;
         chkMatchCase.Left = this.Width - (_chkMatchCaseFixedRight + chkMatchCase.Width);
-        chkMatchWholeWord.Left = this.Width - (_chkMatchWholeWordFixedRight + chkMatchWholeWord.Width);
+        chkMatchWholeWord.Left = chkMatchCase.Left;
+    }
+
+    private void EnsureAnchorByHandInitialized()
+    {
+        // Look for these lines:
+        // Name = "SearchTab";
+        // Size = new Size(882, 388);
+        const int thisWidth = 900;
+        if (!_anchorByHandInitialized)
+        {
+            _cmbExcludeFixedLeft = cmbExceptFilePattern.Left;
+            _cmbExcludeFixedRight = thisWidth - (cmbExceptFilePattern.Left + cmbExceptFilePattern.Width);
+            _chkEnableFixedRight = thisWidth - (chkEnableExclusions.Left + chkEnableExclusions.Width);
+            _cmbContainingTextFixedLeft = cmbContainingText.Left;
+            _cmbContainingTextFixedRight = thisWidth - (cmbContainingText.Left + cmbContainingText.Width);
+            _chkMatchCaseFixedRight = thisWidth - (chkMatchCase.Left + chkMatchCase.Width);
+            _anchorByHandInitialized = true;
+        }
     }
 
     private void SearchTab_Resize(object sender, EventArgs e)
