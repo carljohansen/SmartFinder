@@ -16,21 +16,23 @@ public partial class SearchForm : Form
 
     private void mnuNewSearchTab_Click(object sender, EventArgs e)
     {
-        AddNewTab(UserSearchDto.Default);
+        AddNewTab(UserTabState.Default);
     }
 
-    private SearchTabPage AddNewTab(UserSearchDto initialSearchSettings)
+    private SearchTabPage AddNewTab(UserTabState initialState)
     {
-        if (initialSearchSettings.Id == 0)
+        if (initialState.SearchDto.Id == 0)
         {
-            initialSearchSettings.Id = _nextTabId++;
+            initialState.SearchDto.Id = _nextTabId++;
         }
         else
         {
-            _nextTabId = Math.Max(_nextTabId, initialSearchSettings.Id + 1);
+            _nextTabId = Math.Max(_nextTabId, initialState.SearchDto.Id + 1);
         }
-        var searchControl = CreateSearchTabControl(initialSearchSettings);
-        var newTab = new SearchTabPage(this, searchControl, initialSearchSettings.GetDisplayTitle());
+
+
+        var searchControl = CreateSearchTabControl(initialState);
+        var newTab = new SearchTabPage(this, searchControl, initialState.SearchDto.GetDisplayTitle());
 
         tabsMain.TabPages.Add(newTab);
         tabsMain.SelectedTab = newTab;
@@ -39,7 +41,7 @@ public partial class SearchForm : Form
         return newTab;
     }
 
-    private static SearchTab CreateSearchTabControl(UserSearchDto? initialSearchControlState) => new(initialSearchControlState)
+    private static SearchTab CreateSearchTabControl(UserTabState initialState) => new(initialState)
     {
         Dock = DockStyle.Fill
     };
@@ -67,13 +69,13 @@ public partial class SearchForm : Form
         {
             foreach (var savedTab in savedTabs)
             {
-                _ = AddNewTab(savedTab);
+                _ = AddNewTab(new(savedTab, UserTabSettings.Default));
             }
             tabsMain.SelectedIndex = 0;
         }
         else
         {
-            _ = AddNewTab(UserSearchDto.Default);
+            _ = AddNewTab(UserTabState.Default);
         }
     }
 
@@ -104,7 +106,7 @@ public partial class SearchForm : Form
         var currentTabSearchSettings = currentTab?.GetCurrentSearchSettings();
         if (currentTabSearchSettings != null)
         {
-            currentTabSearchSettings.Id = 0; // Reset ID for the new tab
+            currentTabSearchSettings.SearchDto.Id = 0; // Reset ID for the new tab
             AddNewTab(currentTabSearchSettings);
         }
     }

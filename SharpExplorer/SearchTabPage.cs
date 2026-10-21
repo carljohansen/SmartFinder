@@ -88,7 +88,7 @@ public class SearchTabPage : TabPage
 
     public int Index => _searchTab.Index;
 
-    public UserSearchDto GetCurrentSearchSettings() => _searchTab.GetCurrentSettings();
+    public UserTabState GetCurrentSearchSettings() => _searchTab.GetCurrentSettings();
 
     public void ClearHistory() => _searchTab.ClearHistory();
 

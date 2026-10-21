@@ -38,14 +38,14 @@ public partial class SearchTab : UserControl
 
     private SearchForm _parent;
 
-    public SearchTab(UserSearchDto initialSearchControlState)
+    public SearchTab(UserTabState initialState)
     {
         InitializeComponent();
 
         _readyToInitializeAnchorByHand = true;
         AnchorByHand();
 
-        Index = initialSearchControlState.Id;
+        Index = initialState.SearchDto.Id;
         _histories = [_baseDirHistory, _exclusionsHistory, _inclusionsHistory, _searchTextHistory];
 
         var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();
@@ -62,10 +62,8 @@ public partial class SearchTab : UserControl
             historyList.Initialize();
         }
 
-        if (initialSearchControlState != null)
-        {
-            ApplyUserSearchDto(initialSearchControlState);
-        }
+        ApplyUserSearchDto(initialState.SearchDto);
+        searchResultDataSource.Sort = initialState.TabSettings.ResultSortOrder;
     }
 
     public void InitialFocus()
@@ -88,7 +86,7 @@ public partial class SearchTab : UserControl
         cmbContainingText.Items.Clear();
     }
 
-    public UserSearchDto GetCurrentSettings()
+    public UserTabState GetCurrentSettings()
     {
         var searchPatterns = cmbFilePattern.Text.Trim();
         var exceptSearchPatterns = cmbExceptFilePattern.Text.Trim();
@@ -112,7 +110,7 @@ public partial class SearchTab : UserControl
             userSearchDateFilterQty = dateFilterQty;
         }
 
-        return new UserSearchDto
+        var searchDto = new UserSearchDto
         {
             Id = Index,
             RawIncludeFilesPattern = searchPatterns,
@@ -126,6 +124,8 @@ public partial class SearchTab : UserControl
             ModifiedInLastQuantity = userSearchDateFilterQty,
             ModifiedInLastQuantityType = cmbDateFilterAmountType.SelectedItem?.ToString(),
         };
+
+        return new(searchDto, new UserTabSettings { ResultSortOrder = (grdResult.DataSource as BindingSource)!.Sort });
     }
 
     private void ApplyUserSearchDto(UserSearchDto dto)
@@ -205,7 +205,7 @@ public partial class SearchTab : UserControl
         contextMenuRowIndex = -1;
         _searchCancellationTokenSource = new CancellationTokenSource();
 
-        var searchDto = GetCurrentSettings();
+        var searchDto = GetCurrentSettings().SearchDto;
         spltResultPanel.FixedPanel = searchDto.HasTextSearch() ? FixedPanel.Panel1 : FixedPanel.Panel2;
 
         SearchOutcome? searchOutcome = null;
