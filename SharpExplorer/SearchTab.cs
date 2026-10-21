@@ -35,6 +35,7 @@ public partial class SearchTab : UserControl
     private int _chkMatchCaseFixedRight;
     private CancellationTokenSource? _searchCancellationTokenSource;
     private bool _isClosing = false;
+    private readonly UserTabSettings _userTabSettings;
 
     private SearchForm _parent;
 
@@ -63,7 +64,8 @@ public partial class SearchTab : UserControl
         }
 
         ApplyUserSearchDto(initialState.SearchDto);
-        searchResultDataSource.Sort = initialState.TabSettings.ResultSortOrder;
+        _userTabSettings = initialState.TabSettings;
+        _currentSearch.DataTable.DefaultView.Sort = _userTabSettings.ResultSortOrder;
     }
 
     public void InitialFocus()
@@ -125,7 +127,7 @@ public partial class SearchTab : UserControl
             ModifiedInLastQuantityType = cmbDateFilterAmountType.SelectedItem?.ToString(),
         };
 
-        return new(searchDto, new UserTabSettings { ResultSortOrder = (grdResult.DataSource as BindingSource)!.Sort });
+        return new(searchDto, _userTabSettings);
     }
 
     private void ApplyUserSearchDto(UserSearchDto dto)
@@ -854,5 +856,10 @@ public partial class SearchTab : UserControl
     private void SearchTab_Resize(object sender, EventArgs e)
     {
         AnchorByHand();
+    }
+
+    private void grdResult_Sorted(object sender, EventArgs e)
+    {
+        _userTabSettings.ResultSortOrder = _currentSearch.DataTable.DefaultView.Sort;
     }
 }
