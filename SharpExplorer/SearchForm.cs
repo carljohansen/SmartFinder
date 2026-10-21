@@ -21,13 +21,13 @@ public partial class SearchForm : Form
 
     private SearchTabPage AddNewTab(UserTabState initialState)
     {
-        if (initialState.SearchDto.Id == 0)
+        if (initialState.Id == 0)
         {
             initialState.SearchDto.Id = _nextTabId++;
         }
         else
         {
-            _nextTabId = Math.Max(_nextTabId, initialState.SearchDto.Id + 1);
+            _nextTabId = Math.Max(_nextTabId, initialState.Id + 1);
         }
 
 

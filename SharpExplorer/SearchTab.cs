@@ -45,7 +45,7 @@ public partial class SearchTab : UserControl
         _readyToInitializeAnchorByHand = true;
         AnchorByHand();
 
-        Index = initialState.SearchDto.Id;
+        Index = initialState.Id;
         _histories = [_baseDirHistory, _exclusionsHistory, _inclusionsHistory, _searchTextHistory];
 
         var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();

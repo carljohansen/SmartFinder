@@ -9,5 +9,7 @@ public class UserTabSettings
 
 public record UserTabState(UserSearchDto SearchDto, UserTabSettings TabSettings)
 {
+    public int Id => SearchDto.Id;
+
     public readonly static UserTabState Default = new(UserSearchDto.Default, new UserTabSettings());
 }
