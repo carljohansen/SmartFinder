@@ -9,6 +9,9 @@ public partial class SearchForm : Form
     public SearchForm()
     {
         InitializeComponent();
+
+        tabsMain.DrawMode = TabDrawMode.OwnerDrawFixed;
+        tabsMain.DrawItem += new DrawItemEventHandler(DrawTabHeaders);
     }
 
     private void mnuNewSearchTab_Click(object sender, EventArgs e)
@@ -27,7 +30,7 @@ public partial class SearchForm : Form
             _nextTabId = Math.Max(_nextTabId, initialSearchSettings.Id + 1);
         }
         var searchControl = CreateSearchTabControl(initialSearchSettings);
-        var newTab = new SearchTabPage(this, searchControl) { Text = $"Search {searchControl.Index}" };
+        var newTab = new SearchTabPage(this, searchControl, initialSearchSettings.GetDisplayTitle());
 
         tabsMain.TabPages.Add(newTab);
         tabsMain.SelectedTab = newTab;
@@ -66,11 +69,33 @@ public partial class SearchForm : Form
             {
                 _ = AddNewTab(savedTab);
             }
+            tabsMain.SelectedIndex = 0;
         }
         else
         {
             _ = AddNewTab(UserSearchDto.Default);
         }
+    }
+
+    private void DrawTabHeaders(object? sender, DrawItemEventArgs e)
+    {
+        //e.DrawBackground();
+        var tabPage = tabsMain.TabPages[e.Index] as SearchTabPage;
+        using Brush br = new SolidBrush(tabPage?.HeaderColor ?? default);
+        e.Graphics.FillRectangle(br, e.Bounds);
+        SizeF sz = e.Graphics.MeasureString(tabsMain.TabPages[e.Index].Text, e.Font!);
+        e.Graphics.DrawString(tabsMain.TabPages[e.Index].Text, e.Font!, Brushes.Black, e.Bounds.Left + (e.Bounds.Width - sz.Width) / 2, e.Bounds.Top + (e.Bounds.Height - sz.Height) / 2 + 1);
+
+        if (e.Index != tabsMain.SelectedIndex)
+        {
+            return;
+        }
+
+        Rectangle rect = e.Bounds;
+        rect.Offset(0, 1);
+        rect.Inflate(0, -1);
+        e.Graphics.DrawRectangle(Pens.DarkGray, rect);
+        e.DrawFocusRectangle();
     }
 
     private void duplicateTabToolStripMenuItem_Click(object sender, EventArgs e)
@@ -107,5 +132,10 @@ public partial class SearchForm : Form
         {
             tabPage.ClearHistory();
         }
+    }
+
+    internal void RedrawTabControl()
+    {
+        tabsMain.Invalidate();
     }
 }

@@ -6,7 +6,7 @@ public static class FileTypeHelper
 {
     public readonly static string[] KnownTextFileExtensions =
     [
-        ".txt", ".md", ".csv", ".json", ".xml", ".html", ".htm", ".css", ".js", ".ts",
+        ".txt", ".md", ".csv", ".json", ".xml", ".html", ".htm", ".css", ".js", ".ts", ".tsx",
         ".py", ".java", ".c", ".cpp", ".h", ".hpp", ".cs", ".vb", ".php", ".rb", ".yml",".yaml",
         ".ini", ".log", ".bat", ".sh", ".ps1", ".r", ".pl", ".swift", ".go",
         // Add more known text file extensions as needed

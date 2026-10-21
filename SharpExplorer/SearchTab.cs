@@ -15,6 +15,8 @@ public partial class SearchTab : UserControl
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public int Index { get; init; }
 
+    public event EventHandler<FilesFoundUpdateEventArgs>? FilesFoundUpdate;
+
     private readonly FileSearch _currentSearch;
     private readonly TextCriterionHistory _baseDirHistory = new(15, UserSearchRepository.BaseDirHistoryFileName);
     private readonly TextCriterionHistory _exclusionsHistory = new(15, UserSearchRepository.ExclusionsHistoryFileName);
@@ -160,6 +162,16 @@ public partial class SearchTab : UserControl
         }
         SetStatusText(e.StatusMessage);
         SetProgress(e.ProgressPercentage);
+        RaiseFilesFoundUpdate(searchStatus: FileSearchStatus.Running);
+    }
+
+    private void RaiseFilesFoundUpdate(int? fileCount = null, FileSearchStatus searchStatus = FileSearchStatus.NotRunning)
+    {
+        if (FilesFoundUpdate != null)
+        {
+            var countToReport = fileCount ?? grdResult.Rows.Count;
+            FilesFoundUpdate?.Invoke(this, new(countToReport, searchStatus));
+        }
     }
 
     private void SetStatusText(string text)
@@ -188,6 +200,7 @@ public partial class SearchTab : UserControl
         cmbExceptFilePattern.DroppedDown = false;
         cmbRootDir.DroppedDown = false;
         SetProgress(0);
+        RaiseFilesFoundUpdate(-1, searchStatus: FileSearchStatus.Running);
         lstTextMatches.Items.Clear();
         contextMenuRowIndex = -1;
         _searchCancellationTokenSource = new CancellationTokenSource();
@@ -195,12 +208,13 @@ public partial class SearchTab : UserControl
         var searchDto = GetCurrentSettings();
         spltResultPanel.FixedPanel = searchDto.HasTextSearch() ? FixedPanel.Panel1 : FixedPanel.Panel2;
 
+        SearchOutcome? searchOutcome = null;
         try
         {
-            var finalStatusMsg = await _currentSearch.SearchAndPopulateTableAsync(searchDto, _searchCancellationTokenSource.Token);
+            searchOutcome = await _currentSearch.SearchAndPopulateTableAsync(searchDto, _searchCancellationTokenSource.Token);
             if (!_isClosing)
             {
-                SetStatusText(finalStatusMsg);
+                SetStatusText(searchOutcome.StatusMessage);
             }
         }
         catch
@@ -224,6 +238,7 @@ public partial class SearchTab : UserControl
         btnSearch.Enabled = true;
         btnCancelSearch.Enabled = false;
         HideProgressBar();
+        RaiseFilesFoundUpdate(searchStatus: searchOutcome?.FinalState ?? FileSearchStatus.Failed);
     }
 
     private void PopulateHistoryDropdowns(bool updateExclusions)

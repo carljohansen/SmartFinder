@@ -155,4 +155,56 @@ public class UserSearchDto
         }
         return normalized;
     }
+
+    public string GetDisplayTitle()
+    {
+        const int maxLength = 15;
+
+        var unelidedResult = "New Search";
+
+        if (!string.IsNullOrWhiteSpace(BaseDirectoriesPattern)
+            && !string.IsNullOrWhiteSpace(RawIncludeFilesPattern))
+        {
+            var tryCombine = $"{BaseDirectoriesPattern} ({RawIncludeFilesPattern})";
+            if (tryCombine.Length <= maxLength)
+            {
+                // Unlikely, but it could happen.
+                return tryCombine;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(TextSearchPattern))
+        {
+            var elidedSearchText = Elide(TextSearchPattern, maxLength - 2);
+            return $"\"{elidedSearchText}\"";
+        }
+        else if (!string.IsNullOrWhiteSpace(BaseDirectoriesPattern))
+        {
+            unelidedResult = BaseDirectoriesPattern;
+        }
+        else if (!string.IsNullOrWhiteSpace(RawIncludeFilesPattern))
+        {
+            unelidedResult = RawIncludeFilesPattern;
+        }
+
+        if (unelidedResult.Length <= maxLength)
+        {
+            return unelidedResult;
+        }
+
+        return Elide(unelidedResult, maxLength);
+    }
+
+    private static string Elide(string str, int maxLength)
+    {
+        const string ellipsis = "...";
+
+        if (str.Length <= maxLength)
+        {
+            return str;
+        }
+
+        var visibleLength = Math.Max(0, maxLength - ellipsis.Length);
+        return str[..visibleLength] + ellipsis;
+    }
 }

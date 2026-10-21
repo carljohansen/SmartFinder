@@ -1,4 +1,4 @@
-namespace SharpExplorer.Domain;
+﻿namespace SharpExplorer.Domain;
 
 public class FileSearchOptions
 {

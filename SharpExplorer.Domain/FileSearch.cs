@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 
 namespace SharpExplorer.Domain;
 
+public record SearchOutcome(string StatusMessage, FileSearchStatus FinalState);
+
 public class FileSearch
 {
     public event EventHandler<SearchProgressEventArgs>? SearchProgressUpdate;
@@ -67,19 +69,43 @@ public class FileSearch
         _currentStatusReportingPath = null;
     }
 
-    public async Task<string> SearchAndPopulateTableAsync(UserSearchDto searchDto, CancellationToken cancellationToken)
+    public async Task<SearchOutcome> SearchAndPopulateTableAsync(UserSearchDto searchDto, CancellationToken cancellationToken)
     {
+        var timer = Stopwatch.StartNew();
+
         bool wasCancelled = await SearchAndPopulateTableAsyncInternal(searchDto, cancellationToken);
 
         var cancelledMsg = wasCancelled ? " (search cancelled)" : "";
+
+        string elapsedTimeMessage = $" in {GetElapsedTimeDisplay(timer.Elapsed)}";
+
+        var finalState = wasCancelled ? FileSearchStatus.Cancelled : FileSearchStatus.Completed;
         var numMatches = DataTable.Rows.Count;
-        if (numMatches > 0)
+
+        string finalMessage = numMatches > 0
+                                ? numMatches == 1 ? $"1 file found{cancelledMsg}" : $"{numMatches:#,##0} files found{elapsedTimeMessage}{cancelledMsg}"
+                                : $"No matching files found{cancelledMsg}";
+
+        return new SearchOutcome(finalMessage, finalState);
+    }
+
+    private object GetElapsedTimeDisplay(TimeSpan elapsed)
+    {
+        if (elapsed.TotalSeconds < 1)
         {
-            return numMatches == 1 ? $"1 file found{cancelledMsg}" : $"{numMatches:#,##0} files found{cancelledMsg}";
+            return $"{elapsed.TotalMilliseconds:#,##0} ms";
+        }
+        else if (elapsed.TotalMinutes < 2)
+        {
+            return $"{elapsed.TotalSeconds:#,##0} seconds";
+        }
+        else if (elapsed.TotalHours < 1)
+        {
+            return $"{elapsed.TotalMinutes:#,##0} minutes";
         }
         else
         {
-            return $"No matching files found{cancelledMsg}";
+            return $"{elapsed.TotalHours:#,##0} hours";
         }
     }
 
