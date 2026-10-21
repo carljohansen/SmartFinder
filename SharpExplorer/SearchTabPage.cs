@@ -63,7 +63,8 @@ public class SearchTabPage : TabPage
             if (e.FilesFound <= 0)
             {
                 _lastFileCountShown = -2;
-                SetParentTabTitle(_originalTabTitle);
+                SetParentTabTitle("No match");
+                HeaderColor = Color.Honeydew;
                 return;
             }
         }

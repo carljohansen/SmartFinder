@@ -25,7 +25,7 @@ public static class UserSearchRepository
     {
         // Get the LocalApplicationData folder path
         var localDataDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        var storageDir = Path.Combine(localDataDir, "SmartFinder");
+        var storageDir = Path.Combine(localDataDir, "RangeFinder");
         if (!Directory.Exists(storageDir))
         {
             Directory.CreateDirectory(storageDir);
