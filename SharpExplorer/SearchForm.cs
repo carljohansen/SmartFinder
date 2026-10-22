@@ -35,7 +35,7 @@ public partial class SearchForm : Form
         var newTab = new SearchTabPage(this, searchControl, initialState.SearchDto.GetDisplayTitle());
 
         tabsMain.TabPages.Add(newTab); // second SearchTab_Resize call happens here
-        newTab.ApplyUserPreferences();
+        newTab.ApplyUserPreferences(initialState.TabSettings);
         tabsMain.SelectedTab = newTab;
         newTab.InitialFocus();
 

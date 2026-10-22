@@ -35,7 +35,6 @@ public partial class SearchTab : UserControl
     private int _chkMatchCaseFixedRight;
     private CancellationTokenSource? _searchCancellationTokenSource;
     private bool _isClosing = false;
-    private readonly UserTabSettings _userTabSettings;
     private bool _hasInitializedFromUserPrefs = false;
 
     private SearchForm _parent;
@@ -65,12 +64,9 @@ public partial class SearchTab : UserControl
         }
 
         ApplyUserSearchDto(initialState.SearchDto);
-        _userTabSettings = initialState.TabSettings;
     }
 
-    public void ApplyUserPreferences() => ApplyUserPreferences(_userTabSettings);
-
-    private void ApplyUserPreferences(UserTabSettings settings)
+    public void ApplyUserPreferences(UserTabSettings settings)
     {
         _currentSearch.DataTable.DefaultView.Sort = settings.ResultSortOrder;
         if (settings.SplitterDistance.HasValue)
@@ -143,7 +139,15 @@ public partial class SearchTab : UserControl
         return UserTabState.Create(searchDto, GetCurrentUserSettings());
     }
 
-    public UserTabSettings GetCurrentUserSettings() => _userTabSettings.Clone();
+    public UserTabSettings GetCurrentUserSettings()
+    {
+        return new()
+        {
+            Id = Index,
+            ResultSortOrder = _currentSearch.DataTable.DefaultView.Sort,
+            SplitterDistance = spltResultPanel.SplitterDistance
+        };
+    }
 
     private void ApplyUserSearchDto(UserSearchDto dto)
     {
@@ -783,8 +787,6 @@ public partial class SearchTab : UserControl
         {
             return;
         }
-
-        _userTabSettings.SplitterDistance = spltResultPanel.SplitterDistance;
     }
 
     private void spltResultPanel_SizeChanged(object sender, EventArgs e)
@@ -872,6 +874,5 @@ public partial class SearchTab : UserControl
 
     private void grdResult_Sorted(object sender, EventArgs e)
     {
-        _userTabSettings.ResultSortOrder = _currentSearch.DataTable.DefaultView.Sort;
     }
 }

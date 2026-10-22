@@ -7,14 +7,7 @@ public class UserTabSettings
     public string? ResultSortOrder { get; set; }
 
     public int? SplitterDistance { get; set; }
-
-    public UserTabSettings Clone() => new()
-    {
-        Id = this.Id,
-        ResultSortOrder = this.ResultSortOrder,
-        SplitterDistance = this.SplitterDistance
-    };
-
+    
     public static UserTabSettings CreateDefault() => new()
     {
         Id = 0,

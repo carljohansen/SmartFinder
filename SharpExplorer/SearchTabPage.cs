@@ -111,5 +111,5 @@ public class SearchTabPage : TabPage
 
     public void InitialFocus() => _searchTab.InitialFocus();
 
-    internal void ApplyUserPreferences() => _searchTab.ApplyUserPreferences();
+    internal void ApplyUserPreferences(UserTabSettings userTabSettings) => _searchTab.ApplyUserPreferences(userTabSettings);
 }
