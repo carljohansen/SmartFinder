@@ -1,4 +1,5 @@
-﻿using SharpExplorer.Domain.History;
+﻿using Microsoft.Extensions.FileSystemGlobbing;
+using SharpExplorer.Domain.History;
 using SharpExplorer.Domain.TextSearch;
 using System.Data;
 using System.Diagnostics;
@@ -196,8 +197,20 @@ public class FileSearch
         if (!rawFiles.HasMatches)
         {
             yield break;
-        }
+        }       
 
+        await foreach (var match in ProcessFiles(baseDirectory, rawFiles.Files, textChecks, cancellationToken))
+        {
+            yield return match;
+        }
+    }
+
+    private async IAsyncEnumerable<FileDisplay> ProcessFiles(string baseDirectory, 
+                                                            IEnumerable<FilePatternMatch> files,
+                                                            FileTextMatcher[] textChecks,
+                                                            [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var hasTextChecks = textChecks.Length > 0;
         var actionMsg = hasTextChecks ? "Searching in files" : "Annotating files";
 
         if (hasTextChecks)
@@ -205,12 +218,13 @@ public class FileSearch
             SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = $"{actionMsg}...", ProgressPercentage = 0 });
         }
 
-        var timer = Stopwatch.StartNew();
+        var timer = Stopwatch.StartNew(); // Really the clock starts with file discovery BUG.
+
         FileDisplay? matchedItem = null;
         var numFilesProcessed = 0;
-        var numFiles = rawFiles.Files.Count();
+        var numFiles = files.Count();
 
-        foreach (var match in rawFiles.Files)
+        foreach (var match in files)
         {
             if (cancellationToken.IsCancellationRequested)
             {
