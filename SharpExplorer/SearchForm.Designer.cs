@@ -124,6 +124,7 @@
             Margin = new Padding(3, 2, 3, 2);
             Name = "SearchForm";
             Text = "RangeFinder";
+            FormClosing += SearchForm_FormClosing;
             Load += SearchForm_Load;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();

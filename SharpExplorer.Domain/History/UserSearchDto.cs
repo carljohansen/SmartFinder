@@ -104,8 +104,9 @@ public class UserSearchDto
         return result;
     }
 
-    public readonly static UserSearchDto Default = new()
+    public static UserSearchDto CreateDefault() => new()
     {
+        Id = 0,
         BaseDirectoriesPattern = "",
         RawIncludeFilesPattern = "",
         RawExcludeFilesPattern = "",

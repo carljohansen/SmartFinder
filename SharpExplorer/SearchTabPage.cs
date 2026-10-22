@@ -34,7 +34,7 @@ public class SearchTabPage : TabPage
     {
         _parentForm = parentForm;
         _searchTab = content;
-        Controls.Add(content);
+        Controls.Add(content); // first SearchTab_Resize call happens here
         Text = initialTitle;
         _originalTabTitle = initialTitle;
 
@@ -42,6 +42,8 @@ public class SearchTabPage : TabPage
         _searchTab.Width = this.Width;
         _searchTab.Height = this.Height;
     }
+
+    public UserTabSettings GetCurrentUserSettings() => _searchTab.GetCurrentUserSettings();
 
     private int? _lastFileCountShown;
 
@@ -88,7 +90,7 @@ public class SearchTabPage : TabPage
 
     public int Index => _searchTab.Index;
 
-    public UserTabState GetCurrentSearchSettings() => _searchTab.GetCurrentSettings();
+    public UserTabState GetCurrentSearchSettings() => _searchTab.GetCurrentTabState();
 
     public void ClearHistory() => _searchTab.ClearHistory();
 
@@ -108,4 +110,6 @@ public class SearchTabPage : TabPage
     }
 
     public void InitialFocus() => _searchTab.InitialFocus();
+
+    internal void ApplyUserPreferences() => _searchTab.ApplyUserPreferences();
 }

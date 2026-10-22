@@ -14,14 +14,14 @@ public static class UserSearchRepository
 
     public static string SearchTextHistoryFileName => GetDtoFileName("searchTextHistory");
 
-    private static readonly JsonSerializerOptions SerializationOptions = new()
+    public static readonly JsonSerializerOptions SerializationOptions = new()
     {
         WriteIndented = false,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         IgnoreReadOnlyProperties = true
     };
 
-    private static string GetStorageDirectory()
+    public static string GetStorageDirectory()
     {
         // Get the LocalApplicationData folder path
         var localDataDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);

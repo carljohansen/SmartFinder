@@ -16,7 +16,7 @@ public partial class SearchForm : Form
 
     private void mnuNewSearchTab_Click(object sender, EventArgs e)
     {
-        AddNewTab(UserTabState.Default);
+        AddNewTab(UserTabState.CreateDefault());
     }
 
     private SearchTabPage AddNewTab(UserTabState initialState)
@@ -24,17 +24,18 @@ public partial class SearchForm : Form
         if (initialState.Id == 0)
         {
             initialState.SearchDto.Id = _nextTabId++;
+            initialState.TabSettings.Id = initialState.SearchDto.Id;
         }
         else
         {
             _nextTabId = Math.Max(_nextTabId, initialState.Id + 1);
         }
 
-
         var searchControl = CreateSearchTabControl(initialState);
         var newTab = new SearchTabPage(this, searchControl, initialState.SearchDto.GetDisplayTitle());
 
-        tabsMain.TabPages.Add(newTab);
+        tabsMain.TabPages.Add(newTab); // second SearchTab_Resize call happens here
+        newTab.ApplyUserPreferences();
         tabsMain.SelectedTab = newTab;
         newTab.InitialFocus();
 
@@ -54,6 +55,7 @@ public partial class SearchForm : Form
             selectedTabPage.CancelSearch();
             tabsMain.TabPages.Remove(selectedTabPage);
             UserSearchRepository.DeleteSearchDto(selectedTabPage.Index);
+            TabSettingsRepository.DeleteTabSettings(selectedTabPage.Index);
         }
 
         if (tabsMain.TabPages.Count == 0)
@@ -64,18 +66,55 @@ public partial class SearchForm : Form
 
     private void SearchForm_Load(object sender, EventArgs e)
     {
+        if (Properties.Settings.Default.WindowState >= 0 && Properties.Settings.Default.WindowState <= 2)
+        {
+            this.WindowState = (FormWindowState)Properties.Settings.Default.WindowState;
+        }
+
+        if (WindowState == FormWindowState.Normal)
+        {
+            // Restore saved position and size
+            if (Properties.Settings.Default.WindowSize.Width > 0 &&
+                Properties.Settings.Default.WindowSize.Height > 0)
+            {
+                this.Size = Properties.Settings.Default.WindowSize;
+            }
+
+            if (Properties.Settings.Default.WindowLocation.X >= 0 &&
+                Properties.Settings.Default.WindowLocation.Y >= 0)
+            {
+                // Ensure the saved location is visible on current monitors
+                Rectangle savedBounds = new Rectangle(
+                    Properties.Settings.Default.WindowLocation,
+                    Properties.Settings.Default.WindowSize);
+
+                if (IsOnScreen(savedBounds))
+                {
+                    this.StartPosition = FormStartPosition.Manual;
+                    this.Location = Properties.Settings.Default.WindowLocation;
+                }
+                else
+                {
+                    // Fallback: center on primary screen
+                    this.StartPosition = FormStartPosition.CenterScreen;
+                }
+            }
+        }
+
         var savedTabs = UserSearchRepository.LoadSavedSearches();
+        var savedPrefs = TabSettingsRepository.LoadSavedTabSettings();
         if (savedTabs.Length > 0)
         {
             foreach (var savedTab in savedTabs)
             {
-                _ = AddNewTab(new(savedTab, UserTabSettings.Default));
+                var tabPrefs = savedPrefs.FirstOrDefault(p => p.Id == savedTab.Id) ?? UserTabSettings.CreateDefault();
+                _ = AddNewTab(UserTabState.Create(savedTab, tabPrefs));
             }
             tabsMain.SelectedIndex = 0;
         }
         else
         {
-            _ = AddNewTab(UserTabState.Default);
+            _ = AddNewTab(UserTabState.CreateDefault());
         }
     }
 
@@ -139,5 +178,40 @@ public partial class SearchForm : Form
     internal void RedrawTabControl()
     {
         tabsMain.Invalidate();
+    }
+
+    private void SearchForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        foreach (SearchTabPage tabPage in tabsMain.TabPages)
+        {
+            TabSettingsRepository.SaveTabSettings(tabPage.GetCurrentUserSettings());
+        }
+
+        Properties.Settings.Default.WindowState = (int)WindowState;
+
+        // Save current size and location
+        if (this.WindowState == FormWindowState.Normal)
+        {
+            Properties.Settings.Default.WindowSize = this.Size;
+            Properties.Settings.Default.WindowLocation = this.Location;
+        }
+        else
+        {
+            // Save restored bounds if maximized/minimized
+            Properties.Settings.Default.WindowSize = this.RestoreBounds.Size;
+            Properties.Settings.Default.WindowLocation = this.RestoreBounds.Location;
+        }
+
+        Properties.Settings.Default.Save();
+    }
+
+    private bool IsOnScreen(Rectangle rect)
+    {
+        foreach (Screen screen in Screen.AllScreens)
+        {
+            if (screen.WorkingArea.IntersectsWith(rect))
+                return true;
+        }
+        return false;
     }
 }

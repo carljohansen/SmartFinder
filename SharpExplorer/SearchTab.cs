@@ -36,6 +36,7 @@ public partial class SearchTab : UserControl
     private CancellationTokenSource? _searchCancellationTokenSource;
     private bool _isClosing = false;
     private readonly UserTabSettings _userTabSettings;
+    private bool _hasInitializedFromUserPrefs = false;
 
     private SearchForm _parent;
 
@@ -65,7 +66,19 @@ public partial class SearchTab : UserControl
 
         ApplyUserSearchDto(initialState.SearchDto);
         _userTabSettings = initialState.TabSettings;
-        _currentSearch.DataTable.DefaultView.Sort = _userTabSettings.ResultSortOrder;
+    }
+
+    public void ApplyUserPreferences() => ApplyUserPreferences(_userTabSettings);
+
+    private void ApplyUserPreferences(UserTabSettings settings)
+    {
+        _currentSearch.DataTable.DefaultView.Sort = settings.ResultSortOrder;
+        if (settings.SplitterDistance.HasValue)
+        {
+            spltResultPanel.SplitterDistance = settings.SplitterDistance.Value;
+        }
+
+        _hasInitializedFromUserPrefs = true;
     }
 
     public void InitialFocus()
@@ -88,7 +101,7 @@ public partial class SearchTab : UserControl
         cmbContainingText.Items.Clear();
     }
 
-    public UserTabState GetCurrentSettings()
+    public UserTabState GetCurrentTabState()
     {
         var searchPatterns = cmbFilePattern.Text.Trim();
         var exceptSearchPatterns = cmbExceptFilePattern.Text.Trim();
@@ -127,8 +140,10 @@ public partial class SearchTab : UserControl
             ModifiedInLastQuantityType = cmbDateFilterAmountType.SelectedItem?.ToString(),
         };
 
-        return new(searchDto, _userTabSettings);
+        return UserTabState.Create(searchDto, GetCurrentUserSettings());
     }
+
+    public UserTabSettings GetCurrentUserSettings() => _userTabSettings.Clone();
 
     private void ApplyUserSearchDto(UserSearchDto dto)
     {
@@ -207,7 +222,7 @@ public partial class SearchTab : UserControl
         contextMenuRowIndex = -1;
         _searchCancellationTokenSource = new CancellationTokenSource();
 
-        var searchDto = GetCurrentSettings().SearchDto;
+        var searchDto = GetCurrentTabState().SearchDto;
         spltResultPanel.FixedPanel = searchDto.HasTextSearch() ? FixedPanel.Panel1 : FixedPanel.Panel2;
 
         SearchOutcome? searchOutcome = null;
@@ -508,6 +523,8 @@ public partial class SearchTab : UserControl
 
     private void SearchTab_Load(object sender, EventArgs e)
     {
+        Debug.WriteLine($"SearchTab_Load: Width={this.Width}, Height={this.Height}");
+
         _parent = (this.Parent!.Parent!.Parent as SearchForm)!;
 
         ColumnHeader header = new()
@@ -759,21 +776,15 @@ public partial class SearchTab : UserControl
 
         var newWidth = spltResultPanel.Panel1.Width - (SystemInformation.VerticalScrollBarWidth + 5);
         grdResult.ResizeResultsGrid(newWidth);
-        //var fixedColWidths = 0;
-        //for (int i = 0; i < grdResult.Columns.Count; i++)
-        //{
-        //    if (i != _locationColIndex)
-        //    {
-        //        fixedColWidths += grdResult.Columns[i].Width;
-        //    }
-        //}
 
-        //if (fixedColWidths == 0)
-        //{
-        //    return;
-        //}
+        Debug.WriteLine($"ResizeResultsGrid: newWidth={newWidth}, grdResult.Width={grdResult.Width}, spltResultPanel.Panel1.Width={spltResultPanel.Panel1.Width}");
 
-        //grdResult.Columns[_locationColIndex].Width = Math.Max(50, newWidth - fixedColWidths);
+        if (!_hasInitializedFromUserPrefs)
+        {
+            return;
+        }
+
+        _userTabSettings.SplitterDistance = spltResultPanel.SplitterDistance;
     }
 
     private void spltResultPanel_SizeChanged(object sender, EventArgs e)
@@ -855,6 +866,7 @@ public partial class SearchTab : UserControl
 
     private void SearchTab_Resize(object sender, EventArgs e)
     {
+        Debug.WriteLine($"SearchTab_Resize: Width={this.Width}, Height={this.Height}");
         AnchorByHand();
     }
 

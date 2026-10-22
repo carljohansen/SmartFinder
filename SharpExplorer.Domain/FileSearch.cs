@@ -230,28 +230,36 @@ public class FileSearch
             {
                 var checkerState = new bool[textChecks.Length]; // false = still evaluating; true already found a match
 
-                foreach (var line in File.ReadLines(Path.Combine(_fileLocationRepository.BaseDirectory, match.Path)))
+                try
                 {
-                    for (var i = 0; i < textChecks.Length; i++)
+                    foreach (var line in File.ReadLines(Path.Combine(_fileLocationRepository.BaseDirectory, match.Path)))
                     {
-                        if (checkerState[i] == false)
+                        for (var i = 0; i < textChecks.Length; i++)
                         {
-                            if (textChecks[i].HasMatchOnLine(line))
+                            if (checkerState[i] == false)
                             {
-                                if (textChecks[i].IsExclusion)
+                                if (textChecks[i].HasMatchOnLine(line))
                                 {
-                                    passesTextCheck = false;
-                                    break;
+                                    if (textChecks[i].IsExclusion)
+                                    {
+                                        passesTextCheck = false;
+                                        break;
+                                    }
+                                    checkerState[i] = true;
                                 }
-                                checkerState[i] = true;
                             }
                         }
-                    }
 
-                    if (!passesTextCheck)
-                    {
-                        break;
+                        if (!passesTextCheck)
+                        {
+                            break;
+                        }
                     }
+                }
+                catch (IOException)
+                {
+                    // If we can't read the file, we just skip it.
+                    passesTextCheck = false;
                 }
 
                 for (var i = 0; i < textChecks.Length; i++)
