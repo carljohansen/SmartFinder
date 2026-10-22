@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Diagnostics;
 using System.ComponentModel;
+using SharpExplorer.Extensions;
 
 namespace SharpExplorer;
 
@@ -72,6 +73,14 @@ public partial class SearchTab : UserControl
         if (settings.SplitterDistance.HasValue)
         {
             spltResultPanel.SplitterDistance = settings.SplitterDistance.Value;
+        }
+
+        if (settings.ColumnWidths.Count == grdResult.ColumnCount)
+        {
+            for (var i = 0; i < settings.ColumnWidths.Count; i++)
+            {
+                grdResult.Columns[i].Width = settings.ColumnWidths[i];
+            }
         }
 
         _hasInitializedFromUserPrefs = true;
@@ -145,7 +154,8 @@ public partial class SearchTab : UserControl
         {
             Id = Index,
             ResultSortOrder = _currentSearch.DataTable.DefaultView.Sort,
-            SplitterDistance = spltResultPanel.SplitterDistance
+            SplitterDistance = spltResultPanel.SplitterDistance,
+            ColumnWidths = [.. grdResult.ColumnsEnumerable().Select(c => c.Width)]
         };
     }
 

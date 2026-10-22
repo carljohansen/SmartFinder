@@ -7,12 +7,15 @@ public class UserTabSettings
     public string? ResultSortOrder { get; set; }
 
     public int? SplitterDistance { get; set; }
-    
+
+    public required List<int> ColumnWidths { get; set; }
+
     public static UserTabSettings CreateDefault() => new()
     {
         Id = 0,
         ResultSortOrder = null,
-        SplitterDistance = null
+        SplitterDistance = null,
+        ColumnWidths = []
     };
 }
 
