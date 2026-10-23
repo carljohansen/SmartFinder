@@ -80,20 +80,7 @@ public class TextCriterionHistory
         _lastRefreshTimestamp = DateTime.UtcNow;
     }
 
-    public string[] GetPossibleContinuations(string userInput)
-    {
-        // TODO: refactor, because this is applicable to directory list only.
-        var possibleContinuations = DirectoryPredictiveTexter.GetPossibleContinuations(userInput);
-
-        if (possibleContinuations.Length == 0 && !string.IsNullOrWhiteSpace(userInput))
-        {
-            possibleContinuations = GetMatches(userInput);
-        }
-
-        return possibleContinuations;
-    }
-
-    public string[] GetMatches(string userInput)
+    public virtual string[] GetPossibleContinuations(string userInput)
     {
         if (string.IsNullOrWhiteSpace(userInput))
         {
