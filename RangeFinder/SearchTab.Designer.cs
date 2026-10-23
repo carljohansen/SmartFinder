@@ -39,10 +39,13 @@ namespace RangeFinder
             mnuOpenFile = new ToolStripMenuItem();
             mnuOpenWithTextEditor = new ToolStripMenuItem();
             mnuShowInExplorer = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
             mnuCopyPath = new ToolStripMenuItem();
             mnuCopyFolderPath = new ToolStripMenuItem();
             mnuCopyFiles = new ToolStripMenuItem();
+            toolStripSeparator2 = new ToolStripSeparator();
             mnuSearchHere = new ToolStripMenuItem();
+            mnuSearchHereInNewTab = new ToolStripMenuItem();
             mnuExcludeThisFolder = new ToolStripMenuItem();
             chkMatchCase = new CheckBox();
             chkMatchWholeWord = new CheckBox();
@@ -72,9 +75,6 @@ namespace RangeFinder
             statusStrip1 = new StatusStrip();
             TabProgressBar = new ToolStripProgressBar();
             lblTabStatus = new ToolStripStatusLabel();
-            toolStripSeparator1 = new ToolStripSeparator();
-            toolStripSeparator2 = new ToolStripSeparator();
-            mnuSearchHereInNewTab = new ToolStripMenuItem();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -90,7 +90,7 @@ namespace RangeFinder
             btnSearch.Location = new Point(20, 142);
             btnSearch.Margin = new Padding(3, 2, 3, 2);
             btnSearch.Name = "btnSearch";
-            btnSearch.Size = new Size(82, 22);
+            btnSearch.Size = new Size(82, 24);
             btnSearch.TabIndex = 14;
             btnSearch.Text = "&Search";
             btnSearch.UseVisualStyleBackColor = true;
@@ -120,7 +120,7 @@ namespace RangeFinder
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
             mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuOpenWithTextEditor, mnuShowInExplorer, toolStripSeparator1, mnuCopyPath, mnuCopyFolderPath, mnuCopyFiles, toolStripSeparator2, mnuSearchHere, mnuExcludeThisFolder });
             mnuFileItemContext.Name = "mnuFileItemContext";
-            mnuFileItemContext.Size = new Size(194, 214);
+            mnuFileItemContext.Size = new Size(194, 192);
             // 
             // mnuOpenFile
             // 
@@ -144,6 +144,11 @@ namespace RangeFinder
             mnuShowInExplorer.Text = "Open In File Explorer";
             mnuShowInExplorer.Click += mnuShowInExplorer_Click;
             // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(190, 6);
+            // 
             // mnuCopyPath
             // 
             mnuCopyPath.Name = "mnuCopyPath";
@@ -166,6 +171,11 @@ namespace RangeFinder
             mnuCopyFiles.Text = "Copy";
             mnuCopyFiles.Click += mnuCopyFiles_Click;
             // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(190, 6);
+            // 
             // mnuSearchHere
             // 
             mnuSearchHere.DropDownItems.AddRange(new ToolStripItem[] { mnuSearchHereInNewTab });
@@ -173,6 +183,13 @@ namespace RangeFinder
             mnuSearchHere.Size = new Size(193, 22);
             mnuSearchHere.Text = "Search This Folder...";
             mnuSearchHere.Click += mnuSearchHere_Click;
+            // 
+            // mnuSearchHereInNewTab
+            // 
+            mnuSearchHereInNewTab.Name = "mnuSearchHereInNewTab";
+            mnuSearchHereInNewTab.Size = new Size(144, 22);
+            mnuSearchHereInNewTab.Text = "In A New Tab";
+            mnuSearchHereInNewTab.Click += mnuSearchHereInNewTab_Click;
             // 
             // mnuExcludeThisFolder
             // 
@@ -413,7 +430,7 @@ namespace RangeFinder
             btnCancelSearch.Location = new Point(108, 142);
             btnCancelSearch.Margin = new Padding(3, 2, 3, 2);
             btnCancelSearch.Name = "btnCancelSearch";
-            btnCancelSearch.Size = new Size(82, 22);
+            btnCancelSearch.Size = new Size(82, 24);
             btnCancelSearch.TabIndex = 15;
             btnCancelSearch.Text = "Sto&p";
             btnCancelSearch.UseVisualStyleBackColor = true;
@@ -433,7 +450,7 @@ namespace RangeFinder
             // 
             // txtDateFilterAmount
             // 
-            txtDateFilterAmount.Location = new Point(509, 143);
+            txtDateFilterAmount.Location = new Point(509, 144);
             txtDateFilterAmount.Margin = new Padding(3, 2, 3, 2);
             txtDateFilterAmount.Name = "txtDateFilterAmount";
             txtDateFilterAmount.Size = new Size(38, 23);
@@ -496,23 +513,6 @@ namespace RangeFinder
             // 
             lblTabStatus.Name = "lblTabStatus";
             lblTabStatus.Size = new Size(0, 17);
-            // 
-            // toolStripSeparator1
-            // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(190, 6);
-            // 
-            // toolStripSeparator2
-            // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(190, 6);
-            // 
-            // mnuSearchHereInNewTab
-            // 
-            mnuSearchHereInNewTab.Name = "mnuSearchHereInNewTab";
-            mnuSearchHereInNewTab.Size = new Size(180, 22);
-            mnuSearchHereInNewTab.Text = "In A New Tab";
-            mnuSearchHereInNewTab.Click += mnuSearchHereInNewTab_Click;
             // 
             // SearchTab
             // 
