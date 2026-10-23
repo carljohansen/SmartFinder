@@ -6,9 +6,19 @@ public class UserSearchDto
 {
     public static string NormalizeDirectoryName(string directoryName)
     {
-        return directoryName.Length > 2 && directoryName.StartsWith('\"') && directoryName.EndsWith('\"')
-            ? directoryName[1..^1]
-            : directoryName;
+        var result = directoryName;
+
+        if (directoryName.Length > 2 && directoryName.StartsWith('\"') && directoryName.EndsWith('\"'))
+        {
+            result = directoryName[1..^1];
+        }
+
+        if (result.Length > 2 && result.EndsWith('\\'))
+        {
+            result = result[..^1];
+        }
+
+        return result;
     }
 
     public required string? RawIncludeFilesPattern { get; set; }

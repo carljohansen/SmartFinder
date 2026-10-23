@@ -81,9 +81,9 @@ namespace SharpExplorer
             mnuTextMatchContext.SuspendLayout();
             statusStrip1.SuspendLayout();
             SuspendLayout();
-            // 
+            //
             // btnSearch
-            // 
+            //
             btnSearch.Location = new Point(20, 142);
             btnSearch.Margin = new Padding(3, 2, 3, 2);
             btnSearch.Name = "btnSearch";
@@ -92,9 +92,9 @@ namespace SharpExplorer
             btnSearch.Text = "&Search";
             btnSearch.UseVisualStyleBackColor = true;
             btnSearch.Click += btnSearch_Click;
-            // 
+            //
             // cmbFilePattern
-            // 
+            //
             cmbFilePattern.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cmbFilePattern.Location = new Point(108, 4);
             cmbFilePattern.Margin = new Padding(3, 2, 3, 2);
@@ -102,83 +102,83 @@ namespace SharpExplorer
             cmbFilePattern.Size = new Size(766, 23);
             cmbFilePattern.TabIndex = 1;
             cmbFilePattern.Text = "*.txt";
-            // 
+            //
             // cmbContainingText
-            // 
+            //
             cmbContainingText.Anchor = AnchorStyles.Top;
             cmbContainingText.Location = new Point(109, 72);
             cmbContainingText.Margin = new Padding(3, 2, 3, 2);
             cmbContainingText.Name = "cmbContainingText";
             cmbContainingText.Size = new Size(638, 23);
             cmbContainingText.TabIndex = 5;
-            // 
+            //
             // mnuFileItemContext
-            // 
+            //
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
             mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuOpenWithTextEditor, mnuShowInExplorer, mnuCopyPath, mnuCopyFolderPath, mnuCopyFiles, mnuSearchHere, mnuExcludeThisFolder });
             mnuFileItemContext.Name = "mnuFileItemContext";
             mnuFileItemContext.Size = new Size(194, 180);
-            // 
+            //
             // mnuOpenFile
-            // 
+            //
             mnuOpenFile.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             mnuOpenFile.Name = "mnuOpenFile";
             mnuOpenFile.Size = new Size(193, 22);
             mnuOpenFile.Text = "Open";
             mnuOpenFile.Click += mnuOpenFile_Click;
-            // 
+            //
             // mnuOpenWithTextEditor
-            // 
+            //
             mnuOpenWithTextEditor.Name = "mnuOpenWithTextEditor";
             mnuOpenWithTextEditor.Size = new Size(193, 22);
             mnuOpenWithTextEditor.Text = "Open With Text Editor";
             mnuOpenWithTextEditor.Click += mnuOpenWithTextEditor_Click;
-            // 
+            //
             // mnuShowInExplorer
-            // 
+            //
             mnuShowInExplorer.Name = "mnuShowInExplorer";
             mnuShowInExplorer.Size = new Size(193, 22);
             mnuShowInExplorer.Text = "Open In File Explorer";
             mnuShowInExplorer.Click += mnuShowInExplorer_Click;
-            // 
+            //
             // mnuCopyPath
-            // 
+            //
             mnuCopyPath.Name = "mnuCopyPath";
             mnuCopyPath.ShortcutKeys = Keys.Control | Keys.C;
             mnuCopyPath.Size = new Size(193, 22);
             mnuCopyPath.Text = "Copy Full Path";
             mnuCopyPath.Click += mnuCopyPath_Click;
-            // 
+            //
             // mnuCopyFolderPath
-            // 
+            //
             mnuCopyFolderPath.Name = "mnuCopyFolderPath";
             mnuCopyFolderPath.Size = new Size(193, 22);
             mnuCopyFolderPath.Text = "Copy Folder Path";
             mnuCopyFolderPath.Click += mnuCopyFolderPath_Click;
-            // 
+            //
             // mnuCopyFiles
-            // 
+            //
             mnuCopyFiles.Name = "mnuCopyFiles";
             mnuCopyFiles.Size = new Size(193, 22);
             mnuCopyFiles.Text = "Copy";
             mnuCopyFiles.Click += mnuCopyFiles_Click;
-            // 
+            //
             // mnuSearchHere
-            // 
+            //
             mnuSearchHere.Name = "mnuSearchHere";
             mnuSearchHere.Size = new Size(193, 22);
             mnuSearchHere.Text = "Search This Folder...";
             mnuSearchHere.Click += mnuSearchHere_Click;
-            // 
+            //
             // mnuExcludeThisFolder
-            // 
+            //
             mnuExcludeThisFolder.Name = "mnuExcludeThisFolder";
             mnuExcludeThisFolder.Size = new Size(193, 22);
             mnuExcludeThisFolder.Text = "Exclude This Folder...";
             mnuExcludeThisFolder.Click += mnuExcludeThisFolder_Click;
-            // 
+            //
             // chkMatchCase
-            // 
+            //
             chkMatchCase.Anchor = AnchorStyles.Top;
             chkMatchCase.AutoSize = true;
             chkMatchCase.Location = new Point(757, 64);
@@ -188,9 +188,9 @@ namespace SharpExplorer
             chkMatchCase.TabIndex = 11;
             chkMatchCase.Text = "Match &Case";
             chkMatchCase.UseVisualStyleBackColor = true;
-            // 
+            //
             // chkMatchWholeWord
-            // 
+            //
             chkMatchWholeWord.Anchor = AnchorStyles.Top;
             chkMatchWholeWord.AutoSize = true;
             chkMatchWholeWord.Location = new Point(757, 84);
@@ -200,56 +200,56 @@ namespace SharpExplorer
             chkMatchWholeWord.TabIndex = 12;
             chkMatchWholeWord.Text = "Whole &Word";
             chkMatchWholeWord.UseVisualStyleBackColor = true;
-            // 
+            //
             // label1
-            // 
+            //
             label1.AutoSize = true;
             label1.Location = new Point(5, 6);
             label1.Name = "label1";
             label1.Size = new Size(61, 15);
             label1.TabIndex = 0;
             label1.Text = "&File name:";
-            // 
+            //
             // label2
-            // 
+            //
             label2.AutoSize = true;
             label2.Location = new Point(5, 74);
             label2.Name = "label2";
             label2.Size = new Size(91, 15);
             label2.TabIndex = 4;
             label2.Text = "Containing &text:";
-            // 
+            //
             // label3
-            // 
+            //
             label3.AutoSize = true;
             label3.Location = new Point(5, 119);
             label3.Name = "label3";
             label3.Size = new Size(49, 15);
             label3.TabIndex = 6;
             label3.Text = "&Look in:";
-            // 
+            //
             // spltResultPanel
-            // 
+            //
             spltResultPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             spltResultPanel.FixedPanel = FixedPanel.Panel1;
             spltResultPanel.Location = new Point(4, 168);
             spltResultPanel.Margin = new Padding(3, 2, 3, 2);
             spltResultPanel.Name = "spltResultPanel";
-            // 
+            //
             // spltResultPanel.Panel1
-            // 
+            //
             spltResultPanel.Panel1.Controls.Add(grdResult);
             spltResultPanel.Panel1.Resize += spltResultPanel_Panel1_Resize;
-            // 
+            //
             // spltResultPanel.Panel2
-            // 
+            //
             spltResultPanel.Panel2.Controls.Add(lstTextMatches);
             spltResultPanel.Size = new Size(874, 196);
             spltResultPanel.SplitterDistance = 621;
             spltResultPanel.TabIndex = 101;
-            // 
+            //
             // grdResult
-            // 
+            //
             grdResult.AllowUserToAddRows = false;
             grdResult.AllowUserToDeleteRows = false;
             grdResult.AllowUserToResizeRows = false;
@@ -276,9 +276,9 @@ namespace SharpExplorer
             grdResult.Sorted += grdResult_Sorted;
             grdResult.MouseEnter += grdResult_MouseEnter;
             grdResult.MouseLeave += grdResult_MouseLeave;
-            // 
+            //
             // colIcon
-            // 
+            //
             colIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             colIcon.DataPropertyName = "Icon";
             colIcon.HeaderText = "";
@@ -286,9 +286,9 @@ namespace SharpExplorer
             colIcon.Name = "colIcon";
             colIcon.ReadOnly = true;
             colIcon.Width = 22;
-            // 
+            //
             // colName
-            // 
+            //
             colName.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             colName.DataPropertyName = "Name";
             colName.HeaderText = "Name";
@@ -296,9 +296,9 @@ namespace SharpExplorer
             colName.Name = "colName";
             colName.ReadOnly = true;
             colName.Width = 200;
-            // 
+            //
             // colLocation
-            // 
+            //
             colLocation.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             colLocation.DataPropertyName = "Location";
             colLocation.HeaderText = "Location";
@@ -306,9 +306,9 @@ namespace SharpExplorer
             colLocation.Name = "colLocation";
             colLocation.ReadOnly = true;
             colLocation.Width = 95;
-            // 
+            //
             // colFileType
-            // 
+            //
             colFileType.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             colFileType.DataPropertyName = "FileTypeDescription";
             colFileType.HeaderText = "Type";
@@ -316,9 +316,9 @@ namespace SharpExplorer
             colFileType.Name = "colFileType";
             colFileType.ReadOnly = true;
             colFileType.Width = 69;
-            // 
+            //
             // colSize
-            // 
+            //
             colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             colSize.DataPropertyName = "SizeDisplay";
             dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
@@ -328,9 +328,9 @@ namespace SharpExplorer
             colSize.Name = "colSize";
             colSize.ReadOnly = true;
             colSize.Width = 52;
-            // 
+            //
             // colLastModified
-            // 
+            //
             colLastModified.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             colLastModified.DataPropertyName = "LastModified";
             colLastModified.HeaderText = "Modified";
@@ -338,11 +338,12 @@ namespace SharpExplorer
             colLastModified.Name = "colLastModified";
             colLastModified.ReadOnly = true;
             colLastModified.Width = 80;
-            // 
+            //
             // lstTextMatches
-            // 
+            //
             lstTextMatches.ContextMenuStrip = mnuTextMatchContext;
             lstTextMatches.Dock = DockStyle.Fill;
+            lstTextMatches.FullRowSelect = true;
             lstTextMatches.HeaderStyle = ColumnHeaderStyle.None;
             lstTextMatches.Location = new Point(0, 0);
             lstTextMatches.Margin = new Padding(3, 2, 3, 2);
@@ -353,32 +354,33 @@ namespace SharpExplorer
             lstTextMatches.UseCompatibleStateImageBehavior = false;
             lstTextMatches.View = View.Details;
             lstTextMatches.DrawItem += lstTextMatches_DrawItem;
-            // 
+            lstTextMatches.DrawSubItem += lstTextMatches_DrawSubItem;
+            //
             // mnuTextMatchContext
-            // 
+            //
             mnuTextMatchContext.ImageScalingSize = new Size(20, 20);
             mnuTextMatchContext.Items.AddRange(new ToolStripItem[] { mnuTextMatchLineCopy });
             mnuTextMatchContext.Name = "mnuTextMatchContext";
             mnuTextMatchContext.Size = new Size(103, 26);
-            // 
+            //
             // mnuTextMatchLineCopy
-            // 
+            //
             mnuTextMatchLineCopy.Name = "mnuTextMatchLineCopy";
             mnuTextMatchLineCopy.Size = new Size(102, 22);
             mnuTextMatchLineCopy.Text = "Copy";
             mnuTextMatchLineCopy.Click += mnuTextMatchLineCopy_Click;
-            // 
+            //
             // label4
-            // 
+            //
             label4.AutoSize = true;
             label4.Location = new Point(5, 38);
             label4.Name = "label4";
             label4.Size = new Size(44, 15);
             label4.TabIndex = 2;
             label4.Text = "E&xcept:";
-            // 
+            //
             // cmbExceptFilePattern
-            // 
+            //
             cmbExceptFilePattern.Anchor = AnchorStyles.Top;
             cmbExceptFilePattern.FormattingEnabled = true;
             cmbExceptFilePattern.Location = new Point(109, 36);
@@ -387,9 +389,9 @@ namespace SharpExplorer
             cmbExceptFilePattern.Size = new Size(676, 23);
             cmbExceptFilePattern.TabIndex = 3;
             cmbExceptFilePattern.Enter += txtExceptFilePattern_Enter;
-            // 
+            //
             // chkEnableExclusions
-            // 
+            //
             chkEnableExclusions.Anchor = AnchorStyles.Top;
             chkEnableExclusions.AutoSize = true;
             chkEnableExclusions.Location = new Point(789, 38);
@@ -400,9 +402,9 @@ namespace SharpExplorer
             chkEnableExclusions.Text = "E&nable";
             chkEnableExclusions.UseVisualStyleBackColor = true;
             chkEnableExclusions.CheckedChanged += chkEnableExclusions_CheckedChanged;
-            // 
+            //
             // btnCancelSearch
-            // 
+            //
             btnCancelSearch.Enabled = false;
             btnCancelSearch.Location = new Point(108, 142);
             btnCancelSearch.Margin = new Padding(3, 2, 3, 2);
@@ -412,9 +414,9 @@ namespace SharpExplorer
             btnCancelSearch.Text = "Sto&p";
             btnCancelSearch.UseVisualStyleBackColor = true;
             btnCancelSearch.Click += btnCancelSearch_Click;
-            // 
+            //
             // chkFilterByDate
-            // 
+            //
             chkFilterByDate.AutoSize = true;
             chkFilterByDate.Location = new Point(375, 146);
             chkFilterByDate.Margin = new Padding(3, 2, 3, 2);
@@ -424,9 +426,9 @@ namespace SharpExplorer
             chkFilterByDate.Text = "&Modified in the last";
             chkFilterByDate.UseVisualStyleBackColor = true;
             chkFilterByDate.CheckedChanged += chkFilterByDate_CheckedChanged;
-            // 
+            //
             // txtDateFilterAmount
-            // 
+            //
             txtDateFilterAmount.Location = new Point(509, 143);
             txtDateFilterAmount.Margin = new Padding(3, 2, 3, 2);
             txtDateFilterAmount.Name = "txtDateFilterAmount";
@@ -434,9 +436,9 @@ namespace SharpExplorer
             txtDateFilterAmount.TabIndex = 9;
             txtDateFilterAmount.TextAlign = HorizontalAlignment.Right;
             txtDateFilterAmount.Enter += txtDateFilterAmount_Enter;
-            // 
+            //
             // cmbDateFilterAmountType
-            // 
+            //
             cmbDateFilterAmountType.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbDateFilterAmountType.FormattingEnabled = true;
             cmbDateFilterAmountType.Items.AddRange(new object[] { "hours", "days", "weeks", "months", "years" });
@@ -445,9 +447,9 @@ namespace SharpExplorer
             cmbDateFilterAmountType.Name = "cmbDateFilterAmountType";
             cmbDateFilterAmountType.Size = new Size(75, 23);
             cmbDateFilterAmountType.TabIndex = 10;
-            // 
+            //
             // cmbRootDir
-            // 
+            //
             cmbRootDir.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cmbRootDir.FormattingEnabled = true;
             cmbRootDir.Location = new Point(67, 117);
@@ -459,9 +461,9 @@ namespace SharpExplorer
             cmbRootDir.TextUpdate += cmbRootDir_TextUpdate;
             cmbRootDir.SelectedValueChanged += cmbRootDir_SelectedValueChanged;
             cmbRootDir.Enter += cmbRootDir_Enter;
-            // 
+            //
             // chkShowHidden
-            // 
+            //
             chkShowHidden.AutoSize = true;
             chkShowHidden.Location = new Point(738, 147);
             chkShowHidden.Name = "chkShowHidden";
@@ -469,9 +471,9 @@ namespace SharpExplorer
             chkShowHidden.TabIndex = 104;
             chkShowHidden.Text = "Hidden Items";
             chkShowHidden.UseVisualStyleBackColor = true;
-            // 
+            //
             // statusStrip1
-            // 
+            //
             statusStrip1.AutoSize = false;
             statusStrip1.Items.AddRange(new ToolStripItem[] { TabProgressBar, lblTabStatus });
             statusStrip1.Location = new Point(0, 366);
@@ -479,20 +481,20 @@ namespace SharpExplorer
             statusStrip1.Size = new Size(884, 22);
             statusStrip1.TabIndex = 105;
             statusStrip1.Text = "statusStrip1";
-            // 
+            //
             // TabProgressBar
-            // 
+            //
             TabProgressBar.Name = "TabProgressBar";
             TabProgressBar.Size = new Size(100, 16);
             TabProgressBar.Visible = false;
-            // 
+            //
             // lblTabStatus
-            // 
+            //
             lblTabStatus.Name = "lblTabStatus";
             lblTabStatus.Size = new Size(0, 17);
-            // 
+            //
             // SearchTab
-            // 
+            //
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(statusStrip1);
@@ -518,6 +520,7 @@ namespace SharpExplorer
             Name = "SearchTab";
             Size = new Size(884, 388);
             Load += SearchTab_Load;
+            Enter += SearchTab_Enter;
             Resize += SearchTab_Resize;
             mnuFileItemContext.ResumeLayout(false);
             spltResultPanel.Panel1.ResumeLayout(false);

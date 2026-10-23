@@ -80,6 +80,40 @@ public class TextCriterionHistory
         _lastRefreshTimestamp = DateTime.UtcNow;
     }
 
+    public string[] GetPossibleContinuations(string userInput)
+    {
+        // TODO: refactor, because this is applicable to directory list only.
+        var possibleContinuations = DirectoryPredictiveTexter.GetPossibleContinuations(userInput);
+
+        if (possibleContinuations.Length == 0 && !string.IsNullOrWhiteSpace(userInput))
+        {
+            possibleContinuations = GetMatches(userInput);
+        }
+
+        return possibleContinuations;
+    }
+
+    public string[] GetMatches(string userInput)
+    {
+        if (string.IsNullOrWhiteSpace(userInput))
+        {
+            return [];
+        }
+        if (HasBackingFile())
+        {
+            EnsureRefreshed();
+        }
+        var bestMatches = _items
+            .Where(item => item.StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        var otherMatches = _items
+            .Where(item => item.Contains(userInput, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        return [.. bestMatches, .. otherMatches.Except(bestMatches, StringComparer.OrdinalIgnoreCase)];
+    }
+
     public string ToJson(JsonSerializerOptions? options = null)
     {
         var model = new Dto

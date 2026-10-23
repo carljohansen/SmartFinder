@@ -197,7 +197,7 @@ public class FileSearch
         if (!rawFiles.HasMatches)
         {
             yield break;
-        }       
+        }
 
         await foreach (var match in ProcessFiles(baseDirectory, rawFiles.Files, textChecks, cancellationToken))
         {
@@ -205,7 +205,7 @@ public class FileSearch
         }
     }
 
-    private async IAsyncEnumerable<FileDisplay> ProcessFiles(string baseDirectory, 
+    private async IAsyncEnumerable<FileDisplay> ProcessFiles(string baseDirectory,
                                                             IEnumerable<FilePatternMatch> files,
                                                             FileTextMatcher[] textChecks,
                                                             [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -218,7 +218,7 @@ public class FileSearch
             SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = $"{actionMsg}...", ProgressPercentage = 0 });
         }
 
-        var timer = Stopwatch.StartNew(); // Really the clock starts with file discovery BUG.
+        var eventStreamTimer = Stopwatch.StartNew();
 
         FileDisplay? matchedItem = null;
         var numFilesProcessed = 0;
@@ -295,10 +295,10 @@ public class FileSearch
 
             numFilesProcessed++;
 
-            if (timer.ElapsedMilliseconds > 100)
+            if (eventStreamTimer.ElapsedMilliseconds > 150)
             {
                 await Task.Delay(1, cancellationToken);
-                timer.Restart();
+                eventStreamTimer.Restart();
                 var percentComplete = (int)Math.Floor((numFilesProcessed * 100.0) / numFiles);
                 SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs
                 {

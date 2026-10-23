@@ -19,12 +19,12 @@ public partial class SearchTab : UserControl
     public event EventHandler<FilesFoundUpdateEventArgs>? FilesFoundUpdate;
 
     private readonly FileSearch _currentSearch;
-    private readonly TextCriterionHistory _baseDirHistory = new(15, UserSearchRepository.BaseDirHistoryFileName);
-    private readonly TextCriterionHistory _exclusionsHistory = new(15, UserSearchRepository.ExclusionsHistoryFileName);
-    private readonly TextCriterionHistory _inclusionsHistory = new(15, UserSearchRepository.InclusionsHistoryFileName);
-    private readonly TextCriterionHistory _searchTextHistory = new(15, UserSearchRepository.SearchTextHistoryFileName);
+    //private readonly TextCriterionHistory _baseDirHistory = new(25, UserSearchRepository.BaseDirHistoryFileName);
+    //private readonly TextCriterionHistory _exclusionsHistory = new(15, UserSearchRepository.ExclusionsHistoryFileName);
+    //private readonly TextCriterionHistory _inclusionsHistory = new(15, UserSearchRepository.InclusionsHistoryFileName);
+    //private readonly TextCriterionHistory _searchTextHistory = new(25, UserSearchRepository.SearchTextHistoryFileName);
 
-    private readonly TextCriterionHistory[] _histories;
+    //private readonly TextCriterionHistory[] _histories;
     private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
 
     private int contextMenuRowIndex = -1;
@@ -48,7 +48,7 @@ public partial class SearchTab : UserControl
         AnchorByHand();
 
         Index = initialState.Id;
-        _histories = [_baseDirHistory, _exclusionsHistory, _inclusionsHistory, _searchTextHistory];
+        //_histories = [_baseDirHistory, _exclusionsHistory, _inclusionsHistory, _searchTextHistory];
 
         var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();
         var searchResultDataSource = new BindingSource(resultTable.DefaultView, null!);
@@ -59,10 +59,10 @@ public partial class SearchTab : UserControl
 
         _currentSearch.SearchProgressUpdate += HandleSearchStatusUpdate;
 
-        foreach (var historyList in _histories)
-        {
-            historyList.Initialize();
-        }
+        //foreach (var historyList in _histories)
+        //{
+        //    historyList.Initialize();
+        //}
 
         ApplyUserSearchDto(initialState.SearchDto);
     }
@@ -95,10 +95,10 @@ public partial class SearchTab : UserControl
 
     public void ClearHistory()
     {
-        foreach (var historyList in _histories)
-        {
-            historyList.Clear();
-        }
+        //foreach (var historyList in _histories)
+        //{
+        //    historyList.Clear();
+        //}
 
         cmbFilePattern.Items.Clear();
         cmbExceptFilePattern.Items.Clear();
@@ -176,8 +176,6 @@ public partial class SearchTab : UserControl
         {
             cmbDateFilterAmountType.SelectedItem = dto.ModifiedInLastQuantityType;
         }
-
-        PopulateHistoryDropdowns(dto.EnableFileExclusion);
     }
 
     private FileDisplay? GetRowFileDisplay(int rowIndex)
@@ -254,15 +252,15 @@ public partial class SearchTab : UserControl
         }
 
         UserSearchRepository.SaveSearchDto(searchDto);
-        _baseDirHistory.AddItem(searchDto.BaseDirectoriesPattern);
-        _inclusionsHistory.AddItem(searchDto.RawIncludeFilesPattern);
-        _searchTextHistory.AddItem(searchDto.TextSearchPattern);
+        TextCriterionHistoryCollection.Instance.BaseDirHistory.AddItem(searchDto.BaseDirectoriesPattern);
+        TextCriterionHistoryCollection.Instance.InclusionsHistory.AddItem(searchDto.RawIncludeFilesPattern);
+        TextCriterionHistoryCollection.Instance.SearchTextHistory.AddItem(searchDto.TextSearchPattern);
         if (searchDto.EnableFileExclusion)
         {
-            _exclusionsHistory.AddItem(searchDto.RawExcludeFilesPattern);
+            TextCriterionHistoryCollection.Instance.ExclusionsHistory.AddItem(searchDto.RawExcludeFilesPattern);
         }
 
-        PopulateHistoryDropdowns(searchDto.EnableFileExclusion);
+        PopulateHistoryDropdowns();
 
         grdResult.FocusAfterSearch();
 
@@ -272,12 +270,12 @@ public partial class SearchTab : UserControl
         RaiseFilesFoundUpdate(searchStatus: searchOutcome?.FinalState ?? FileSearchStatus.Failed);
     }
 
-    private void PopulateHistoryDropdowns(bool updateExclusions)
+    private void PopulateHistoryDropdowns()
     {
-        cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
-        cmbFilePattern.ApplyComboBoxHistory(_inclusionsHistory);
-        cmbContainingText.ApplyComboBoxHistory(_searchTextHistory);
-        cmbExceptFilePattern.ApplyComboBoxHistory(_exclusionsHistory);
+        cmbRootDir.ApplyComboBoxHistory(TextCriterionHistoryCollection.Instance.BaseDirHistory);
+        cmbFilePattern.ApplyComboBoxHistory(TextCriterionHistoryCollection.Instance.InclusionsHistory);
+        cmbContainingText.ApplyComboBoxHistory(TextCriterionHistoryCollection.Instance.SearchTextHistory);
+        cmbExceptFilePattern.ApplyComboBoxHistory(TextCriterionHistoryCollection.Instance.ExclusionsHistory);
     }
 
     private void mnuCopyPath_Click(object sender, EventArgs e)
@@ -475,45 +473,50 @@ public partial class SearchTab : UserControl
 
     private void lstTextMatches_DrawItem(object sender, DrawListViewItemEventArgs e)
     {
-        if (e.ItemIndex < 0) return;
-
-        var itemUnderlyingMatches = lstTextMatches.Items[e.ItemIndex].Tag as FileLineTextMatch;
-
-        if (itemUnderlyingMatches == null)
-        {
-            return;
-        }
-
-        var textSegments = itemUnderlyingMatches.GetSegments();
-
-        e.DrawBackground();
-
-        Font font = lstTextMatches.Font;
-        using var highlightFont = new Font(font.FontFamily, font.Size, FontStyle.Bold, font.Unit, font.GdiCharSet, font.GdiVerticalFont);
-        float xPos = e.Bounds.Left;
-
-        using Graphics g = e.Graphics;
-
-        // Line Number:
-        string lineNumberText = itemUnderlyingMatches.LineNumber.ToString();
-        Brush brush = _brushes[0];
-        g.DrawString(lineNumberText, highlightFont, brush, xPos, e.Bounds.Top, StringFormat.GenericTypographic);
-        xPos = e.Bounds.Left + 50; // Prepare for next col.
-
-        // Text:
-        foreach (var segment in textSegments)
-        {
-            string segmentText = segment.SegmentText;
-            brush = _brushes[Math.Min(segment.SegmentColourIndex, _brushes.Length - 1)];
-            var segmentFont = segment.SegmentColourIndex == 0 ? font : highlightFont;
-            g.DrawString(segmentText, segmentFont, brush, xPos, e.Bounds.Top, StringFormat.GenericTypographic);
-            xPos += g.MeasureString(segmentText, segmentFont, 0, MeasuringHelper.FormatForMeasuring).Width;
-        }
-
         e.DrawFocusRectangle();
     }
 
+    private void lstTextMatches_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
+    {
+        if (e.ItemIndex < 0)
+            return;
 
+        // TODO: Move this out.
+        Font font = lstTextMatches.Font;
+        using var highlightFont = new Font(font.FontFamily, font.Size, FontStyle.Bold, font.Unit, font.GdiCharSet, font.GdiVerticalFont);
+
+        using Graphics g = e.Graphics;
+
+        if (e.ColumnIndex == 0)
+        {
+            // Line Number:
+            string lineNumberText = e.SubItem!.Text;
+            Brush brush = _brushes[0];
+            g.DrawString(lineNumberText, highlightFont, brush, e.Bounds.Left + 5, e.Bounds.Top + 3, StringFormat.GenericTypographic);
+        }
+        else
+        {
+            var itemUnderlyingMatches = lstTextMatches.Items[e.ItemIndex].Tag as FileLineTextMatch;
+
+            if (itemUnderlyingMatches == null)
+            {
+                return;
+            }
+
+            var textSegments = itemUnderlyingMatches.GetSegments();
+            float xPos = e.Bounds.Left;
+
+            // Text:
+            foreach (var segment in textSegments)
+            {
+                string segmentText = segment.SegmentText;
+                Brush brush = _brushes[Math.Min(segment.SegmentColourIndex, _brushes.Length - 1)];
+                var segmentFont = segment.SegmentColourIndex == 0 ? font : highlightFont;
+                g.DrawString(segmentText, segmentFont, brush, xPos, e.Bounds.Top + 3, StringFormat.GenericTypographic);
+                xPos += g.MeasureString(segmentText, segmentFont, 0, MeasuringHelper.FormatForMeasuring).Width;
+            }
+        }
+    }
 
     private void grdResult_RowEnter(object sender, DataGridViewCellEventArgs e)
     {
@@ -529,7 +532,7 @@ public partial class SearchTab : UserControl
             lstTextMatches.Items.Clear();
             foreach (var match in matches)
             {
-                var newItem = lstTextMatches.Items.Add(match.Line);
+                var newItem = lstTextMatches.Items.Add(new ListViewItem([match.LineNumber.ToString(), match.Line]));
                 newItem.Tag = match;
             }
         }
@@ -541,13 +544,21 @@ public partial class SearchTab : UserControl
 
         _parent = (this.Parent!.Parent!.Parent as SearchForm)!;
 
-        ColumnHeader header = new()
+        ColumnHeader lineNumberHeader = new()
         {
             Text = "",
             Name = "col1",
+            Width = 45 // TODO: resize when drawing.
+        };
+        ColumnHeader matchingTextHeader = new()
+        {
+            Text = "",
+            Name = "col2",
             Width = 2000
         };
-        lstTextMatches.Columns.Add(header);
+
+        lstTextMatches.Columns.Add(lineNumberHeader);
+        lstTextMatches.Columns.Add(matchingTextHeader);
 
         SetInputFont(this);
 
@@ -722,8 +733,9 @@ public partial class SearchTab : UserControl
     {
         var currPath = cmbRootDir.Text;
 
-        var possibleContinuations = DirectoryPredictiveTexter.GetPossibleContinuations(currPath);
-        cmbRootDir.PopulateDropdown(_baseDirHistory, possibleContinuations);
+        var possibleContinuations = TextCriterionHistoryCollection.Instance.BaseDirHistory.GetPossibleContinuations(currPath);
+
+        cmbRootDir.PopulateDropdown(TextCriterionHistoryCollection.Instance.BaseDirHistory, possibleContinuations);
     }
 
     private void cmbRootDir_Enter(object sender, EventArgs e)
@@ -731,7 +743,7 @@ public partial class SearchTab : UserControl
         if (sender is PredictiveComboBox cmbRootDir)
         {
             cmbRootDir.SelectAll();
-            cmbRootDir.ApplyComboBoxHistory(_baseDirHistory);
+            cmbRootDir.ApplyComboBoxHistory(TextCriterionHistoryCollection.Instance.BaseDirHistory);
         }
     }
 
@@ -884,5 +896,10 @@ public partial class SearchTab : UserControl
 
     private void grdResult_Sorted(object sender, EventArgs e)
     {
+    }
+
+    private void SearchTab_Enter(object sender, EventArgs e)
+    {
+        PopulateHistoryDropdowns();
     }
 }

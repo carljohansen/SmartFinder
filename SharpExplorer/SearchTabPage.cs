@@ -60,6 +60,12 @@ public class SearchTabPage : TabPage
                 return;
             }
         }
+        else if (e.SearchStatus == FileSearchStatus.Failed)
+        {
+            _lastFileCountShown = -2;
+            SetParentTabTitle("Failed");
+            return;
+        }
         else
         {
             if (e.FilesFound <= 0)

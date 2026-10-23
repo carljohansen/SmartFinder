@@ -101,6 +101,7 @@ public partial class SearchForm : Form
             }
         }
 
+        TextCriterionHistoryCollection.Instance.EnsureRefreshed();
         var savedTabs = UserSearchRepository.LoadSavedSearches();
         var savedPrefs = TabSettingsRepository.LoadSavedTabSettings();
         if (savedTabs.Length > 0)
@@ -168,7 +169,9 @@ public partial class SearchForm : Form
             return;
         }
 
+        TextCriterionHistoryCollection.Instance.ClearAll();
         UserSearchRepository.DeleteHistoryFiles();
+
         foreach (SearchTabPage tabPage in tabsMain.TabPages)
         {
             tabPage.ClearHistory();

@@ -63,7 +63,7 @@
             //
             // fileToolStripMenuItem
             //
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuQuit, mnuClearSearchHistory });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuClearSearchHistory, mnuQuit });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "File";
