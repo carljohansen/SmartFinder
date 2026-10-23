@@ -1,7 +1,7 @@
-﻿using SharpExplorer.Domain;
+﻿using RangeFinder.Domain;
 using System.Data;
 
-namespace SharpExplorer.Controls;
+namespace RangeFinder.Controls;
 
 public class SearchResultDataGridView : DataGridView
 {

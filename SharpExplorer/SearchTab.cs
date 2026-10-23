@@ -1,15 +1,15 @@
-using SharpExplorer.Controls;
-using SharpExplorer.Domain;
-using SharpExplorer.Domain.FileType;
-using SharpExplorer.Domain.History;
-using SharpExplorer.Domain.TextSearch;
+using RangeFinder.Controls;
+using RangeFinder.Domain;
+using RangeFinder.Domain.FileType;
+using RangeFinder.Domain.History;
+using RangeFinder.Domain.TextSearch;
 using System.Collections.Specialized;
 using System.Data;
 using System.Diagnostics;
 using System.ComponentModel;
-using SharpExplorer.Extensions;
+using RangeFinder.Extensions;
 
-namespace SharpExplorer;
+namespace RangeFinder;
 
 public partial class SearchTab : UserControl
 {

@@ -1,7 +1,7 @@
-﻿using SharpExplorer.Domain.History;
-using SharpExplorer.Domain.TextSearch;
+﻿using RangeFinder.Domain.History;
+using RangeFinder.Domain.TextSearch;
 
-namespace SharpExplorer.Domain.Tests;
+namespace RangeFinder.Domain.Tests;
 
 public class AtomicTextMatchTests
 {

@@ -1,4 +1,4 @@
-﻿namespace SharpExplorer.Domain.TextSearch;
+﻿namespace RangeFinder.Domain.TextSearch;
 
 public class FileTextMatcher(string? BaseDirectory, AtomicTextMatch TextMatch)
 {

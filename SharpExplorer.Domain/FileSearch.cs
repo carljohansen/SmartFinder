@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.FileSystemGlobbing;
-using SharpExplorer.Domain.History;
-using SharpExplorer.Domain.TextSearch;
+using RangeFinder.Domain.History;
+using RangeFinder.Domain.TextSearch;
 using System.Data;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace SharpExplorer.Domain;
+namespace RangeFinder.Domain;
 
 public record SearchOutcome(string StatusMessage, FileSearchStatus FinalState);
 

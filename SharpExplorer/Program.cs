@@ -1,4 +1,4 @@
-namespace SharpExplorer
+namespace RangeFinder
 {
     internal static class Program
     {

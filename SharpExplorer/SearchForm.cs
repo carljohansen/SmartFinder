@@ -1,6 +1,6 @@
-﻿using SharpExplorer.Domain.History;
+﻿using RangeFinder.Domain.History;
 
-namespace SharpExplorer;
+namespace RangeFinder;
 
 public partial class SearchForm : Form
 {

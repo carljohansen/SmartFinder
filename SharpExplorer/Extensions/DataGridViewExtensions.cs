@@ -1,4 +1,4 @@
-﻿namespace SharpExplorer.Extensions;
+﻿namespace RangeFinder.Extensions;
 
 internal static class DataGridViewExtensions
 {

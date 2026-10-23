@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SharpExplorer.Domain;
+namespace RangeFinder.Domain;
 
 public static class FileIconRepository
 {

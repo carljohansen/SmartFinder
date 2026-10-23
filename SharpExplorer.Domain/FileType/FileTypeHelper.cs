@@ -1,4 +1,4 @@
-﻿namespace SharpExplorer.Domain.FileType;
+﻿namespace RangeFinder.Domain.FileType;
 
 public record FileTypeDetails(string Description, bool IsText);
 

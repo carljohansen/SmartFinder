@@ -1,7 +1,7 @@
-using SharpExplorer.Controls;
-using SharpExplorer.Domain.TextSearch;
+using RangeFinder.Controls;
+using RangeFinder.Domain.TextSearch;
 
-namespace SharpExplorer;
+namespace RangeFinder;
 
 internal class MatchListRenderer
 {

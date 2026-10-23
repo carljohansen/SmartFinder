@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="SharpExplorer.Domain.Tests/SharpExplorer.Domain.Tests.csproj" />
-  <Project Path="SharpExplorer.Domain/SharpExplorer.Domain.csproj" />
-  <Project Path="SharpExplorer/SharpExplorer.csproj" />
+  <Project Path="SharpExplorer.Domain.Tests/RangeFinder.Domain.Tests.csproj" />
+  <Project Path="SharpExplorer.Domain/RangeFinder.Domain.csproj" />
+  <Project Path="SharpExplorer/RangeFinder.csproj" />
 </Solution>

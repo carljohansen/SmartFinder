@@ -1,7 +1,7 @@
-using SharpExplorer.Domain.FileType;
+using RangeFinder.Domain.FileType;
 using System.Drawing;
 
-namespace SharpExplorer.Domain;
+namespace RangeFinder.Domain;
 
 public class ExtensionMetadataRepository
 {

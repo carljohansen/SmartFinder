@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace SharpExplorer.Domain.History;
+namespace RangeFinder.Domain.History;
 
 public static class TabSettingsRepository
 {

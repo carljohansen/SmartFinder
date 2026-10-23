@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Drawing;
 
-namespace SharpExplorer.Domain;
+namespace RangeFinder.Domain;
 
 public class FileDisplay
 {

@@ -1,6 +1,6 @@
-﻿using SharpExplorer;
-using SharpExplorer.Domain;
-using SharpExplorer.Domain.History;
+﻿using RangeFinder;
+using RangeFinder.Domain;
+using RangeFinder.Domain.History;
 
 public class SearchTabPage : TabPage
 {

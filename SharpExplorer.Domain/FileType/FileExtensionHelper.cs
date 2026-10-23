@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SharpExplorer.Domain.FileType;
+namespace RangeFinder.Domain.FileType;
 
 public static class FileExtensionHelper
 {

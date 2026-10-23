@@ -1,4 +1,4 @@
-﻿namespace SharpExplorer.Domain.TextSearch;
+﻿namespace RangeFinder.Domain.TextSearch;
 
 internal static class StringExtensions
 {

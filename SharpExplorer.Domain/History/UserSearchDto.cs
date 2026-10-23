@@ -1,6 +1,6 @@
-﻿using SharpExplorer.Domain.TextSearch;
+﻿using RangeFinder.Domain.TextSearch;
 
-namespace SharpExplorer.Domain.History;
+namespace RangeFinder.Domain.History;
 
 public class UserSearchDto
 {

@@ -1,6 +1,6 @@
-﻿using SharpExplorer.Domain.TextSearch;
+﻿using RangeFinder.Domain.TextSearch;
 
-namespace SharpExplorer.Domain.Tests;
+namespace RangeFinder.Domain.Tests;
 
 public class FileLineTextMatchTests
 {

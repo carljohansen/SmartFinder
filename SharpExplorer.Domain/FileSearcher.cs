@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
-using SharpExplorer.Domain.FileType;
+using RangeFinder.Domain.FileType;
 using System.Diagnostics;
 
-namespace SharpExplorer.Domain;
+namespace RangeFinder.Domain;
 
 public static class FileSearcher
 {

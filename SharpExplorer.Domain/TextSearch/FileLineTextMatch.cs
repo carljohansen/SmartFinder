@@ -1,8 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("SharpExplorer.Domain.Tests")]
+[assembly: InternalsVisibleTo("RangeFinder.Domain.Tests")]
 
-namespace SharpExplorer.Domain.TextSearch;
+namespace RangeFinder.Domain.TextSearch;
 
 public record FileLineTextMatch(string Line, int LineNumber, int StartPos, int Length, AtomicTextMatch Source)
 {

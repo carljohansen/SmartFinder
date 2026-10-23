@@ -1,6 +1,6 @@
-﻿using SharpExplorer.Controls;
+﻿using RangeFinder.Controls;
 
-namespace SharpExplorer
+namespace RangeFinder
 {
     partial class SearchTab
     {

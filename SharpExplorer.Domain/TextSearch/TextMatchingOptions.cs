@@ -1,4 +1,4 @@
-﻿namespace SharpExplorer.Domain.TextSearch;
+﻿namespace RangeFinder.Domain.TextSearch;
 
 [Flags]
 public enum TextMatchingOptions

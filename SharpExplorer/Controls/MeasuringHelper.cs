@@ -1,4 +1,4 @@
-﻿namespace SharpExplorer.Controls;
+﻿namespace RangeFinder.Controls;
 
 public static class MeasuringHelper
 {

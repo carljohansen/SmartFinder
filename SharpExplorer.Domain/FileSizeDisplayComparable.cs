@@ -1,4 +1,4 @@
-namespace SharpExplorer.Domain;
+namespace RangeFinder.Domain;
 
 public class FileSizeDisplayComparable : IComparable
 {

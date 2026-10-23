@@ -1,6 +1,6 @@
-﻿using SharpExplorer.Domain.History;
+﻿using RangeFinder.Domain.History;
 
-namespace SharpExplorer.Controls;
+namespace RangeFinder.Controls;
 
 internal static class ComboBoxExtensions
 {

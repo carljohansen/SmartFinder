@@ -1,4 +1,4 @@
-﻿namespace SharpExplorer.Domain.History;
+﻿namespace RangeFinder.Domain.History;
 
 public class TextCriterionHistoryCollection
 {

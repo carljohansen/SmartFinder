@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace SharpExplorer.Domain;
+namespace RangeFinder.Domain;
 
 public class FileLocation
 {

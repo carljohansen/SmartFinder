@@ -1,8 +1,8 @@
-using SharpExplorer.Domain.TextSearch;
+using RangeFinder.Domain.TextSearch;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace SharpExplorer.Domain.History;
+namespace RangeFinder.Domain.History;
 
 public static class UserSearchRepository
 {
