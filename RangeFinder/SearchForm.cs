@@ -49,9 +49,17 @@ public partial class SearchForm : Form
 
     private void closeTabToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        if (tabsMain.SelectedTab is SearchTabPage selectedTabPage)
+        CloseTab(tabsMain.SelectedIndex);
+    }
+
+    private void CloseTab(int index)
+    {
+        if (tabsMain.TabPages[index] is SearchTabPage selectedTabPage)
         {
-            tabsMain.SelectedIndex = tabsMain.SelectedIndex == 0 ? 1 : tabsMain.SelectedIndex - 1;
+            if (tabsMain.SelectedIndex == index)
+            {
+                tabsMain.SelectedIndex = index == 0 ? 1 : index - 1;
+            }
             selectedTabPage.CancelSearch();
             tabsMain.TabPages.Remove(selectedTabPage);
             UserSearchRepository.DeleteSearchDto(selectedTabPage.Index);
@@ -142,12 +150,19 @@ public partial class SearchForm : Form
 
     private void duplicateTabToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        var currentTab = tabsMain.SelectedTab as SearchTabPage;
-        var currentTabSearchSettings = currentTab?.GetCurrentSearchSettings();
-        if (currentTabSearchSettings != null)
+        DuplicateTab(tabsMain.SelectedIndex);
+    }
+
+    private void DuplicateTab(int index)
+    {
+        if (tabsMain.TabPages[index] is SearchTabPage tabToDuplicate)
         {
-            currentTabSearchSettings.SearchDto.Id = 0; // Reset ID for the new tab
-            AddNewTab(currentTabSearchSettings);
+            var tabSearchSettings = tabToDuplicate?.GetCurrentSearchSettings();
+            if (tabSearchSettings != null)
+            {
+                tabSearchSettings.SearchDto.Id = 0; // Reset ID for the new tab
+                AddNewTab(tabSearchSettings);
+            }
         }
     }
 
@@ -216,5 +231,40 @@ public partial class SearchForm : Form
                 return true;
         }
         return false;
+    }
+
+    private void mnuCloseTab_Click(object sender, EventArgs e)
+    {
+        if (_tabIndexForContextMenu.HasValue)
+        {
+            CloseTab(_tabIndexForContextMenu.Value);
+        }
+    }
+
+    private void mnuDuplicateTab_Click(object sender, EventArgs e)
+    {
+        if (_tabIndexForContextMenu.HasValue)
+        {
+            DuplicateTab(_tabIndexForContextMenu.Value);
+        }
+    }
+
+    private int? _tabIndexForContextMenu = null;
+
+    private void mnuTabContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        _tabIndexForContextMenu = null;
+
+        Point p = this.tabsMain.PointToClient(Cursor.Position);
+        for (int i = 0; i < this.tabsMain.TabCount; i++)
+        {
+            Rectangle r = this.tabsMain.GetTabRect(i);
+            if (r.Contains(p))
+            {
+                _tabIndexForContextMenu = i; // i is the index of tab under cursor
+                return;
+            }
+        }
+        e.Cancel = true;
     }
 }
