@@ -72,6 +72,9 @@ namespace RangeFinder
             statusStrip1 = new StatusStrip();
             TabProgressBar = new ToolStripProgressBar();
             lblTabStatus = new ToolStripStatusLabel();
+            toolStripSeparator1 = new ToolStripSeparator();
+            toolStripSeparator2 = new ToolStripSeparator();
+            mnuSearchHereInNewTab = new ToolStripMenuItem();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -115,9 +118,9 @@ namespace RangeFinder
             // mnuFileItemContext
             // 
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
-            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuOpenWithTextEditor, mnuShowInExplorer, mnuCopyPath, mnuCopyFolderPath, mnuCopyFiles, mnuSearchHere, mnuExcludeThisFolder });
+            mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuOpenWithTextEditor, mnuShowInExplorer, toolStripSeparator1, mnuCopyPath, mnuCopyFolderPath, mnuCopyFiles, toolStripSeparator2, mnuSearchHere, mnuExcludeThisFolder });
             mnuFileItemContext.Name = "mnuFileItemContext";
-            mnuFileItemContext.Size = new Size(194, 180);
+            mnuFileItemContext.Size = new Size(194, 214);
             // 
             // mnuOpenFile
             // 
@@ -165,6 +168,7 @@ namespace RangeFinder
             // 
             // mnuSearchHere
             // 
+            mnuSearchHere.DropDownItems.AddRange(new ToolStripItem[] { mnuSearchHereInNewTab });
             mnuSearchHere.Name = "mnuSearchHere";
             mnuSearchHere.Size = new Size(193, 22);
             mnuSearchHere.Text = "Search This Folder...";
@@ -493,6 +497,23 @@ namespace RangeFinder
             lblTabStatus.Name = "lblTabStatus";
             lblTabStatus.Size = new Size(0, 17);
             // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(190, 6);
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(190, 6);
+            // 
+            // mnuSearchHereInNewTab
+            // 
+            mnuSearchHereInNewTab.Name = "mnuSearchHereInNewTab";
+            mnuSearchHereInNewTab.Size = new Size(180, 22);
+            mnuSearchHereInNewTab.Text = "In A New Tab";
+            mnuSearchHereInNewTab.Click += mnuSearchHereInNewTab_Click;
+            // 
             // SearchTab
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -577,5 +598,8 @@ namespace RangeFinder
         private StatusStrip statusStrip1;
         private ToolStripProgressBar TabProgressBar;
         private ToolStripStatusLabel lblTabStatus;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem mnuSearchHereInNewTab;
     }
 }

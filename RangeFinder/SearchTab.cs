@@ -385,6 +385,8 @@ public partial class SearchTab : UserControl
 
     private void mnuSearchHere_Click(object sender, EventArgs e)
     {
+        mnuFileItemContext.Hide();
+
         var selectedFileDisplay = GetRowFileDisplay(contextMenuRowIndex);
         if (selectedFileDisplay == null)
             return;
@@ -401,6 +403,28 @@ public partial class SearchTab : UserControl
         {
             cmbRootDir.Text = containingFolder;
             cmbRootDir.FocusWithEndCursor();
+        }
+    }
+
+    private void mnuSearchHereInNewTab_Click(object sender, EventArgs e)
+    {
+        var selectedFileDisplay = GetRowFileDisplay(contextMenuRowIndex);
+        if (selectedFileDisplay == null)
+            return;
+
+        var selectedFilePath = selectedFileDisplay.FullPath;
+        if (selectedFilePath == null
+            || !File.Exists(selectedFilePath))
+        {
+            return;
+        }
+
+        var containingFolder = Path.GetDirectoryName(selectedFilePath);
+        if (containingFolder != null)
+        {
+            var currentState = GetCurrentTabState();
+            currentState.SearchDto.BaseDirectoriesPattern = containingFolder;
+            _parent.AddNewTab(currentState);
         }
     }
 
@@ -872,5 +896,5 @@ public partial class SearchTab : UserControl
         var possibleContinuations = TextCriterionHistoryCollection.Instance.SearchTextHistory.GetPossibleContinuations(currPath);
 
         cmbContainingText.PopulateDropdown(TextCriterionHistoryCollection.Instance.SearchTextHistory, possibleContinuations);
-    }
+    }    
 }

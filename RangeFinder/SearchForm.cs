@@ -19,7 +19,7 @@ public partial class SearchForm : Form
         AddNewTab(UserTabState.CreateDefault());
     }
 
-    private SearchTabPage AddNewTab(UserTabState initialState)
+    public SearchTabPage AddNewTab(UserTabState initialState)
     {
         if (initialState.Id == 0)
         {
