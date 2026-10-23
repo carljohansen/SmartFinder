@@ -114,6 +114,11 @@ public class UserSearchDto
         return result;
     }
 
+    public bool IsValidBaseDir()
+    {
+        return !(string.IsNullOrWhiteSpace(BaseDirectoriesPattern) || !Directory.Exists(BaseDirectoriesPattern));
+    }
+
     public static UserSearchDto CreateDefault() => new()
     {
         Id = 0,

@@ -94,7 +94,6 @@ public partial class SearchTab : UserControl
     {
         var searchPatterns = cmbFilePattern.Text.Trim();
         var exceptSearchPatterns = cmbExceptFilePattern.Text.Trim();
-        var directoryPath = string.IsNullOrEmpty(cmbRootDir.Text) ? "." : cmbRootDir.Text;
         var query = cmbContainingText.Text;
         var doMatchCase = chkMatchCase.Checked;
         var doMatchWholeWord = chkMatchWholeWord.Checked;
@@ -121,7 +120,7 @@ public partial class SearchTab : UserControl
             RawExcludeFilesPattern = exceptSearchPatterns,
             TextSearchPattern = query,
             TextMatchingOptions = options,
-            BaseDirectoriesPattern = UserSearchDto.NormalizeDirectoryName(directoryPath),
+            BaseDirectoriesPattern = UserSearchDto.NormalizeDirectoryName(cmbRootDir.Text),
             EnableFileExclusion = chkEnableExclusions.Checked,
             FilterByModifiedDate = chkFilterByDate.Checked,
             ShowHiddenItems = chkShowHidden.Checked,
@@ -207,6 +206,16 @@ public partial class SearchTab : UserControl
 
     private async void btnSearch_Click(object sender, EventArgs e)
     {
+        var searchDto = GetCurrentTabState().SearchDto;
+
+        if (!searchDto.IsValidBaseDir())
+        {
+            cmbRootDir.BackColor = Color.Pink;
+            cmbRootDir.Focus();
+            SetStatusText("Invalid search directory");
+            return;
+        }
+
         SetStatusText("Searching...");
         btnSearch.Enabled = false;
         btnCancelSearch.Enabled = true;
@@ -218,7 +227,6 @@ public partial class SearchTab : UserControl
         contextMenuRowIndex = -1;
         _searchCancellationTokenSource = new CancellationTokenSource();
 
-        var searchDto = GetCurrentTabState().SearchDto;
         spltResultPanel.FixedPanel = searchDto.HasTextSearch() ? FixedPanel.Panel1 : FixedPanel.Panel2;
 
         SearchOutcome? searchOutcome = null;
@@ -683,6 +691,8 @@ public partial class SearchTab : UserControl
 
     private void cmbRootDir_TextUpdate(object sender, EventArgs e)
     {
+        cmbRootDir.BackColor = default;
+
         var currPath = cmbRootDir.Text;
 
         var possibleContinuations = TextCriterionHistoryCollection.Instance.BaseDirHistory.GetPossibleContinuations(currPath);
