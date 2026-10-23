@@ -249,6 +249,22 @@ public partial class SearchForm : Form
         }
     }
 
+    private void mnuCloseOtherTabs_Click(object sender, EventArgs e)
+    {
+        if (!_tabIndexForContextMenu.HasValue)
+            return;
+
+        var tabToKeep = tabsMain.TabPages[_tabIndexForContextMenu.Value];
+
+        while (tabsMain.TabPages.Count > 1)
+        {
+            var lastTabIndex = tabsMain.TabPages.Count - 1;
+            if (tabsMain.TabPages[lastTabIndex] == tabToKeep)
+                lastTabIndex--;
+            CloseTab(lastTabIndex);
+        }
+    }
+
     private int? _tabIndexForContextMenu = null;
 
     private void mnuTabContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)

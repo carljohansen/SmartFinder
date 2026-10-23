@@ -32,7 +32,7 @@
             tabsMain = new TabControl();
             mnuTabContext = new ContextMenuStrip(components);
             mnuCloseTab = new ToolStripMenuItem();
-            closeOtherTabsToolStripMenuItem = new ToolStripMenuItem();
+            mnuCloseOtherTabs = new ToolStripMenuItem();
             mnuDuplicateTab = new ToolStripMenuItem();
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
@@ -59,28 +59,29 @@
             // 
             // mnuTabContext
             // 
-            mnuTabContext.Items.AddRange(new ToolStripItem[] { mnuCloseTab, closeOtherTabsToolStripMenuItem, mnuDuplicateTab });
+            mnuTabContext.Items.AddRange(new ToolStripItem[] { mnuCloseTab, mnuCloseOtherTabs, mnuDuplicateTab });
             mnuTabContext.Name = "mnuTabContext";
-            mnuTabContext.Size = new Size(181, 92);
+            mnuTabContext.Size = new Size(164, 70);
             mnuTabContext.Opening += mnuTabContext_Opening;
             // 
             // mnuCloseTab
             // 
             mnuCloseTab.Name = "mnuCloseTab";
-            mnuCloseTab.Size = new Size(180, 22);
+            mnuCloseTab.Size = new Size(163, 22);
             mnuCloseTab.Text = "Close Tab";
             mnuCloseTab.Click += mnuCloseTab_Click;
             // 
-            // closeOtherTabsToolStripMenuItem
+            // mnuCloseOtherTabs
             // 
-            closeOtherTabsToolStripMenuItem.Name = "closeOtherTabsToolStripMenuItem";
-            closeOtherTabsToolStripMenuItem.Size = new Size(180, 22);
-            closeOtherTabsToolStripMenuItem.Text = "Close Other Tabs";
+            mnuCloseOtherTabs.Name = "mnuCloseOtherTabs";
+            mnuCloseOtherTabs.Size = new Size(163, 22);
+            mnuCloseOtherTabs.Text = "Close Other Tabs";
+            mnuCloseOtherTabs.Click += mnuCloseOtherTabs_Click;
             // 
             // mnuDuplicateTab
             // 
             mnuDuplicateTab.Name = "mnuDuplicateTab";
-            mnuDuplicateTab.Size = new Size(180, 22);
+            mnuDuplicateTab.Size = new Size(163, 22);
             mnuDuplicateTab.Text = "Duplicate Tab";
             mnuDuplicateTab.Click += mnuDuplicateTab_Click;
             // 
@@ -180,7 +181,7 @@
         private ToolStripMenuItem mnuClearSearchHistory;
         private ContextMenuStrip mnuTabContext;
         private ToolStripMenuItem mnuCloseTab;
-        private ToolStripMenuItem closeOtherTabsToolStripMenuItem;
+        private ToolStripMenuItem mnuCloseOtherTabs;
         private ToolStripMenuItem mnuDuplicateTab;
     }
 }
