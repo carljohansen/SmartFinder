@@ -11,7 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\SharpExplorer.Domain\RangeFinder.Domain.csproj" />
+		<ProjectReference Include="..\RangeFinder.Domain\RangeFinder.Domain.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="RangeFinder.Domain.Tests/RangeFinder.Domain.Tests.csproj" />
+  <Project Path="RangeFinder.Domain/RangeFinder.Domain.csproj" />
+  <Project Path="RangeFinder/RangeFinder.csproj" />
+</Solution>
