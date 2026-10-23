@@ -34,7 +34,7 @@ namespace SharpExplorer
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             btnSearch = new Button();
             cmbFilePattern = new ComboBox();
-            cmbContainingText = new ComboBox();
+            cmbContainingText = new PredictiveComboBox();
             mnuFileItemContext = new ContextMenuStrip(components);
             mnuOpenFile = new ToolStripMenuItem();
             mnuOpenWithTextEditor = new ToolStripMenuItem();
@@ -110,6 +110,7 @@ namespace SharpExplorer
             cmbContainingText.Name = "cmbContainingText";
             cmbContainingText.Size = new Size(638, 23);
             cmbContainingText.TabIndex = 5;
+            cmbContainingText.TextUpdate += cmbContainingText_TextUpdate;
             // 
             // mnuFileItemContext
             // 
@@ -538,7 +539,7 @@ namespace SharpExplorer
 
         private Button btnSearch;
         private ComboBox cmbFilePattern;
-        private ComboBox cmbContainingText;
+        private PredictiveComboBox cmbContainingText;
         private CheckBox chkMatchCase;
         private CheckBox chkMatchWholeWord;
         private Label label1;

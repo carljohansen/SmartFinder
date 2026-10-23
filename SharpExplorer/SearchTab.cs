@@ -854,4 +854,13 @@ public partial class SearchTab : UserControl
     {
         PopulateHistoryDropdowns();
     }
+
+    private void cmbContainingText_TextUpdate(object sender, EventArgs e)
+    {
+        var currPath = cmbContainingText.Text;
+
+        var possibleContinuations = TextCriterionHistoryCollection.Instance.SearchTextHistory.GetPossibleContinuations(currPath);
+
+        cmbContainingText.PopulateDropdown(TextCriterionHistoryCollection.Instance.SearchTextHistory, possibleContinuations);
+    }
 }
