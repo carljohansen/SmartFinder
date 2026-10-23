@@ -19,12 +19,7 @@ public partial class SearchTab : UserControl
     public event EventHandler<FilesFoundUpdateEventArgs>? FilesFoundUpdate;
 
     private readonly FileSearch _currentSearch;
-    //private readonly TextCriterionHistory _baseDirHistory = new(25, UserSearchRepository.BaseDirHistoryFileName);
-    //private readonly TextCriterionHistory _exclusionsHistory = new(15, UserSearchRepository.ExclusionsHistoryFileName);
-    //private readonly TextCriterionHistory _inclusionsHistory = new(15, UserSearchRepository.InclusionsHistoryFileName);
-    //private readonly TextCriterionHistory _searchTextHistory = new(25, UserSearchRepository.SearchTextHistoryFileName);
 
-    //private readonly TextCriterionHistory[] _histories;
     private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
 
     private int contextMenuRowIndex = -1;
@@ -48,7 +43,6 @@ public partial class SearchTab : UserControl
         AnchorByHand();
 
         Index = initialState.Id;
-        //_histories = [_baseDirHistory, _exclusionsHistory, _inclusionsHistory, _searchTextHistory];
 
         var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();
         var searchResultDataSource = new BindingSource(resultTable.DefaultView, null!);
@@ -58,11 +52,6 @@ public partial class SearchTab : UserControl
         grdResult.DataSource = searchResultDataSource;
 
         _currentSearch.SearchProgressUpdate += HandleSearchStatusUpdate;
-
-        //foreach (var historyList in _histories)
-        //{
-        //    historyList.Initialize();
-        //}
 
         ApplyUserSearchDto(initialState.SearchDto);
     }
@@ -95,11 +84,6 @@ public partial class SearchTab : UserControl
 
     public void ClearHistory()
     {
-        //foreach (var historyList in _histories)
-        //{
-        //    historyList.Clear();
-        //}
-
         cmbFilePattern.Items.Clear();
         cmbExceptFilePattern.Items.Clear();
         cmbRootDir.Items.Clear();
