@@ -147,21 +147,31 @@ public class FileSearch
         return wasCancelled;
     }
 
-    public IAsyncEnumerable<FileDisplay> SearchFilesAsync(string directoryPath,
+    public async IAsyncEnumerable<FileDisplay> SearchFilesAsync(string directoryPath,
                                                             PathCollection includePatterns,
                                                             PathCollection excludePatterns,
-                                                            CancellationToken cancellationToken)
+                                                            [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath))
         {
             throw new ArgumentException("Invalid directory path.", nameof(directoryPath));
         }
 
-        return SearchFilesInternalAsync(directoryPath,
+        // TODO: Don't put this here.  Put this method back the way it was,
+        // (i.e. not async).
+        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Verifying permissions...", ProgressPercentage = 0 });
+
+        var inaccessiblePaths = await Task.Run(() => DirectorySearch.GetInaccessibleExclusionPaths(directoryPath));
+        excludePatterns.AddRange(inaccessiblePaths);
+
+        await foreach (var val in SearchFilesInternalAsync(directoryPath,
                                         includePatterns,
                                         excludePatterns,
                                         [.. TextSearches.Select(ts => new FileTextMatcher(directoryPath, ts))],
-                                        cancellationToken);
+                                        cancellationToken))
+        {
+            yield return val;
+        }
     }
 
     private async IAsyncEnumerable<FileDisplay> SearchFilesInternalAsync(string baseDirectory,

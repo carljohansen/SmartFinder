@@ -18,7 +18,6 @@ public static class FileSearcher
                 matcher.AddInclude(pattern);
             }
 
-            matcher.AddExclude(@"\System Volume Information\**");
             foreach (var pattern in excludePatterns.Paths)
             {
                 matcher.AddExclude(pattern);

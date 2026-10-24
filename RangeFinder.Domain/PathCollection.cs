@@ -31,6 +31,11 @@ public class PathCollection
         return new(paths);
     }
 
+    public void AddRange(IEnumerable<string> morePaths)
+    {
+        _paths.AddRange(morePaths);
+    }
+
     public static PathCollection CreateForFullSearch() => Create("", PathCollectionOptions.AddGeneralWildcardIfBlank);
 
     public static string Globbify(string path)
