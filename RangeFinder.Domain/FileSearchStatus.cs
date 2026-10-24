@@ -6,5 +6,6 @@ public enum FileSearchStatus
     Running,
     Completed,
     Cancelled,
-    Failed
+    Failed,
+    UnauthorizedEx
 }

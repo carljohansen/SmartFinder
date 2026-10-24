@@ -14,6 +14,7 @@ public class SearchTabPage : TabPage
         { FileSearchStatus.Running, Color.LightBlue },
         { FileSearchStatus.Completed, Color.LightGreen },
         { FileSearchStatus.Failed, Color.LightPink },
+        { FileSearchStatus.UnauthorizedEx, Color.LightPink },
         { FileSearchStatus.Cancelled, Color.LightGoldenrodYellow },
         { FileSearchStatus.NotRunning, default },
     };
@@ -60,7 +61,7 @@ public class SearchTabPage : TabPage
                 return;
             }
         }
-        else if (e.SearchStatus == FileSearchStatus.Failed)
+        else if (e.SearchStatus is FileSearchStatus.Failed or FileSearchStatus.UnauthorizedEx)
         {
             _lastFileCountShown = -2;
             SetParentTabTitle("Failed");

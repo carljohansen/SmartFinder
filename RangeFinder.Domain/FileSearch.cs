@@ -74,7 +74,14 @@ public class FileSearch
     {
         var timer = Stopwatch.StartNew();
 
-        bool wasCancelled = await SearchAndPopulateTableAsyncInternal(searchDto, cancellationToken);
+        var searchCompletionStatus = await SearchAndPopulateTableAsyncInternal(searchDto, cancellationToken);
+
+        if (searchCompletionStatus == FileSearchStatus.UnauthorizedEx)
+        {
+            return new SearchOutcome("Encountered inaccessible folder", FileSearchStatus.UnauthorizedEx);
+        }
+
+        var wasCancelled = searchCompletionStatus == FileSearchStatus.Cancelled;
 
         var cancelledMsg = wasCancelled ? " (search cancelled)" : "";
 
@@ -110,7 +117,7 @@ public class FileSearch
         }
     }
 
-    private async Task<bool> SearchAndPopulateTableAsyncInternal(UserSearchDto searchDto, CancellationToken cancellationToken)
+    private async Task<FileSearchStatus> SearchAndPopulateTableAsyncInternal(UserSearchDto searchDto, CancellationToken cancellationToken)
     {
         var options = new FileSearchOptions { AutomaticTextSearchFileFiltering = true };
 
@@ -143,8 +150,12 @@ public class FileSearch
         {
             wasCancelled = true;
         }
+        catch (UnauthorizedAccessException)
+        {
+            return FileSearchStatus.UnauthorizedEx;
+        }
 
-        return wasCancelled;
+        return wasCancelled ? FileSearchStatus.Cancelled : FileSearchStatus.Completed;
     }
 
     public async IAsyncEnumerable<FileDisplay> SearchFilesAsync(string directoryPath,
@@ -161,8 +172,8 @@ public class FileSearch
         // (i.e. not async).
         SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Verifying permissions...", ProgressPercentage = 0 });
 
-        var inaccessiblePaths = await Task.Run(() => DirectorySearch.GetInaccessibleExclusionPaths(directoryPath));
-        excludePatterns.AddRange(inaccessiblePaths);
+        //var inaccessiblePaths = await Task.Run(() => DirectorySearch.GetInaccessibleExclusionPaths(directoryPath));
+        //excludePatterns.AddRange(inaccessiblePaths);
 
         await foreach (var val in SearchFilesInternalAsync(directoryPath,
                                         includePatterns,
