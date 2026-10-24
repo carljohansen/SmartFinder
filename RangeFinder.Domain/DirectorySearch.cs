@@ -21,7 +21,7 @@ public static partial class DirectorySearch
             inaccessibleDirectoryNames[i] = Path.GetRelativePath(rootPath, inaccessibleDirectoryNames[i]);
         }
         return inaccessibleDirectoryNames;
-    }
+    }    
 
     public static List<string> GetInaccessibleSubdirectories(string rootPath)
     {

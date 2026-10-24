@@ -172,8 +172,8 @@ public class FileSearch
         // (i.e. not async).
         SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Verifying permissions...", ProgressPercentage = 0 });
 
-        //var inaccessiblePaths = await Task.Run(() => DirectorySearch.GetInaccessibleExclusionPaths(directoryPath));
-        //excludePatterns.AddRange(inaccessiblePaths);
+        var inaccessiblePaths = await Task.Run(() => DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(directoryPath));
+        excludePatterns.AddRange(inaccessiblePaths);
 
         await foreach (var val in SearchFilesInternalAsync(directoryPath,
                                         includePatterns,
