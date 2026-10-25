@@ -1,19 +1,35 @@
-﻿namespace RangeFinder.Domain;
+﻿using RangeFinder.Domain.History;
+using System.Text.Json;
+
+namespace RangeFinder.Domain;
 
 public class DirectoryEnumerator
 {
     public readonly static DirectoryEnumerator Instance = new();
 
-    public readonly Dictionary<string, List<string>> _inaccessibleDirs = new(StringComparer.OrdinalIgnoreCase);
+    public readonly Dictionary<string, List<string>> _inaccessibleDirs;
 
     private DirectoryEnumerator()
     {
+        _inaccessibleDirs = Load(GetFileName());
     }
 
     public static string NormalizePath(string directoryPath)
     {
         var result = Path.GetFullPath(directoryPath);
         return !Path.EndsInDirectorySeparator(result) ? result + Path.DirectorySeparatorChar : result;
+    }
+
+    public bool HasCachedResult(string directoryPath)
+    {
+        directoryPath = NormalizePath(directoryPath);
+
+        if (_inaccessibleDirs.ContainsKey(directoryPath))
+        {
+            return true;
+        }
+
+        return _inaccessibleDirs.Keys.Any(path => directoryPath.StartsWith(path, StringComparison.InvariantCultureIgnoreCase));
     }
 
     public List<string> GetInaccessibleSubdirectories(string directoryPath)
@@ -40,7 +56,7 @@ public class DirectoryEnumerator
 
             if (!foundSubMatch)
             {
-                preNormalizedPaths = DirectorySearch.GetInaccessibleSubdirectories(directoryPath);
+                preNormalizedPaths = DirectorySearch.GetInaccessibleSubdirectories(directoryPath); // This is the slow part.
 
                 foreach (var basePath in _inaccessibleDirs.Keys)
                 {
@@ -52,6 +68,7 @@ public class DirectoryEnumerator
                 }
 
                 _inaccessibleDirs[directoryPath] = preNormalizedPaths;
+                Save(_inaccessibleDirs, GetFileName());
             }
         }
 
@@ -63,5 +80,39 @@ public class DirectoryEnumerator
         return [.. subPaths
                     .Select(sub => Path.GetRelativePath(basePath, sub))
                     .Where(p => !p.StartsWith(".."))];
+    }
+
+    private static string GetFileName() => UserSearchRepository.GetDtoFileName("xdirs");
+
+    private static void Save(Dictionary<string, List<string>> dict, string filePath)
+    {
+        try
+        {
+            string json = JsonSerializer.Serialize(dict, UserSearchRepository.SerializationOptions);
+            File.WriteAllText(filePath, json);
+        }
+        catch
+        {
+        }
+    }
+
+    private static Dictionary<string, List<string>> Load(string filePath)
+    {
+        try
+        {
+            if (!File.Exists(filePath))
+            {
+                return [];
+            }
+
+            string json = File.ReadAllText(filePath);
+            var dict = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
+
+            return dict ?? [];
+        }
+        catch
+        {
+            return [];
+        }
     }
 }

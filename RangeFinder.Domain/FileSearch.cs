@@ -168,9 +168,12 @@ public class FileSearch
             throw new ArgumentException("Invalid directory path.", nameof(directoryPath));
         }
 
-        // TODO: Don't put this here.  Put this method back the way it was,
-        // (i.e. not async).
-        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Verifying permissions...", ProgressPercentage = 0 });
+        if (!DirectoryEnumerator.Instance.HasCachedResult(directoryPath))
+        {
+            // TODO: Don't put this here.  Put this method back the way it was,
+            // (i.e. not async).
+            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Verifying permissions...", ProgressPercentage = 0 });
+        }
 
         var inaccessiblePaths = await Task.Run(() => DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(directoryPath));
         excludePatterns.AddRange(inaccessiblePaths);
