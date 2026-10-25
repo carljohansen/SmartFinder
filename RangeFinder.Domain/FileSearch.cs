@@ -178,6 +178,26 @@ public class FileSearch
         SetSearch(searchDto);
 
         var wasCancelled = false;
+
+        if (searchDto.IncludeFolders
+            && !searchDto.HasTextSearch())
+        {
+            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building directory list...", ProgressPercentage = 0 });
+
+            var unfilteredFolderList = await Task.Run(() => DirectorySearch.GetAllSubdirectories(searchDto.BaseDirectoriesPattern, cancellationToken));
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return FileSearchStatus.Cancelled;
+            }
+
+            var filteredFolderList = FileSearcher.FilterPaths(unfilteredFolderList.DirectoryNames, searchPatternCollection, excludeSearchPatternCollection);
+            foreach (var matchingDir in filteredFolderList.Files)
+            {
+                var folderDisplay = FileDisplay.CreateFolder(matchingDir.Path, searchDto.BaseDirectoriesPattern, _fileLocationRepository);
+                folderDisplay.AddToDataTable(DataTable);
+            }
+        }
+
         try
         {
             await foreach (var item in SearchFilesAsync(searchDto.BaseDirectoriesPattern,
@@ -378,11 +398,11 @@ public class FileSearch
         {
             return false;
         }
-        if (!SearchCriteria.ShowHiddenItems
-            && item.Attributes.HasFlag(FileAttributes.Hidden))
-        {
-            return false;
-        }
+        //if (!SearchCriteria.ShowHiddenItems
+        //    && item.Attributes.HasFlag(FileAttributes.Hidden))
+        //{
+        //    return false;
+        //}
         return true;
     }
 

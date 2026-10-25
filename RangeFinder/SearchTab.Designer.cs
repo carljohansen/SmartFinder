@@ -488,9 +488,9 @@ namespace RangeFinder
             chkShowHidden.AutoSize = true;
             chkShowHidden.Location = new Point(738, 147);
             chkShowHidden.Name = "chkShowHidden";
-            chkShowHidden.Size = new Size(97, 19);
+            chkShowHidden.Size = new Size(106, 19);
             chkShowHidden.TabIndex = 104;
-            chkShowHidden.Text = "Hidden Items";
+            chkShowHidden.Text = "Include Fol&ders";
             chkShowHidden.UseVisualStyleBackColor = true;
             // 
             // statusStrip1

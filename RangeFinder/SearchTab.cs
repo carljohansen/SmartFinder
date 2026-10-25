@@ -123,7 +123,7 @@ public partial class SearchTab : UserControl
             BaseDirectoriesPattern = UserSearchDto.NormalizeDirectoryName(cmbRootDir.Text),
             EnableFileExclusion = chkEnableExclusions.Checked,
             FilterByModifiedDate = chkFilterByDate.Checked,
-            ShowHiddenItems = chkShowHidden.Checked,
+            IncludeFolders = chkShowHidden.Checked,
             ModifiedInLastQuantity = userSearchDateFilterQty,
             ModifiedInLastQuantityType = cmbDateFilterAmountType.SelectedItem?.ToString(),
         };
@@ -150,7 +150,7 @@ public partial class SearchTab : UserControl
         cmbContainingText.SelectionLength = 0;
         cmbRootDir.Text = dto.BaseDirectoriesPattern ?? "";
         chkEnableExclusions.Checked = dto.EnableFileExclusion;
-        chkShowHidden.Checked = dto.ShowHiddenItems;
+        chkShowHidden.Checked = dto.IncludeFolders;
         chkMatchCase.Checked = dto.TextMatchingOptions.HasFlag(TextMatchingOptions.CaseSensitive);
         chkMatchWholeWord.Checked = dto.TextMatchingOptions.HasFlag(TextMatchingOptions.WholeWord);
         chkFilterByDate.Checked = dto.FilterByModifiedDate;
@@ -365,26 +365,31 @@ public partial class SearchTab : UserControl
         if (selectedFileDisplay == null)
             return;
 
-        var selectedFilePath = selectedFileDisplay.FullPath;
-        if (selectedFilePath == null
-            || !File.Exists(selectedFilePath))
+        if (!selectedFileDisplay.Exists())
         {
             return;
         }
 
-        ExploreFile(selectedFilePath);
+        if (selectedFileDisplay.IsFolder())
+        {
+            ExploreFolder(selectedFileDisplay.FullPath);
+        }
+        else
+        {
+            ExploreFile(selectedFileDisplay.FullPath);
+        }
     }
 
-    private static bool ExploreFile(string filePath)
+    private static void ExploreFile(string filePath)
     {
-        if (!System.IO.File.Exists(filePath))
-        {
-            return false;
-        }
         // Clean up file path so it can be navigated OK
         filePath = System.IO.Path.GetFullPath(filePath);
-        System.Diagnostics.Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
-        return true;
+        using var _ = Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
+    }
+
+    private static void ExploreFolder(string folderPath)
+    {
+        using var _ = Process.Start("explorer.exe", folderPath);
     }
 
     private void mnuSearchHere_Click(object sender, EventArgs e)
@@ -547,6 +552,8 @@ public partial class SearchTab : UserControl
 
         chkFilterByDate.Left = txtDateFilterAmount.Left - chkFilterByDate.Width;
         AlignBaselines(txtDateFilterAmount, chkFilterByDate);
+        chkShowHidden.Top = chkFilterByDate.Top;
+        chkShowHidden.Height = chkFilterByDate.Height;
 
         lstTextMatches.Columns.Add(lineNumberHeader);
         lstTextMatches.Columns.Add(matchingTextHeader);

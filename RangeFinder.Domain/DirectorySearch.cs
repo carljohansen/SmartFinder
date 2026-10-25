@@ -10,6 +10,11 @@ public static partial class DirectorySearch
     {
         var result = new DirectorySearchResult([], []);
         GetAllSubdirectories(rootPath, result, findInaccessibleOnly: false, cancellationToken);
+        for (var i = 0; i < result.DirectoryNames.Count; i++)
+        {
+            result.DirectoryNames[i] = Path.GetRelativePath(rootPath, result.DirectoryNames[i]);
+        }
+
         return result;
     }
 

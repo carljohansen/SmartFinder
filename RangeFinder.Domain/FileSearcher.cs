@@ -46,4 +46,21 @@ public static class FileSearcher
         var notBinFiles = new PatternMatchingResult(allFiles.Files.Where(fpm => !FileTypeHelper.IsKnownBinaryFile(Path.GetExtension(fpm.Path))));
         return notBinFiles;
     }
+
+    public static PatternMatchingResult FilterPaths(IEnumerable<string> directoryNames, PathCollection includePatterns, PathCollection excludePatterns)
+    {
+        // Create matcher and add pattern
+        var matcher = new Matcher();
+        foreach (var pattern in includePatterns.Paths)
+        {
+            matcher.AddInclude(pattern);
+        }
+
+        foreach (var pattern in excludePatterns.Paths)
+        {
+            matcher.AddExclude(pattern);
+        }
+
+        return matcher.Match(directoryNames);
+    }
 }

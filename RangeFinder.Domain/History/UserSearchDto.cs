@@ -43,7 +43,7 @@ public class UserSearchDto
 
     public bool FilterByModifiedDate { get; set; }
 
-    public bool ShowHiddenItems { get; set; }
+    public bool IncludeFolders { get; set; }
 
     public float? ModifiedInLastQuantity { get; set; }
 
@@ -127,7 +127,7 @@ public class UserSearchDto
         RawIncludeFilesPattern = "",
         RawExcludeFilesPattern = "",
         EnableFileExclusion = false,
-        ShowHiddenItems = false,
+        IncludeFolders = false,
         FilterByModifiedDate = false
     };
 

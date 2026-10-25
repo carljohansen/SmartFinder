@@ -27,12 +27,37 @@ public class FileDisplay
 
     public string? LocationTooltip => Location.LocationDisplay != null ? Location.Location : null;
 
+    public bool IsFolder() => Attributes.HasFlag(FileAttributes.Directory);
+
+    public bool Exists()
+    {
+        return IsFolder() ? Directory.Exists(FullPath) : File.Exists(FullPath);
+    }
+
     public FileDisplay(string relativePath, FileLocationRepository locationRepo)
     {
         FullPath = Path.GetFullPath(Path.Combine(locationRepo.BaseDirectory, relativePath));
         Name = Path.GetFileName(FullPath);
         Location = locationRepo.Get(FullPath);
         SizeDisplay = "";
+    }
+
+    public static FileDisplay CreateFolder(string directoryPath, string baseDirectory, FileLocationRepository locationRepo)
+    {
+        var matchingDirFullPath = Path.GetFullPath(Path.Combine(baseDirectory, directoryPath));
+
+        var folderMetadata = ExtensionMetadataRepository.Instance.GetFolderMetadata();
+
+        var result = new FileDisplay(Path.GetFileName(directoryPath), locationRepo)
+        {
+            FullPath = matchingDirFullPath,
+            Attributes = FileAttributes.Directory,
+            FileTypeDescription = folderMetadata.FriendlyDocName,
+            Location = new FileLocation(Path.GetDirectoryName(matchingDirFullPath)!, 50, baseDirectory),
+            Icon = folderMetadata.Icon
+        };
+
+        return result;
     }
 
     public void InitializeMetadata()
