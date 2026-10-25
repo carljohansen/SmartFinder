@@ -32,7 +32,7 @@ public class DirectoryEnumerator
         return _inaccessibleDirs.Keys.Any(path => directoryPath.StartsWith(path, StringComparison.InvariantCultureIgnoreCase));
     }
 
-    public List<string> GetInaccessibleSubdirectories(string directoryPath)
+    public List<string> GetInaccessibleSubdirectories(string directoryPath, CancellationToken cancellationToken)
     {
         directoryPath = NormalizePath(directoryPath);
 
@@ -56,7 +56,11 @@ public class DirectoryEnumerator
 
             if (!foundSubMatch)
             {
-                preNormalizedPaths = DirectorySearch.GetInaccessibleSubdirectories(directoryPath); // This is the slow part.
+                preNormalizedPaths = DirectorySearch.GetInaccessibleSubdirectories(directoryPath, cancellationToken); // This is the slow part.
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return []; // Warning to caller: make sure you cancel too.
+                }
 
                 foreach (var basePath in _inaccessibleDirs.Keys)
                 {

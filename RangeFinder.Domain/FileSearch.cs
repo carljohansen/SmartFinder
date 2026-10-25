@@ -130,7 +130,7 @@ public class FileSearch
         if (DirectoryEnumerator.Instance.HasCachedResult(directoryPath))
         {
             // We've got it; might as well use it.
-            inaccessibleFolderExclusions = DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(directoryPath);
+            inaccessibleFolderExclusions = DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(directoryPath, cancellationToken);
         }
 
         var firstSearchStatus = await SearchAndPopulateTableAsyncInternal(searchDto, inaccessibleFolderExclusions, cancellationToken);
@@ -141,7 +141,12 @@ public class FileSearch
 
         SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Verifying permissions...", ProgressPercentage = 0 });
 
-        inaccessibleFolderExclusions = await Task.Run(() => DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(directoryPath));
+        inaccessibleFolderExclusions = await Task.Run(() => DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(directoryPath, cancellationToken));
+
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return FileSearchStatus.Cancelled;
+        }
 
         var secondSearchStatus = await SearchAndPopulateTableAsyncInternal(searchDto, inaccessibleFolderExclusions, cancellationToken);
         return secondSearchStatus;

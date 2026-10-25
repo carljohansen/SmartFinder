@@ -6,27 +6,27 @@ public record DirectorySearchResult(List<string> DirectoryNames, List<string> Er
 
 public static partial class DirectorySearch
 {
-    public static DirectorySearchResult GetAllSubdirectories(string rootPath)
+    public static DirectorySearchResult GetAllSubdirectories(string rootPath, CancellationToken cancellationToken)
     {
         var result = new DirectorySearchResult([], []);
-        GetAllSubdirectories(rootPath, result, findInaccessibleOnly: false);
+        GetAllSubdirectories(rootPath, result, findInaccessibleOnly: false, cancellationToken);
         return result;
     }
 
-    public static List<string> GetInaccessibleExclusionPaths(string rootPath)
+    public static List<string> GetInaccessibleExclusionPaths(string rootPath, CancellationToken cancellationToken)
     {
-        var inaccessibleDirectoryNames = GetInaccessibleSubdirectories(rootPath);
+        var inaccessibleDirectoryNames = GetInaccessibleSubdirectories(rootPath, cancellationToken);
         for (var i = 0; i < inaccessibleDirectoryNames.Count; i++)
         {
             inaccessibleDirectoryNames[i] = Path.GetRelativePath(rootPath, inaccessibleDirectoryNames[i]);
         }
         return inaccessibleDirectoryNames;
-    }    
+    }
 
-    public static List<string> GetInaccessibleSubdirectories(string rootPath)
+    public static List<string> GetInaccessibleSubdirectories(string rootPath, CancellationToken cancellationToken)
     {
         var result = new DirectorySearchResult([], []);
-        GetAllSubdirectories(rootPath, result, findInaccessibleOnly: true);
+        GetAllSubdirectories(rootPath, result, findInaccessibleOnly: true, cancellationToken);
         return result.ErrorDirectoryNames;
     }
 
@@ -35,7 +35,7 @@ public static partial class DirectorySearch
     /// </summary>
     /// <param name="rootPath">The starting directory path.</param>
     /// <returns>A list of all accessible subdirectories.</returns>
-    private static void GetAllSubdirectories(string rootPath, DirectorySearchResult result, bool findInaccessibleOnly)
+    private static void GetAllSubdirectories(string rootPath, DirectorySearchResult result, bool findInaccessibleOnly, CancellationToken cancellationToken)
     {
         try
         {
@@ -49,8 +49,12 @@ public static partial class DirectorySearch
 
             foreach (string dir in subDirs)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
                 // Recursively get subdirectories of this directory
-                GetAllSubdirectories(dir, result, findInaccessibleOnly);
+                GetAllSubdirectories(dir, result, findInaccessibleOnly, cancellationToken);
             }
         }
         catch (Exception ex)
