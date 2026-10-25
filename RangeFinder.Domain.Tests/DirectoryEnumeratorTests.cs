@@ -7,12 +7,12 @@ public class DirectoryEnumeratorTests
     {
         var testBase = @"C:\Users\carl\AppData\Local\Microsoft\Windows\";
 
-        var actual = DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(testBase);
+        var actual = DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(testBase, CancellationToken.None);
 
         Assert.NotEmpty(actual);
 
         testBase = @"c:\users\carl\appdata\local";
 
-        var a2 = DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(testBase);
+        var a2 = DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(testBase, CancellationToken.None);
     }
 }
