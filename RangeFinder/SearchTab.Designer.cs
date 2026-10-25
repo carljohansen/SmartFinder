@@ -439,7 +439,7 @@ namespace RangeFinder
             // chkFilterByDate
             // 
             chkFilterByDate.AutoSize = true;
-            chkFilterByDate.Location = new Point(375, 146);
+            chkFilterByDate.Location = new Point(369, 146);
             chkFilterByDate.Margin = new Padding(3, 2, 3, 2);
             chkFilterByDate.Name = "chkFilterByDate";
             chkFilterByDate.Size = new Size(128, 19);
@@ -463,7 +463,7 @@ namespace RangeFinder
             cmbDateFilterAmountType.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbDateFilterAmountType.FormattingEnabled = true;
             cmbDateFilterAmountType.Items.AddRange(new object[] { "hours", "days", "weeks", "months", "years" });
-            cmbDateFilterAmountType.Location = new Point(552, 143);
+            cmbDateFilterAmountType.Location = new Point(552, 142);
             cmbDateFilterAmountType.Margin = new Padding(3, 2, 3, 2);
             cmbDateFilterAmountType.Name = "cmbDateFilterAmountType";
             cmbDateFilterAmountType.Size = new Size(75, 23);

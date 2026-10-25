@@ -545,6 +545,9 @@ public partial class SearchTab : UserControl
             Width = 2000
         };
 
+        chkFilterByDate.Left = txtDateFilterAmount.Left - chkFilterByDate.Width;
+        AlignBaselines(txtDateFilterAmount, chkFilterByDate);
+
         lstTextMatches.Columns.Add(lineNumberHeader);
         lstTextMatches.Columns.Add(matchingTextHeader);
 
@@ -557,6 +560,19 @@ public partial class SearchTab : UserControl
         ResizeResultsGrid();
 
         cmbFilePattern.Select();
+    }
+
+    private static void AlignBaselines(Control textControl, Control checkControl)
+    {
+        // Measure text height for baseline alignment
+        var textSize = TextRenderer.MeasureText("X", textControl.Font);
+        var checkSize = TextRenderer.MeasureText("X", checkControl.Font);
+
+        int baselineText = textControl.Top + (textControl.Height + textSize.Height) / 2 - textSize.Height;
+        int baselineCheck = checkControl.Top + (checkControl.Height + checkSize.Height) / 2 - checkSize.Height;
+
+        // Adjust checkbox Y so baselines match
+        checkControl.Top += baselineText - baselineCheck;
     }
 
     private void SetInputFont(Control parentControl)
@@ -900,5 +916,5 @@ public partial class SearchTab : UserControl
         var possibleContinuations = TextCriterionHistoryCollection.Instance.SearchTextHistory.GetPossibleContinuations(currPath);
 
         cmbContainingText.PopulateDropdown(TextCriterionHistoryCollection.Instance.SearchTextHistory, possibleContinuations);
-    }    
+    }
 }
