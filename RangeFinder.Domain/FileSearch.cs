@@ -121,7 +121,9 @@ public class FileSearch
                                                           CancellationToken cancellationToken)
     {
         var directoryPath = searchDto.BaseDirectoriesPattern;
-        if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath))
+        if (string.IsNullOrWhiteSpace(directoryPath)
+            || !Path.IsPathFullyQualified(directoryPath)
+            || !Directory.Exists(directoryPath))
         {
             throw new ArgumentException("Invalid directory path.", nameof(directoryPath));
         }
