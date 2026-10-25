@@ -58,5 +58,17 @@ namespace RangeFinder.Properties {
                 this["WindowState"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int LastTabIndex {
+            get {
+                return ((int)(this["LastTabIndex"]));
+            }
+            set {
+                this["LastTabIndex"] = value;
+            }
+        }
     }
 }

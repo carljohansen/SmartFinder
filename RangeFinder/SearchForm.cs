@@ -122,7 +122,7 @@ public partial class SearchForm : Form
         }
     }
 
-    private void RestoreSavedTabs(UserSearchDto[] savedTabs, 
+    private void RestoreSavedTabs(UserSearchDto[] savedTabs,
                                   UserTabSettings[] savedPrefs)
     {
         tabsMain.Visible = false;
@@ -132,7 +132,14 @@ public partial class SearchForm : Form
             var tabPrefs = savedPrefs.FirstOrDefault(p => p.Id == savedTab.Id) ?? UserTabSettings.CreateDefault();
             _ = AddNewTab(UserTabState.Create(savedTab, tabPrefs));
         }
-        tabsMain.SelectedIndex = 0;
+
+        if (Properties.Settings.Default.LastTabIndex < 0
+            || Properties.Settings.Default.LastTabIndex >= tabsMain.TabCount)
+        {
+            Properties.Settings.Default.LastTabIndex = 0;
+        }
+
+        tabsMain.SelectedIndex = Properties.Settings.Default.LastTabIndex;
         tabsMain.Visible = true;
     }
 
@@ -209,6 +216,8 @@ public partial class SearchForm : Form
 
     private void SearchForm_FormClosing(object sender, FormClosingEventArgs e)
     {
+        Properties.Settings.Default.LastTabIndex = tabsMain.SelectedIndex;
+
         foreach (SearchTabPage tabPage in tabsMain.TabPages)
         {
             TabSettingsRepository.SaveTabSettings(tabPage.GetCurrentUserSettings());
