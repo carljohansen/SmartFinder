@@ -74,7 +74,7 @@ public class FileSearch
     {
         var timer = Stopwatch.StartNew();
 
-        var searchCompletionStatus = await SearchAndPopulateTableAsyncInternal(searchDto, cancellationToken);
+        var searchCompletionStatus = await OptimisticSearch(searchDto, cancellationToken);
 
         if (searchCompletionStatus == FileSearchStatus.UnauthorizedEx)
         {
@@ -117,7 +117,39 @@ public class FileSearch
         }
     }
 
-    private async Task<FileSearchStatus> SearchAndPopulateTableAsyncInternal(UserSearchDto searchDto, CancellationToken cancellationToken)
+    private async Task<FileSearchStatus> OptimisticSearch(UserSearchDto searchDto,
+                                                          CancellationToken cancellationToken)
+    {
+        var directoryPath = searchDto.BaseDirectoriesPattern;
+        if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath))
+        {
+            throw new ArgumentException("Invalid directory path.", nameof(directoryPath));
+        }
+
+        List<string>? inaccessibleFolderExclusions = null;
+        if (DirectoryEnumerator.Instance.HasCachedResult(directoryPath))
+        {
+            // We've got it; might as well use it.
+            inaccessibleFolderExclusions = DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(directoryPath);
+        }
+
+        var firstSearchStatus = await SearchAndPopulateTableAsyncInternal(searchDto, inaccessibleFolderExclusions, cancellationToken);
+        if (firstSearchStatus != FileSearchStatus.UnauthorizedEx)
+        {
+            return firstSearchStatus;
+        }
+
+        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Verifying permissions...", ProgressPercentage = 0 });
+
+        inaccessibleFolderExclusions = await Task.Run(() => DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(directoryPath));
+
+        var secondSearchStatus = await SearchAndPopulateTableAsyncInternal(searchDto, inaccessibleFolderExclusions, cancellationToken);
+        return secondSearchStatus;
+    }
+
+    private async Task<FileSearchStatus> SearchAndPopulateTableAsyncInternal(UserSearchDto searchDto,
+                                                                            List<string>? inaccessibleFolderExclusions,
+                                                                            CancellationToken cancellationToken)
     {
         var options = new FileSearchOptions { AutomaticTextSearchFileFiltering = true };
 
@@ -128,6 +160,10 @@ public class FileSearch
 
         var searchPatternCollection = PathCollection.Create(searchDto.RawIncludeFilesPattern, optionsForSearchPattern);
         var excludeSearchPatternCollection = PathCollection.Create(searchDto.GetExcludeFilesPattern(), PathCollectionOptions.None);
+        if (inaccessibleFolderExclusions != null)
+        {
+            excludeSearchPatternCollection.AddRange(inaccessibleFolderExclusions);
+        }
 
         Reset();
         DataTable.Clear();
@@ -167,16 +203,6 @@ public class FileSearch
         {
             throw new ArgumentException("Invalid directory path.", nameof(directoryPath));
         }
-
-        if (!DirectoryEnumerator.Instance.HasCachedResult(directoryPath))
-        {
-            // TODO: Don't put this here.  Put this method back the way it was,
-            // (i.e. not async).
-            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Verifying permissions...", ProgressPercentage = 0 });
-        }
-
-        var inaccessiblePaths = await Task.Run(() => DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(directoryPath));
-        excludePatterns.AddRange(inaccessiblePaths);
 
         await foreach (var val in SearchFilesInternalAsync(directoryPath,
                                         includePatterns,
