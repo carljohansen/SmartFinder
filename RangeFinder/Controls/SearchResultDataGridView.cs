@@ -71,7 +71,7 @@ public class SearchResultDataGridView : DataGridView
         return GetCurrentGridCellCapacity(_locationColIndex);
     }
 
-    internal void FocusAfterSearch()
+    internal bool FocusAfterSearch()
     {
         var numMatches = Rows.Count;
         if (numMatches > 0)
@@ -79,6 +79,9 @@ public class SearchResultDataGridView : DataGridView
             Rows[0].Selected = true;
             CurrentCell = Rows[0].Cells[0];
             Focus();
+            return true;
         }
+
+        return false;
     }
 }

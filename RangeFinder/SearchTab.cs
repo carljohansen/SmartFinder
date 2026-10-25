@@ -254,10 +254,14 @@ public partial class SearchTab : UserControl
 
         PopulateHistoryDropdowns();
 
-        grdResult.FocusAfterSearch();
-
         btnSearch.Enabled = true;
         btnCancelSearch.Enabled = false;
+
+        if (!grdResult.FocusAfterSearch())
+        {
+            btnSearch.Focus();
+        }
+
         HideProgressBar();
         RaiseFilesFoundUpdate(searchStatus: searchOutcome?.FinalState ?? FileSearchStatus.Failed);
     }

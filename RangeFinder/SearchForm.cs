@@ -114,17 +114,26 @@ public partial class SearchForm : Form
         var savedPrefs = TabSettingsRepository.LoadSavedTabSettings();
         if (savedTabs.Length > 0)
         {
-            foreach (var savedTab in savedTabs)
-            {
-                var tabPrefs = savedPrefs.FirstOrDefault(p => p.Id == savedTab.Id) ?? UserTabSettings.CreateDefault();
-                _ = AddNewTab(UserTabState.Create(savedTab, tabPrefs));
-            }
-            tabsMain.SelectedIndex = 0;
+            RestoreSavedTabs(savedTabs, savedPrefs);
         }
         else
         {
             _ = AddNewTab(UserTabState.CreateDefault());
         }
+    }
+
+    private void RestoreSavedTabs(UserSearchDto[] savedTabs, 
+                                  UserTabSettings[] savedPrefs)
+    {
+        tabsMain.Visible = false;
+
+        foreach (var savedTab in savedTabs)
+        {
+            var tabPrefs = savedPrefs.FirstOrDefault(p => p.Id == savedTab.Id) ?? UserTabSettings.CreateDefault();
+            _ = AddNewTab(UserTabState.Create(savedTab, tabPrefs));
+        }
+        tabsMain.SelectedIndex = 0;
+        tabsMain.Visible = true;
     }
 
     private void DrawTabHeaders(object? sender, DrawItemEventArgs e)
