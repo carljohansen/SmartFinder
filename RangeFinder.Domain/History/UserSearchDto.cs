@@ -13,9 +13,10 @@ public class UserSearchDto
             result = directoryName[1..^1];
         }
 
-        if (result.Length > 2 && result.EndsWith('\\'))
+        if (!Path.EndsInDirectorySeparator(result))
         {
-            result = result[..^1];
+            // This matters because, e.g., "C:" is interpreted as "the current C: directory", which is not intuitive.
+            result += Path.DirectorySeparatorChar;
         }
 
         return result;
