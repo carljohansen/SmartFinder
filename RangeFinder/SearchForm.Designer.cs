@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SearchForm));
             tabsMain = new TabControl();
             mnuTabContext = new ContextMenuStrip(components);
             mnuCloseTab = new ToolStripMenuItem();
@@ -155,6 +156,7 @@
             ClientSize = new Size(1159, 521);
             Controls.Add(menuStrip1);
             Controls.Add(tabsMain);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             Margin = new Padding(3, 2, 3, 2);
             Name = "SearchForm";
