@@ -131,10 +131,9 @@ public class UserSearchDto
         FilterByModifiedDate = false
     };
 
-    public string? AddFolderExclusion(string folderPath)
+    public string? AddFolderExclusion(string folderPath, string currentExclusions)
     {
         var folderRelativePath = GetRelativePath(folderPath);
-        var currentExclusions = this.RawExcludeFilesPattern;
         if (folderRelativePath == null)
         {
             return currentExclusions;

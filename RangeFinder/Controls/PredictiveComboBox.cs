@@ -38,7 +38,7 @@ public class PredictiveComboBox : ComboBox
         if (!ApplyComboBoxHistory(history))
         {
             Items.Clear();
-            Items.Add(currText);
+            //Items.Add(currText);
             foreach (var continuation in continuations)
             {
                 Items.Add(continuation);

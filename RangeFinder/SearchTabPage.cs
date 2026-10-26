@@ -72,8 +72,16 @@ public class SearchTabPage : TabPage
             if (e.FilesFound <= 0)
             {
                 _lastFileCountShown = -2;
-                SetParentTabTitle("No match");
-                HeaderColor = Color.Honeydew;
+                if (e.SearchStatus == FileSearchStatus.Cancelled)
+                {
+                    SetParentTabTitle("Cancelled");
+                    HeaderColor = _statusColors[FileSearchStatus.Cancelled];
+                }
+                else
+                {
+                    SetParentTabTitle("No match");
+                    HeaderColor = Color.Honeydew;
+                }
                 return;
             }
         }

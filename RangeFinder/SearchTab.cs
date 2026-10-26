@@ -3,11 +3,11 @@ using RangeFinder.Domain;
 using RangeFinder.Domain.FileType;
 using RangeFinder.Domain.History;
 using RangeFinder.Domain.TextSearch;
+using RangeFinder.Extensions;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.ComponentModel;
-using RangeFinder.Extensions;
 
 namespace RangeFinder;
 
@@ -194,7 +194,15 @@ public partial class SearchTab : UserControl
     public void SetProgress(int progressPercentage)
     {
         TabProgressBar.Visible = true;
-        TabProgressBar.Value = Math.Min(Math.Max(progressPercentage, 0), 100);
+        if (progressPercentage < 0)
+        {
+            TabProgressBar.Style = ProgressBarStyle.Marquee;
+        }
+        else
+        {
+            TabProgressBar.Style = ProgressBarStyle.Continuous;
+            TabProgressBar.Value = Math.Min(Math.Max(progressPercentage, 0), 100);
+        }
     }
 
     public void HideProgressBar()
@@ -263,6 +271,10 @@ public partial class SearchTab : UserControl
         }
 
         HideProgressBar();
+        lblElapsedTime.Visible = true;
+        lblFilesFound.Visible = true;
+        lblElapsedTime.Text = searchOutcome?.GetElapsedTimeDisplay();
+        lblFilesFound.Text = searchOutcome?.GetFilesFoundDisplay();
         RaiseFilesFoundUpdate(searchStatus: searchOutcome?.FinalState ?? FileSearchStatus.Failed);
     }
 
@@ -359,6 +371,33 @@ public partial class SearchTab : UserControl
         }
     }
 
+
+    private void mnuDeleteItem_Click(object sender, EventArgs e)
+    {
+        var selectedItems = grdResult.SelectedRows;
+        StringCollection filesToDelete = [];
+        List<DataGridViewRow> rowsToDelete = [];
+
+        foreach (var selectedRow in selectedItems)
+        {
+            if (selectedRow is DataGridViewRow row)
+            {
+                var selectedFile = GetRowFileDisplay(row.Index);
+                if (selectedFile?.FullPath != null)
+                {
+                    filesToDelete.Add(selectedFile.FullPath);
+                    rowsToDelete.Add(row);
+                }
+            }
+        }
+
+        for (var i = 0; i < filesToDelete.Count; i++)
+        {
+            MoveToRecycleBin(filesToDelete[i]!);
+            grdResult.Rows.Remove(rowsToDelete[i]);
+        }
+    }
+
     private void mnuShowInExplorer_Click(object sender, EventArgs e)
     {
         var selectedFileDisplay = GetRowFileDisplay(contextMenuRowIndex);
@@ -402,12 +441,12 @@ public partial class SearchTab : UserControl
 
         var selectedFilePath = selectedFileDisplay.FullPath;
         if (selectedFilePath == null
-            || !File.Exists(selectedFilePath))
+            || !selectedFileDisplay.Exists())
         {
             return;
         }
 
-        var containingFolder = Path.GetDirectoryName(selectedFilePath);
+        var containingFolder = selectedFileDisplay.GetDirectoryName();
         if (containingFolder != null)
         {
             cmbRootDir.Text = containingFolder;
@@ -423,12 +462,12 @@ public partial class SearchTab : UserControl
 
         var selectedFilePath = selectedFileDisplay.FullPath;
         if (selectedFilePath == null
-            || !File.Exists(selectedFilePath))
+            || !selectedFileDisplay.Exists())
         {
             return;
         }
 
-        var containingFolder = Path.GetDirectoryName(selectedFilePath);
+        var containingFolder = selectedFileDisplay.GetDirectoryName();
         if (containingFolder != null)
         {
             var currentState = GetCurrentTabState();
@@ -468,7 +507,7 @@ public partial class SearchTab : UserControl
             return;
 
         var folderToExclude = selectedFileDisplay.Location.Location;
-        var exclusionsPlusNew = _currentSearch.SearchCriteria?.AddFolderExclusion(folderToExclude);
+        var exclusionsPlusNew = _currentSearch.SearchCriteria?.AddFolderExclusion(folderToExclude, cmbExceptFilePattern.Text);
         if (exclusionsPlusNew != null)
         {
             cmbExceptFilePattern.Text = exclusionsPlusNew;
@@ -923,5 +962,21 @@ public partial class SearchTab : UserControl
         var possibleContinuations = TextCriterionHistoryCollection.Instance.SearchTextHistory.GetPossibleContinuations(currPath);
 
         cmbContainingText.PopulateDropdown(TextCriterionHistoryCollection.Instance.SearchTextHistory, possibleContinuations);
+    }
+
+    private static void MoveToRecycleBin(string path)
+    {
+        if (!File.Exists(path)
+            && !Directory.Exists(path))
+        {
+            return;
+        }
+
+        var shellType = Type.GetTypeFromProgID("Shell.Application", throwOnError: true)!;
+        dynamic shellApp = Activator.CreateInstance(shellType)!;
+
+        var recycleBin = shellApp.Namespace(0xa);
+
+        recycleBin.MoveHere(path);
     }
 }

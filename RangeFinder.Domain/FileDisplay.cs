@@ -34,6 +34,13 @@ public class FileDisplay
         return IsFolder() ? Directory.Exists(FullPath) : File.Exists(FullPath);
     }
 
+    public string GetDirectoryName()
+    {
+        return IsFolder()
+                ? FullPath
+                : Path.GetDirectoryName(FullPath) ?? string.Empty;
+    }
+
     public FileDisplay(string relativePath, FileLocationRepository locationRepo)
     {
         FullPath = Path.GetFullPath(Path.Combine(locationRepo.BaseDirectory, relativePath));

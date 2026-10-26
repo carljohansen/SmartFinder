@@ -7,8 +7,6 @@ using System.Runtime.CompilerServices;
 
 namespace RangeFinder.Domain;
 
-public record SearchOutcome(string StatusMessage, FileSearchStatus FinalState);
-
 public class FileSearch
 {
     public event EventHandler<SearchProgressEventArgs>? SearchProgressUpdate;
@@ -78,43 +76,19 @@ public class FileSearch
 
         if (searchCompletionStatus == FileSearchStatus.UnauthorizedEx)
         {
-            return new SearchOutcome("Encountered inaccessible folder", FileSearchStatus.UnauthorizedEx);
+            return new SearchOutcome("Encountered inaccessible folder", null, null, FileSearchStatus.UnauthorizedEx);
         }
 
         var wasCancelled = searchCompletionStatus == FileSearchStatus.Cancelled;
 
-        var cancelledMsg = wasCancelled ? " (search cancelled)" : "";
-
-        string elapsedTimeMessage = $" in {GetElapsedTimeDisplay(timer.Elapsed)}";
+        string elapsedTimeMessage = $" in {SearchOutcome.GetElapsedTimeDisplay(timer.Elapsed)}";
 
         var finalState = wasCancelled ? FileSearchStatus.Cancelled : FileSearchStatus.Completed;
         var numMatches = DataTable.Rows.Count;
 
-        string finalMessage = numMatches > 0
-                                ? numMatches == 1 ? $"1 file found{cancelledMsg}" : $"{numMatches:#,##0} files found{elapsedTimeMessage}{cancelledMsg}"
-                                : $"No matching files found{cancelledMsg}";
+        string finalMessage = wasCancelled ? "Cancelled" : "Done";
 
-        return new SearchOutcome(finalMessage, finalState);
-    }
-
-    private object GetElapsedTimeDisplay(TimeSpan elapsed)
-    {
-        if (elapsed.TotalSeconds < 1)
-        {
-            return $"{elapsed.TotalMilliseconds:#,##0} ms";
-        }
-        else if (elapsed.TotalMinutes < 2)
-        {
-            return $"{elapsed.TotalSeconds:#,##0} seconds";
-        }
-        else if (elapsed.TotalHours < 1)
-        {
-            return $"{elapsed.TotalMinutes:#,##0} minutes";
-        }
-        else
-        {
-            return $"{elapsed.TotalHours:#,##0} hours";
-        }
+        return new SearchOutcome(finalMessage, numMatches, timer.Elapsed, finalState);
     }
 
     private async Task<FileSearchStatus> OptimisticSearch(UserSearchDto searchDto,
@@ -141,7 +115,7 @@ public class FileSearch
             return firstSearchStatus;
         }
 
-        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Verifying permissions...", ProgressPercentage = 0 });
+        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Verifying permissions", ProgressPercentage = -1 });
 
         inaccessibleFolderExclusions = await Task.Run(() => DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(directoryPath, cancellationToken));
 
@@ -182,7 +156,7 @@ public class FileSearch
         if (searchDto.IncludeFolders
             && !searchDto.HasTextSearch())
         {
-            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building directory list...", ProgressPercentage = 0 });
+            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building directory list", ProgressPercentage = -1 });
 
             var unfilteredFolderList = await Task.Run(() => DirectorySearch.GetAllSubdirectories(searchDto.BaseDirectoriesPattern, cancellationToken));
             if (cancellationToken.IsCancellationRequested)
@@ -217,6 +191,8 @@ public class FileSearch
         {
             return FileSearchStatus.UnauthorizedEx;
         }
+
+        wasCancelled |= cancellationToken.IsCancellationRequested;
 
         return wasCancelled ? FileSearchStatus.Cancelled : FileSearchStatus.Completed;
     }
@@ -257,7 +233,7 @@ public class FileSearch
 
         var hasTextChecks = textChecks.Length > 0;
 
-        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building file list...", ProgressPercentage = 0 });
+        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building file list", ProgressPercentage = -1 });
 
         var rawFiles = await Task.Run(() =>
         {
@@ -292,7 +268,7 @@ public class FileSearch
 
         if (hasTextChecks)
         {
-            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = $"{actionMsg}...", ProgressPercentage = 0 });
+            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = $"{actionMsg}", ProgressPercentage = 0 });
         }
 
         var eventStreamTimer = Stopwatch.StartNew();
@@ -379,7 +355,7 @@ public class FileSearch
                 var percentComplete = (int)Math.Floor((numFilesProcessed * 100.0) / numFiles);
                 SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs
                 {
-                    StatusMessage = $"{actionMsg} ({GetDirectoryForStatusReport(match.Path, baseDirectory)})...",
+                    StatusMessage = $"{actionMsg} ({GetDirectoryForStatusReport(match.Path, baseDirectory)})",
                     ProgressPercentage = percentComplete
                 });
             }
