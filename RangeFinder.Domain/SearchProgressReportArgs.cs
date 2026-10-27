@@ -1,6 +1,6 @@
 ﻿namespace RangeFinder.Domain;
 
-public class SearchProgressEventArgs : EventArgs
+public class SearchProgressReportArgs 
 {
     public required string StatusMessage { get; set; }
 

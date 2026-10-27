@@ -46,7 +46,7 @@ public partial class SearchTab : UserControl
 
         var resultTable = SearchResultDataTableHelper.CreateFileResultDataTableColumns();
         var searchResultDataSource = new BindingSource(resultTable.DefaultView, null!);
-        _currentSearch = new(resultTable, 50, new Progress<SearchProgressEventArgs>(HandleSearchStatusUpdate));
+        _currentSearch = new(resultTable, 50, new Progress<SearchProgressReportArgs>(HandleSearchStatusUpdate));
 
         grdResult.AutoGenerateColumns = false;
         grdResult.DataSource = searchResultDataSource;
@@ -164,7 +164,7 @@ public partial class SearchTab : UserControl
         return grdResult.GetRowFileDisplay(rowIndex);
     }
 
-    private void HandleSearchStatusUpdate(SearchProgressEventArgs e)
+    private void HandleSearchStatusUpdate(SearchProgressReportArgs e)
     {
         if (_isClosing)
         {
