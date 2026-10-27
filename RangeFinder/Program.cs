@@ -10,7 +10,7 @@ internal static class Program
     ///  The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    static void Main(string[] args)
     {
         string userName = WindowsIdentity.GetCurrent().User?.Value ?? "DefaultUser";
         string mutexName = $"CJ.RangeFinder_{userName}";
@@ -24,10 +24,16 @@ internal static class Program
             return;
         }
 
+        string? argOpenFileName = null;
+        if (args.Length == 1)
+        {
+            argOpenFileName = args[0];
+        }
+
         // To customize application configuration such as set high DPI settings or default font,
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
-        Application.Run(new SearchForm());
+        Application.Run(new SearchForm() { InitialOpenZipFileName = argOpenFileName });
 
         _mutex.ReleaseMutex();
     }

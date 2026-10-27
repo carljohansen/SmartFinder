@@ -1,11 +1,50 @@
 ﻿using RangeFinder.Domain;
 using RangeFinder.Domain.History;
+using System.ComponentModel;
 
 namespace RangeFinder;
 
 public partial class SearchForm : Form
 {
     private int _nextTabId = 1;
+
+    [DefaultValue(null)]
+    public string? InitialOpenZipFileName
+    {
+        get => field;
+        internal set
+        {
+            field = value;
+            VerifyZipFile(value);
+        }
+    }
+
+    private void VerifyZipFile(string? zipFileNameRaw)
+    {
+        if (string.IsNullOrWhiteSpace(zipFileNameRaw))
+        {
+            _verifiedInitialOpenZipFileName = null;
+            return;
+        }
+
+        var ext = Path.GetExtension(zipFileNameRaw);
+        if (string.Compare(ext, ".zip", true) != 0)
+        {
+            _verifiedInitialOpenZipFileName = null;
+            return;
+        }
+
+        var normalized = Path.GetFullPath(zipFileNameRaw);
+        if (!File.Exists(normalized))
+        {
+            _verifiedInitialOpenZipFileName = null;
+            return;
+        }
+
+        _verifiedInitialOpenZipFileName = zipFileNameRaw;
+    }
+
+    private string? _verifiedInitialOpenZipFileName = null;
 
     public SearchForm()
     {
@@ -73,7 +112,7 @@ public partial class SearchForm : Form
         }
     }
 
-    private void SearchForm_Load(object sender, EventArgs e)
+    private async void SearchForm_Load(object sender, EventArgs e)
     {
         if (Properties.Settings.Default.WindowState >= 0 && Properties.Settings.Default.WindowState <= 2)
         {
@@ -117,9 +156,14 @@ public partial class SearchForm : Form
         {
             RestoreSavedTabs(savedTabs, savedPrefs);
         }
-        else
+        else if (_verifiedInitialOpenZipFileName == null)
         {
             _ = AddNewTab(UserTabState.CreateDefault());
+        }
+
+        if (_verifiedInitialOpenZipFileName != null)
+        {
+            await AddTabFromZip(_verifiedInitialOpenZipFileName);
         }
     }
 
@@ -324,12 +368,27 @@ public partial class SearchForm : Form
             return;
         }
 
-        var tempDir = await ZipExpander.Instance.UnzipToTempDirectoryAsync(zipFileName, CancellationToken.None);
-        if (tempDir == null)
+        bool flowControl = await AddTabFromZip(zipFileName);
+        if (!flowControl)
         {
             return;
         }
+    }
 
+    private async Task<bool> AddTabFromZip(string zipFileName)
+    {
+        var tempDir = await ZipExpander.Instance.UnzipToTempDirectoryAsync(zipFileName, CancellationToken.None);
+        if (tempDir == null)
+        {
+            return false;
+        }
+
+        AddZipTab(tempDir);
+        return true;
+    }
+
+    private void AddZipTab(string tempDir)
+    {
         var zipExploreUserSearchDto = new UserSearchDto()
         {
             Id = 0,
