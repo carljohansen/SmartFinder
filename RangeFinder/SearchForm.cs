@@ -15,33 +15,12 @@ public partial class SearchForm : Form
         internal set
         {
             field = value;
-            VerifyZipFile(value);
+            var verified = ZipExpander.VerifyZipFile(value);
+            if (verified != null)
+            {
+                _verifiedInitialOpenZipFileName = verified;
+            }
         }
-    }
-
-    private void VerifyZipFile(string? zipFileNameRaw)
-    {
-        if (string.IsNullOrWhiteSpace(zipFileNameRaw))
-        {
-            _verifiedInitialOpenZipFileName = null;
-            return;
-        }
-
-        var ext = Path.GetExtension(zipFileNameRaw);
-        if (string.Compare(ext, ".zip", true) != 0)
-        {
-            _verifiedInitialOpenZipFileName = null;
-            return;
-        }
-
-        var normalized = Path.GetFullPath(zipFileNameRaw);
-        if (!File.Exists(normalized))
-        {
-            _verifiedInitialOpenZipFileName = null;
-            return;
-        }
-
-        _verifiedInitialOpenZipFileName = zipFileNameRaw;
     }
 
     private string? _verifiedInitialOpenZipFileName = null;
@@ -409,5 +388,26 @@ public partial class SearchForm : Form
             result = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
         return result;
+    }
+
+    private void SearchForm_DragEnter(object sender, DragEventArgs e)
+    {
+        e.Effect = DragDropEffects.Copy;
+    }
+
+    private async void SearchForm_DragDrop(object sender, DragEventArgs e)
+    {
+        if (!e.Data?.GetDataPresent(DataFormats.FileDrop) ?? false)
+        {
+            return;
+        }
+
+        string[] fileNames = (string[])(e.Data?.GetData(DataFormats.FileDrop) ?? Array.Empty<string>());
+        var fileName = fileNames[0];
+        var verifiedFileName = ZipExpander.VerifyZipFile(fileName);
+        if (verifiedFileName != null)
+        {
+            await AddTabFromZip(verifiedFileName);
+        }
     }
 }

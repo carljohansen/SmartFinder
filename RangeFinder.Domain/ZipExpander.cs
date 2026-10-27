@@ -12,6 +12,28 @@ public class ZipExpander
     {
     }
 
+    public static string? VerifyZipFile(string? zipFileNameRaw)
+    {
+        if (string.IsNullOrWhiteSpace(zipFileNameRaw))
+        {
+            return null;
+        }
+
+        var ext = Path.GetExtension(zipFileNameRaw);
+        if (string.Compare(ext, ".zip", true) != 0)
+        {
+            return null;
+        }
+
+        var normalized = Path.GetFullPath(zipFileNameRaw);
+        if (!File.Exists(normalized))
+        {
+            return null;
+        }
+
+        return normalized;
+    }
+
     public async Task<string?> UnzipToTempDirectoryAsync(string zipFileFullPath, CancellationToken cancellationToken)
     {
         try

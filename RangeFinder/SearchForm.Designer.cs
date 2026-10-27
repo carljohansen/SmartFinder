@@ -38,20 +38,21 @@
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             mnuExploreZip = new ToolStripMenuItem();
+            toolStripSeparator2 = new ToolStripSeparator();
             mnuClearSearchHistory = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
             mnuQuit = new ToolStripMenuItem();
             searchToolStripMenuItem = new ToolStripMenuItem();
             mnuNewSearchTab = new ToolStripMenuItem();
             closeTabToolStripMenuItem = new ToolStripMenuItem();
             duplicateTabToolStripMenuItem = new ToolStripMenuItem();
-            toolStripSeparator1 = new ToolStripSeparator();
-            toolStripSeparator2 = new ToolStripSeparator();
             mnuTabContext.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
-            //
+            // 
             // tabsMain
-            //
+            // 
+            tabsMain.AllowDrop = true;
             tabsMain.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tabsMain.ContextMenuStrip = mnuTabContext;
             tabsMain.Location = new Point(0, 26);
@@ -60,37 +61,37 @@
             tabsMain.SelectedIndex = 0;
             tabsMain.Size = new Size(1159, 495);
             tabsMain.TabIndex = 0;
-            //
+            // 
             // mnuTabContext
-            //
+            // 
             mnuTabContext.Items.AddRange(new ToolStripItem[] { mnuCloseTab, mnuCloseOtherTabs, mnuDuplicateTab });
             mnuTabContext.Name = "mnuTabContext";
             mnuTabContext.Size = new Size(164, 70);
             mnuTabContext.Opening += mnuTabContext_Opening;
-            //
+            // 
             // mnuCloseTab
-            //
+            // 
             mnuCloseTab.Name = "mnuCloseTab";
             mnuCloseTab.Size = new Size(163, 22);
             mnuCloseTab.Text = "Close Tab";
             mnuCloseTab.Click += mnuCloseTab_Click;
-            //
+            // 
             // mnuCloseOtherTabs
-            //
+            // 
             mnuCloseOtherTabs.Name = "mnuCloseOtherTabs";
             mnuCloseOtherTabs.Size = new Size(163, 22);
             mnuCloseOtherTabs.Text = "Close Other Tabs";
             mnuCloseOtherTabs.Click += mnuCloseOtherTabs_Click;
-            //
+            // 
             // mnuDuplicateTab
-            //
+            // 
             mnuDuplicateTab.Name = "mnuDuplicateTab";
             mnuDuplicateTab.Size = new Size(163, 22);
             mnuDuplicateTab.Text = "Duplicate Tab";
             mnuDuplicateTab.Click += mnuDuplicateTab_Click;
-            //
+            // 
             // menuStrip1
-            //
+            // 
             menuStrip1.ImageScalingSize = new Size(20, 20);
             menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, searchToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
@@ -99,78 +100,79 @@
             menuStrip1.Size = new Size(1159, 24);
             menuStrip1.TabIndex = 2;
             menuStrip1.Text = "menuStrip1";
-            //
+            // 
             // fileToolStripMenuItem
-            //
+            // 
             fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuExploreZip, toolStripSeparator2, mnuClearSearchHistory, toolStripSeparator1, mnuQuit });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "File";
-            //
+            // 
             // mnuExploreZip
-            //
+            // 
             mnuExploreZip.Name = "mnuExploreZip";
             mnuExploreZip.Size = new Size(180, 22);
             mnuExploreZip.Text = "Explore Zip File...";
             mnuExploreZip.Click += mnuExploreZip_Click;
-            //
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(177, 6);
+            // 
             // mnuClearSearchHistory
-            //
+            // 
             mnuClearSearchHistory.Name = "mnuClearSearchHistory";
             mnuClearSearchHistory.Size = new Size(180, 22);
             mnuClearSearchHistory.Text = "Clear Search &History";
             mnuClearSearchHistory.Click += mnuClearSearchHistory_Click;
-            //
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(177, 6);
+            // 
             // mnuQuit
-            //
+            // 
             mnuQuit.Name = "mnuQuit";
             mnuQuit.Size = new Size(180, 22);
             mnuQuit.Text = "E&xit";
             mnuQuit.Click += mnuQuit_Click;
-            //
+            // 
             // searchToolStripMenuItem
-            //
+            // 
             searchToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuNewSearchTab, closeTabToolStripMenuItem, duplicateTabToolStripMenuItem });
             searchToolStripMenuItem.Name = "searchToolStripMenuItem";
             searchToolStripMenuItem.Size = new Size(54, 20);
             searchToolStripMenuItem.Text = "Search";
-            //
+            // 
             // mnuNewSearchTab
-            //
+            // 
             mnuNewSearchTab.Name = "mnuNewSearchTab";
             mnuNewSearchTab.ShortcutKeys = Keys.Control | Keys.T;
             mnuNewSearchTab.Size = new Size(219, 22);
             mnuNewSearchTab.Text = "New Tab";
             mnuNewSearchTab.Click += mnuNewSearchTab_Click;
-            //
+            // 
             // closeTabToolStripMenuItem
-            //
+            // 
             closeTabToolStripMenuItem.Name = "closeTabToolStripMenuItem";
             closeTabToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.W;
             closeTabToolStripMenuItem.Size = new Size(219, 22);
             closeTabToolStripMenuItem.Text = "Close Tab";
             closeTabToolStripMenuItem.Click += closeTabToolStripMenuItem_Click;
-            //
+            // 
             // duplicateTabToolStripMenuItem
-            //
+            // 
             duplicateTabToolStripMenuItem.Name = "duplicateTabToolStripMenuItem";
             duplicateTabToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.K;
             duplicateTabToolStripMenuItem.Size = new Size(219, 22);
             duplicateTabToolStripMenuItem.Text = "Duplicate Tab";
             duplicateTabToolStripMenuItem.Click += duplicateTabToolStripMenuItem_Click;
-            //
-            // toolStripSeparator1
-            //
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(177, 6);
-            //
-            // toolStripSeparator2
-            //
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(177, 6);
-            //
+            // 
             // SearchForm
-            //
+            // 
+            AllowDrop = true;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1159, 521);
@@ -183,6 +185,8 @@
             Text = "RangeFinder";
             FormClosing += SearchForm_FormClosing;
             Load += SearchForm_Load;
+            DragDrop += SearchForm_DragDrop;
+            DragEnter += SearchForm_DragEnter;
             mnuTabContext.ResumeLayout(false);
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
