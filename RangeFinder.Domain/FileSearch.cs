@@ -9,8 +9,6 @@ namespace RangeFinder.Domain;
 
 public class FileSearch
 {
-    public event EventHandler<SearchProgressEventArgs>? SearchProgressUpdate;
-
     public IReadOnlyCollection<AtomicTextMatch> TextSearches => _textSearches;
     private readonly List<AtomicTextMatch> _textSearches = [];
 
@@ -18,12 +16,15 @@ public class FileSearch
 
     private readonly FileLocationRepository _fileLocationRepository;
 
+    private readonly IProgress<SearchProgressEventArgs>? _progressCallback = null;
+
     public UserSearchDto? SearchCriteria { get; private set; }
 
-    public FileSearch(DataTable dataTable, int locationDisplayLength)
+    public FileSearch(DataTable dataTable, int locationDisplayLength, IProgress<SearchProgressEventArgs>? progressCallback)
     {
         DataTable = dataTable;
         _fileLocationRepository = new(locationDisplayLength);
+        _progressCallback = progressCallback;
     }
 
     public void SetSearch(UserSearchDto search)
@@ -115,7 +116,7 @@ public class FileSearch
             return firstSearchStatus;
         }
 
-        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Verifying permissions", ProgressPercentage = -1 });
+        _progressCallback?.Report(new SearchProgressEventArgs { StatusMessage = "Verifying permissions", ProgressPercentage = -1 });
 
         inaccessibleFolderExclusions = await Task.Run(() => DirectoryEnumerator.Instance.GetInaccessibleSubdirectories(directoryPath, cancellationToken));
 
@@ -156,7 +157,7 @@ public class FileSearch
         if (searchDto.IncludeFolders
             && !searchDto.HasTextSearch())
         {
-            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building directory list", ProgressPercentage = -1 });
+            _progressCallback?.Report(new SearchProgressEventArgs { StatusMessage = "Building directory list", ProgressPercentage = -1 });
 
             var unfilteredFolderList = await Task.Run(() => DirectorySearch.GetAllSubdirectories(searchDto.BaseDirectoriesPattern, cancellationToken));
             if (cancellationToken.IsCancellationRequested)
@@ -233,7 +234,7 @@ public class FileSearch
 
         var hasTextChecks = textChecks.Length > 0;
 
-        SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = "Building file list", ProgressPercentage = -1 });
+        _progressCallback?.Report(new SearchProgressEventArgs { StatusMessage = "Building file list", ProgressPercentage = -1 });
 
         var rawFiles = await Task.Run(() =>
         {
@@ -268,7 +269,7 @@ public class FileSearch
 
         if (hasTextChecks)
         {
-            SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs { StatusMessage = $"{actionMsg}", ProgressPercentage = 0 });
+            _progressCallback?.Report(new SearchProgressEventArgs { StatusMessage = $"{actionMsg}", ProgressPercentage = 0 });
         }
 
         var eventStreamTimer = Stopwatch.StartNew();
@@ -353,7 +354,7 @@ public class FileSearch
                 await Task.Delay(1, cancellationToken);
                 eventStreamTimer.Restart();
                 var percentComplete = (int)Math.Floor((numFilesProcessed * 100.0) / numFiles);
-                SearchProgressUpdate?.Invoke(this, new SearchProgressEventArgs
+                _progressCallback?.Report(new SearchProgressEventArgs
                 {
                     StatusMessage = $"{actionMsg} ({GetDirectoryForStatusReport(match.Path, baseDirectory)})",
                     ProgressPercentage = percentComplete
