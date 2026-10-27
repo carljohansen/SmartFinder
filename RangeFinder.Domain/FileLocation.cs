@@ -36,6 +36,12 @@ public class FileLocation
             return null;
         }
 
+        if (path.Length == _baseDirectory.Length
+            || path.Length == _baseDirectory.Length - 1)
+        {
+            return Path.DirectorySeparatorChar.ToString();
+        }
+
         if (path.StartsWith(_baseDirectory))
         {
             path = path[_baseDirectory.Length..];

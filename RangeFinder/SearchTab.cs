@@ -227,8 +227,7 @@ public partial class SearchTab : UserControl
         SetStatusText("Searching...");
         btnSearch.Enabled = false;
         btnCancelSearch.Enabled = true;
-        cmbExceptFilePattern.DroppedDown = false;
-        cmbRootDir.DroppedDown = false;
+        CollapseDropdowns();
         SetProgress(0);
         RaiseFilesFoundUpdate(-1, searchStatus: FileSearchStatus.Running);
         lstTextMatches.Items.Clear();
@@ -276,6 +275,14 @@ public partial class SearchTab : UserControl
         lblElapsedTime.Text = searchOutcome?.GetElapsedTimeDisplay();
         lblFilesFound.Text = searchOutcome?.GetFilesFoundDisplay();
         RaiseFilesFoundUpdate(searchStatus: searchOutcome?.FinalState ?? FileSearchStatus.Failed);
+    }
+
+    private void CollapseDropdowns()
+    {
+        cmbFilePattern.DroppedDown = false;
+        cmbExceptFilePattern.DroppedDown = false;
+        cmbContainingText.DroppedDown = false;
+        cmbRootDir.DroppedDown = false;
     }
 
     private void PopulateHistoryDropdowns()

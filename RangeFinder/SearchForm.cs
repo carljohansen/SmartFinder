@@ -1,4 +1,5 @@
-﻿using RangeFinder.Domain.History;
+﻿using RangeFinder.Domain;
+using RangeFinder.Domain.History;
 
 namespace RangeFinder;
 
@@ -300,5 +301,54 @@ public partial class SearchForm : Form
             }
         }
         e.Cancel = true;
+    }
+
+    private async void mnuExploreZip_Click(object sender, EventArgs e)
+    {
+        string? zipFileName = null;
+        using OpenFileDialog dialog = new();
+
+        dialog.Title = "Select a ZIP file";
+        dialog.Filter = "ZIP files (*.zip)|*.zip";
+        dialog.InitialDirectory = GetLastZipLocation();
+        dialog.CheckFileExists = true;
+        dialog.CheckPathExists = true;
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            Properties.Settings.Default.LastZipLocation = Path.GetDirectoryName(dialog.FileName);
+            zipFileName = dialog.FileName;
+        }
+        else
+        {
+            return;
+        }
+
+        var tempDir = await ZipExpander.Instance.UnzipToTempDirectoryAsync(zipFileName, CancellationToken.None);
+        if (tempDir == null)
+        {
+            return;
+        }
+
+        var zipExploreUserSearchDto = new UserSearchDto()
+        {
+            Id = 0,
+            RawIncludeFilesPattern = null,
+            RawExcludeFilesPattern = null,
+            BaseDirectoriesPattern = tempDir
+        };
+
+        var zipExploreState = new UserTabState(zipExploreUserSearchDto, UserTabSettings.CreateDefault());
+        AddNewTab(zipExploreState);
+    }
+
+    private static string GetLastZipLocation()
+    {
+        var result = Properties.Settings.Default.LastZipLocation;
+        if (string.IsNullOrWhiteSpace(result) || !Directory.Exists(result))
+        {
+            result = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        }
+        return result;
     }
 }

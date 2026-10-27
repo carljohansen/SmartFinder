@@ -6,3 +6,9 @@ public class SearchProgressEventArgs : EventArgs
 
     public required int ProgressPercentage { get; set; }
 }
+
+
+public class ExtractionProgressEventArgs : EventArgs
+{
+    public required int ProgressPercentage { get; set; }
+}

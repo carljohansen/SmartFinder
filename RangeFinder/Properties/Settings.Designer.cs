@@ -70,5 +70,17 @@ namespace RangeFinder.Properties {
                 this["LastTabIndex"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastZipLocation {
+            get {
+                return ((string)(this["LastZipLocation"]));
+            }
+            set {
+                this["LastZipLocation"] = value;
+            }
+        }
     }
 }
