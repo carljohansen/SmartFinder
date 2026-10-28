@@ -1,17 +1,22 @@
-﻿using System.ComponentModel;
+﻿using RangeFinder.Domain;
 
 namespace RangeFinder;
 
 public class ProgressWindow : Form
 {
-    private ProgressBar _progressBar;
-    private Label _statusLabel;
-    private BackgroundWorker _worker;
+    private readonly ProgressBar _progressBar;
+    private readonly Label _statusLabel;
 
-    public ProgressWindow(Action<BackgroundWorker> longTask)
+    private readonly string _zipFilePath;
+
+    public string? ExtractedDirectoryPath { get; private set; }
+
+    public ProgressWindow(string zipFilePath)
     {
+        _zipFilePath = zipFilePath;
+
         // Window setup
-        Text = "Processing...";
+        Text = "Explore Zip Archive";
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterParent;
         TopMost = true;
@@ -32,34 +37,25 @@ public class ProgressWindow : Form
         {
             Dock = DockStyle.Fill,
             TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
-            Text = "Please wait..."
+            Text = "Extracting..."
         };
 
         Controls.Add(_statusLabel);
         Controls.Add(_progressBar);
 
-        // Background worker setup
-        _worker = new BackgroundWorker
-        {
-            WorkerReportsProgress = true,
-            WorkerSupportsCancellation = true
-        };
-        _worker.DoWork += (s, e) => longTask(_worker);
-        _worker.ProgressChanged += (s, e) =>
-        {
-            _progressBar.Value = e.ProgressPercentage;
-            _statusLabel.Text = $"Progress: {e.ProgressPercentage}%";
-        };
-        _worker.RunWorkerCompleted += (s, e) =>
-        {
-            DialogResult = DialogResult.OK;
-            Close();
-        };
+        Load += ProgressWindow_Load;
     }
 
-    public void Start()
+    private async void ProgressWindow_Load(object? sender, EventArgs e)
     {
-        _worker.RunWorkerAsync();
-        ShowDialog();
+        var progressHandler = new Progress<ExtractionProgressEventArgs>(args =>
+        {
+            _progressBar.Value = args.ProgressPercentage;
+        });
+
+        ExtractedDirectoryPath = await ZipExpander.Instance.UnzipToTempDirectoryAsync(_zipFilePath, progressHandler, CancellationToken.None);
+
+        DialogResult = ExtractedDirectoryPath == null ? DialogResult.Cancel : DialogResult.OK;
+        Close();
     }
 }

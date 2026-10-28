@@ -13,6 +13,11 @@ public class UserSearchDto
             result = directoryName[1..^1];
         }
 
+        if (result.StartsWith("<zip>"))
+        {
+            result = Path.Join(ZipExpander.GetZipTempFolderPath(), result[5..]);
+        }
+
         if (!Path.EndsInDirectorySeparator(result))
         {
             // This matters because, e.g., "C:" is interpreted as "the current C: directory", which is not intuitive.
@@ -196,7 +201,19 @@ public class UserSearchDto
         }
         else if (!string.IsNullOrWhiteSpace(BaseDirectoriesPattern))
         {
-            unelidedResult = BaseDirectoriesPattern;
+            var normalizedBaseDir = NormalizeDirectoryName(BaseDirectoriesPattern);
+            if (Directory.Exists(normalizedBaseDir))
+            {
+                var leafDir = Path.GetFileName(normalizedBaseDir.TrimEnd(Path.DirectorySeparatorChar));
+                if (!string.IsNullOrWhiteSpace(leafDir))
+                {
+                    unelidedResult = leafDir;
+                }
+            }
+            else
+            {
+                unelidedResult = BaseDirectoriesPattern;
+            }
         }
         else if (!string.IsNullOrWhiteSpace(RawIncludeFilesPattern))
         {

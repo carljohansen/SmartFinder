@@ -221,6 +221,10 @@ public partial class SearchTab : UserControl
             SetStatusText("Invalid search directory");
             return;
         }
+        else
+        {
+            cmbRootDir.BackColor = default;
+        }
 
         SetStatusText("Searching...");
         btnSearch.Enabled = false;
@@ -962,9 +966,9 @@ public partial class SearchTab : UserControl
 
     private void cmbContainingText_TextUpdate(object sender, EventArgs e)
     {
-        var currPath = cmbContainingText.Text;
+        var currSearchText = cmbContainingText.Text;
 
-        var possibleContinuations = TextCriterionHistoryCollection.Instance.SearchTextHistory.GetPossibleContinuations(currPath);
+        var possibleContinuations = TextCriterionHistoryCollection.Instance.SearchTextHistory.GetPossibleContinuations(currSearchText);
 
         cmbContainingText.PopulateDropdown(TextCriterionHistoryCollection.Instance.SearchTextHistory, possibleContinuations);
     }

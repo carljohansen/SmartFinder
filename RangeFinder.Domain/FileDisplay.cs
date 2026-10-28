@@ -102,7 +102,7 @@ public class FileDisplay
         long bytes = Math.Abs(byteCount);
         int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
         double num = Math.Round(bytes / Math.Pow(1024, place), 0);
-        return (Math.Sign(byteCount) * num).ToString() + " " + suf[place];
+        return (Math.Sign(byteCount) * num).ToString("#,##0") + " " + suf[place];
     }
 
     public string GetFileExtension()

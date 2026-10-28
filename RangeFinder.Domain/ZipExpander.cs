@@ -6,13 +6,11 @@ public class ZipExpander
 {
     public readonly static ZipExpander Instance = new();
 
-    public event EventHandler<ExtractionProgressEventArgs>? ExtractionProgressUpdate;
-
     private ZipExpander()
     {
     }
 
-    public static string? VerifyZipFile(string? zipFileNameRaw)
+    public static string? VerifyZipFileByName(string? zipFileNameRaw)
     {
         if (string.IsNullOrWhiteSpace(zipFileNameRaw))
         {
@@ -34,7 +32,50 @@ public class ZipExpander
         return normalized;
     }
 
-    public async Task<string?> UnzipToTempDirectoryAsync(string zipFileFullPath, CancellationToken cancellationToken)
+    public static string? VerifyZipFileByContent(string zipFileNameRaw)
+    {
+        if (string.IsNullOrWhiteSpace(zipFileNameRaw))
+        {
+            return null;
+        }
+
+        var normalized = Path.GetFullPath(zipFileNameRaw);
+        if (!File.Exists(normalized))
+        {
+            return null;
+        }
+
+        var fileSize = new FileInfo(normalized).Length;
+        if (fileSize > 50 * 1024 * 1024) // 50 MB limit
+        {
+            return null;
+        }
+
+        try
+        {
+            using ZipArchive archive = ZipFile.OpenRead(normalized);
+        }
+        catch
+        {
+            return null;
+        }
+
+        return normalized;
+    }
+
+    public static string GetZipTempFolderPath() => Path.Join(Path.GetTempPath(), "RangeFinder");
+
+    private static string FriendlyizeTempPath(string path)
+    {
+        var zipTempBasePath = GetZipTempFolderPath();
+        if (path.StartsWith(zipTempBasePath, StringComparison.OrdinalIgnoreCase))
+        {
+            return "<zip>" + path[zipTempBasePath.Length..];
+        }
+        return path;
+    }
+
+    public async Task<string?> UnzipToTempDirectoryAsync(string zipFileFullPath, IProgress<ExtractionProgressEventArgs>? progressCallback, CancellationToken cancellationToken)
     {
         try
         {
@@ -45,7 +86,7 @@ public class ZipExpander
             do
             {
                 var tryName = zipFileName + (index > 0 ? $"_{index}" : "");
-                var tryPath = Path.GetFullPath(Path.Join(Path.GetTempPath(), "RangeFinder", tryName));
+                var tryPath = Path.GetFullPath(Path.Join(GetZipTempFolderPath(), tryName));
 
                 if (!tryPath.EndsWith(Path.DirectorySeparatorChar))
                 {
@@ -66,7 +107,7 @@ public class ZipExpander
             Directory.CreateDirectory(tempDirPath);
 
             // Extract ZIP contents
-            await SafeExtractAsync(zipFileFullPath, tempDirPath, 100.0f, cancellationToken);
+            await SafeExtractAsync(zipFileFullPath, tempDirPath, 500.0f, progressCallback, cancellationToken);
 
             if (cancellationToken.IsCancellationRequested)
             {
@@ -79,7 +120,7 @@ public class ZipExpander
                 if (singleDirectory == null)
                 {
                     // Contains more than just a single dir.
-                    return tempDirPath;
+                    return FriendlyizeTempPath(tempDirPath);
                 }
                 tempDirPath = singleDirectory;
             }
@@ -116,7 +157,7 @@ public class ZipExpander
         return null;
     }
 
-    public async Task SafeExtractAsync(string zipFilePath, string destinationDir, float maxDecompressedSizeMB, CancellationToken cancellationToken)
+    private static async Task SafeExtractAsync(string zipFilePath, string destinationDir, float maxDecompressedSizeMB, IProgress<ExtractionProgressEventArgs>? progressCallback, CancellationToken cancellationToken)
     {
         var maxDecompressedBytes = (long)(maxDecompressedSizeMB * 1024 * 1024);
 
@@ -138,19 +179,18 @@ public class ZipExpander
             totalExtracted = checked(totalExtracted + entry.Length);
             if (totalExtracted > maxDecompressedBytes)
             {
-                throw new InvalidOperationException(
-                    $"Archive total decompressed size exceeds the allowed limit of {maxDecompressedSizeMB} MB.");
+                // Exceeded maximum allowed decompressed size; stop with what we have extracted so far.
+                return;
             }
             string destinationPath = Path.GetFullPath(Path.Join(destinationDir, entry.FullName));
-            await SafeExtractEntryAsync(entry, destinationPath, maxDecompressedSize: 100 * 1024 * 1024, cancellationToken); // Example limit: 100 MB per entry
+            await SafeExtractEntryAsync(entry, destinationPath, maxDecompressedBytes, cancellationToken); // Example limit: 100 MB per entry
             numEntriesProcessed++;
 
-            if (ExtractionProgressUpdate != null
+            if (progressCallback != null
                 && eventStreamTimer.ElapsedMilliseconds > 150)
             {
-                await Task.Delay(1, cancellationToken);
                 eventStreamTimer.Restart();
-                ExtractionProgressUpdate.Invoke(this, new ExtractionProgressEventArgs { ProgressPercentage = (numEntriesProcessed * 100 / numEntries) });
+                progressCallback.Report(new ExtractionProgressEventArgs { ProgressPercentage = (numEntriesProcessed * 100 / numEntries) });
             }
         }
     }
@@ -173,8 +213,8 @@ public class ZipExpander
         // entry.Length bytes, so checking the declared size is sufficient.
         if (entry.Length > maxDecompressedSize)
         {
-            throw new InvalidOperationException(
-                $"Entry '{entry.FullName}' declares size {entry.Length}, exceeding limit {maxDecompressedSize}.");
+            // TOO big; don't extract.
+            return;
         }
 
         if (string.IsNullOrEmpty(entry.Name))

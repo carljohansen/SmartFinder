@@ -15,7 +15,7 @@ public partial class SearchForm : Form
         internal set
         {
             field = value;
-            var verified = ZipExpander.VerifyZipFile(value);
+            var verified = ZipExpander.VerifyZipFileByName(value);
             if (verified != null)
             {
                 _verifiedInitialOpenZipFileName = verified;
@@ -38,7 +38,7 @@ public partial class SearchForm : Form
         AddNewTab(UserTabState.CreateDefault());
     }
 
-    public SearchTabPage AddNewTab(UserTabState initialState)
+    public SearchTabPage AddNewTab(UserTabState initialState, Color? initialHeaderColour = null)
     {
         if (initialState.Id == 0)
         {
@@ -50,8 +50,8 @@ public partial class SearchForm : Form
             _nextTabId = Math.Max(_nextTabId, initialState.Id + 1);
         }
 
-        var searchControl = CreateSearchTabControl(initialState);
-        var newTab = new SearchTabPage(this, searchControl, initialState.SearchDto.GetDisplayTitle());
+        var searchControl = SearchFormHelper.CreateSearchTabControl(initialState);
+        var newTab = new SearchTabPage(this, searchControl, initialState.SearchDto.GetDisplayTitle(), initialHeaderColour);
 
         tabsMain.TabPages.Add(newTab); // second SearchTab_Resize call happens here
         newTab.ApplyUserPreferences(initialState.TabSettings);
@@ -61,10 +61,7 @@ public partial class SearchForm : Form
         return newTab;
     }
 
-    private static SearchTab CreateSearchTabControl(UserTabState initialState) => new(initialState)
-    {
-        Dock = DockStyle.Fill
-    };
+
 
     private void closeTabToolStripMenuItem_Click(object sender, EventArgs e)
     {
@@ -115,7 +112,7 @@ public partial class SearchForm : Form
                     Properties.Settings.Default.WindowLocation,
                     Properties.Settings.Default.WindowSize);
 
-                if (IsOnScreen(savedBounds))
+                if (SearchFormHelper.IsOnScreen(savedBounds))
                 {
                     this.StartPosition = FormStartPosition.Manual;
                     this.Location = Properties.Settings.Default.WindowLocation;
@@ -142,7 +139,7 @@ public partial class SearchForm : Form
 
         if (_verifiedInitialOpenZipFileName != null)
         {
-            await AddTabFromZip(_verifiedInitialOpenZipFileName);
+            await AddTabFromZipAsync(_verifiedInitialOpenZipFileName);
         }
     }
 
@@ -169,23 +166,7 @@ public partial class SearchForm : Form
 
     private void DrawTabHeaders(object? sender, DrawItemEventArgs e)
     {
-        //e.DrawBackground();
-        var tabPage = tabsMain.TabPages[e.Index] as SearchTabPage;
-        using Brush br = new SolidBrush(tabPage?.HeaderColor ?? default);
-        e.Graphics.FillRectangle(br, e.Bounds);
-        SizeF sz = e.Graphics.MeasureString(tabsMain.TabPages[e.Index].Text, e.Font!);
-        e.Graphics.DrawString(tabsMain.TabPages[e.Index].Text, e.Font!, Brushes.Black, e.Bounds.Left + (e.Bounds.Width - sz.Width) / 2, e.Bounds.Top + (e.Bounds.Height - sz.Height) / 2 + 1);
-
-        if (e.Index != tabsMain.SelectedIndex)
-        {
-            return;
-        }
-
-        Rectangle rect = e.Bounds;
-        rect.Offset(0, 1);
-        rect.Inflate(0, -1);
-        e.Graphics.DrawRectangle(Pens.DarkGray, rect);
-        e.DrawFocusRectangle();
+        SearchFormHelper.DrawTabHeaders(tabsMain, e);
     }
 
     private void duplicateTabToolStripMenuItem_Click(object sender, EventArgs e)
@@ -265,15 +246,7 @@ public partial class SearchForm : Form
         Properties.Settings.Default.Save();
     }
 
-    private bool IsOnScreen(Rectangle rect)
-    {
-        foreach (Screen screen in Screen.AllScreens)
-        {
-            if (screen.WorkingArea.IntersectsWith(rect))
-                return true;
-        }
-        return false;
-    }
+
 
     private void mnuCloseTab_Click(object sender, EventArgs e)
     {
@@ -332,8 +305,8 @@ public partial class SearchForm : Form
         using OpenFileDialog dialog = new();
 
         dialog.Title = "Select a ZIP file";
-        dialog.Filter = "ZIP files (*.zip)|*.zip";
-        dialog.InitialDirectory = GetLastZipLocation();
+        dialog.Filter = "ZIP files (*.zip)|*.zip|All files (*.*)|*.*";
+        dialog.InitialDirectory = SearchFormHelper.GetLastZipLocation();
         dialog.CheckFileExists = true;
         dialog.CheckPathExists = true;
 
@@ -347,23 +320,25 @@ public partial class SearchForm : Form
             return;
         }
 
-        bool flowControl = await AddTabFromZip(zipFileName);
+        bool flowControl = await AddTabFromZipAsync(zipFileName);
         if (!flowControl)
         {
             return;
         }
     }
 
-    private async Task<bool> AddTabFromZip(string zipFileName)
+    private async Task<bool> AddTabFromZipAsync(string zipFileName)
     {
-        var tempDir = await ZipExpander.Instance.UnzipToTempDirectoryAsync(zipFileName, CancellationToken.None);
-        if (tempDir == null)
+        var unzipProgressWindow = new ProgressWindow(zipFileName);
+        var result = unzipProgressWindow.ShowDialog();
+        if (result == DialogResult.OK)
         {
-            return false;
+            var tempDir = unzipProgressWindow.ExtractedDirectoryPath;
+            AddZipTab(tempDir!);
+            return true;
         }
 
-        AddZipTab(tempDir);
-        return true;
+        return false;
     }
 
     private void AddZipTab(string tempDir)
@@ -377,37 +352,32 @@ public partial class SearchForm : Form
         };
 
         var zipExploreState = new UserTabState(zipExploreUserSearchDto, UserTabSettings.CreateDefault());
-        AddNewTab(zipExploreState);
+        AddNewTab(zipExploreState, Color.Lavender);
     }
 
-    private static string GetLastZipLocation()
+    private string? _verifiedDropFileName = null;
+
+    private async void SearchForm_DragEnter(object sender, DragEventArgs e)
     {
-        var result = Properties.Settings.Default.LastZipLocation;
-        if (string.IsNullOrWhiteSpace(result) || !Directory.Exists(result))
+        _verifiedDropFileName = null;
+
+        var verifiedFileName = await SearchFormHelper.GetDraggedZipFileNameAsync(e);
+        if (verifiedFileName != null)
         {
-            result = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            e.Effect = DragDropEffects.Copy;
+            _verifiedDropFileName = verifiedFileName;
         }
-        return result;
-    }
-
-    private void SearchForm_DragEnter(object sender, DragEventArgs e)
-    {
-        e.Effect = DragDropEffects.Copy;
+        else
+        {
+            e.Effect = DragDropEffects.None;
+        }
     }
 
     private async void SearchForm_DragDrop(object sender, DragEventArgs e)
     {
-        if (!e.Data?.GetDataPresent(DataFormats.FileDrop) ?? false)
+        if (_verifiedDropFileName != null)
         {
-            return;
-        }
-
-        string[] fileNames = (string[])(e.Data?.GetData(DataFormats.FileDrop) ?? Array.Empty<string>());
-        var fileName = fileNames[0];
-        var verifiedFileName = ZipExpander.VerifyZipFile(fileName);
-        if (verifiedFileName != null)
-        {
-            await AddTabFromZip(verifiedFileName);
+            await AddTabFromZipAsync(_verifiedDropFileName);
         }
     }
 }

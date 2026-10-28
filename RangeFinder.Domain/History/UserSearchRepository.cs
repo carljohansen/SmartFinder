@@ -50,14 +50,16 @@ public static class UserSearchRepository
         File.WriteAllText(fileName, jsonString);
     }
 
+    private static string GetFileName(int id) => $"tab_{id:000}";
+
     public static void SaveSearchDto(UserSearchDto dto)
     {
-        SaveSearchDto(dto, $"tab_{dto.Id}");
+        SaveSearchDto(dto, GetFileName(dto.Id));
     }
 
     public static void DeleteSearchDto(int index)
     {
-        var fileName = GetDtoFileName($"tab_{index}");
+        var fileName = GetDtoFileName(GetFileName(index));
         if (File.Exists(fileName))
         {
             File.Delete(fileName);
@@ -69,7 +71,7 @@ public static class UserSearchRepository
         var storageDir = GetStorageDirectory();
         var searchFiles = Directory.GetFiles(storageDir, "tab_*.json");
         var savedSearches = new List<UserSearchDto>();
-        foreach (var fileName in searchFiles)
+        foreach (var fileName in searchFiles.OrderBy(f => f))
         {
             var dto = GetSearchDto(fileName);
             if (dto != null)

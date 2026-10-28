@@ -31,7 +31,7 @@ public class SearchTabPage : TabPage
         }
     } = default;
 
-    public SearchTabPage(SearchForm parentForm, SearchTab content, string initialTitle)
+    public SearchTabPage(SearchForm parentForm, SearchTab content, string initialTitle, Color? initialHeaderColour)
     {
         _parentForm = parentForm;
         _searchTab = content;
@@ -42,6 +42,7 @@ public class SearchTabPage : TabPage
         _searchTab.FilesFoundUpdate += HandleFilesFoundUpdate;
         _searchTab.Width = this.Width;
         _searchTab.Height = this.Height;
+        HeaderColor = initialHeaderColour ?? default;
     }
 
     public UserTabSettings GetCurrentUserSettings() => _searchTab.GetCurrentUserSettings();

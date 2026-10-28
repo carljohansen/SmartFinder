@@ -98,6 +98,11 @@ public class TextCriterionHistory
             .Where(item => item.Contains(userInput, StringComparison.OrdinalIgnoreCase))
             .ToList();
 
+        if (!bestMatches.Contains(userInput)
+            && !otherMatches.Contains(userInput))
+        {
+            bestMatches.Insert(0, userInput);
+        }
         return [.. bestMatches, .. otherMatches.Except(bestMatches, StringComparer.OrdinalIgnoreCase)];
     }
 

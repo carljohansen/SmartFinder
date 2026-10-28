@@ -18,6 +18,13 @@ public class PredictiveComboBox : ComboBox
 
     public bool ApplyComboBoxHistory(TextCriterionHistory history)
     {
+        int? selectedIndexToRestore = null;
+        if (SelectedIndex >= this.Items.Count)
+        {
+            selectedIndexToRestore = SelectedIndex;
+            SelectedIndex = -1;
+        }
+
         if (Text != "")
         {
             return false;
@@ -26,6 +33,11 @@ public class PredictiveComboBox : ComboBox
         foreach (var item in history.Items)
         {
             Items.Add(item);
+        }
+
+        if (selectedIndexToRestore.HasValue && selectedIndexToRestore.Value < Items.Count)
+        {
+            SelectedIndex = selectedIndexToRestore.Value;
         }
         return true;
     }

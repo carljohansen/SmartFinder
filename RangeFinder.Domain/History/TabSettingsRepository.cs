@@ -22,15 +22,17 @@ public static class TabSettingsRepository
 
     public static void SaveTabSettings(UserTabSettings dto)
     {
-        SaveTabSettings(dto, $"tabpref_{dto.Id}");
+        SaveTabSettings(dto, GetFileName(dto.Id));
     }
+
+    private static string GetFileName(int id) => $"tabpref_{id:000}";
 
     public static UserTabSettings[] LoadSavedTabSettings()
     {
         var storageDir = UserSearchRepository.GetStorageDirectory();
         var searchFiles = Directory.GetFiles(storageDir, "tabpref_*.json");
         var savedSearches = new List<UserTabSettings>();
-        foreach (var fileName in searchFiles)
+        foreach (var fileName in searchFiles.OrderBy(f => f))
         {
             var dto = GetTabSettings(fileName);
             if (dto != null)
@@ -57,7 +59,7 @@ public static class TabSettingsRepository
 
     public static void DeleteTabSettings(int index)
     {
-        var fileName = GetDtoFileName($"tabpref_{index}");
+        var fileName = GetDtoFileName(GetFileName(index));
         if (File.Exists(fileName))
         {
             File.Delete(fileName);
