@@ -32,7 +32,7 @@ public class FileSearch
         SearchCriteria = search;
         _textSearches.Clear();
 
-        _fileLocationRepository.Start(search.BaseDirectoriesPattern);
+        _fileLocationRepository.Start(search.GetNormalizedBaseDirectory());
 
         if (search.HasTextSearch())
         {
@@ -95,7 +95,7 @@ public class FileSearch
     private async Task<FileSearchStatus> OptimisticSearch(UserSearchDto searchDto,
                                                           CancellationToken cancellationToken)
     {
-        var directoryPath = searchDto.BaseDirectoriesPattern;
+        var directoryPath = searchDto.GetNormalizedBaseDirectory();
         if (string.IsNullOrWhiteSpace(directoryPath)
             || !Path.IsPathFullyQualified(directoryPath)
             || !Directory.Exists(directoryPath))
@@ -159,7 +159,7 @@ public class FileSearch
         {
             _progressCallback?.Report(new SearchProgressReportArgs { StatusMessage = "Building directory list", ProgressPercentage = -1 });
 
-            var unfilteredFolderList = await Task.Run(() => DirectorySearch.GetAllSubdirectories(searchDto.BaseDirectoriesPattern, cancellationToken));
+            var unfilteredFolderList = await Task.Run(() => DirectorySearch.GetAllSubdirectories(searchDto.GetNormalizedBaseDirectory(), cancellationToken));
             if (cancellationToken.IsCancellationRequested)
             {
                 return FileSearchStatus.Cancelled;
@@ -168,14 +168,14 @@ public class FileSearch
             var filteredFolderList = FileSearcher.FilterPaths(unfilteredFolderList.DirectoryNames, searchPatternCollection, excludeSearchPatternCollection);
             foreach (var matchingDir in filteredFolderList.Files)
             {
-                var folderDisplay = FileDisplay.CreateFolder(matchingDir.Path, searchDto.BaseDirectoriesPattern, _fileLocationRepository);
+                var folderDisplay = FileDisplay.CreateFolder(matchingDir.Path, searchDto.GetNormalizedBaseDirectory(), _fileLocationRepository);
                 folderDisplay.AddToDataTable(DataTable);
             }
         }
 
         try
         {
-            await foreach (var item in SearchFilesAsync(searchDto.BaseDirectoriesPattern,
+            await foreach (var item in SearchFilesAsync(searchDto.GetNormalizedBaseDirectory(),
                                                                         searchPatternCollection,
                                                                         excludeSearchPatternCollection,
                                                                         cancellationToken))

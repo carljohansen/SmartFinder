@@ -63,6 +63,7 @@
             tabsMain.TabIndex = 0;
             tabsMain.DragDrop += tabsMain_DragDrop;
             tabsMain.DragEnter += tabsMain_DragEnter;
+            tabsMain.DragLeave += tabsMain_DragLeave;
             // 
             // mnuTabContext
             // 
@@ -190,6 +191,7 @@
             Load += SearchForm_Load;
             DragDrop += SearchForm_DragDrop;
             DragEnter += SearchForm_DragEnter;
+            DragLeave += SearchForm_DragLeave;
             mnuTabContext.ResumeLayout(false);
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();

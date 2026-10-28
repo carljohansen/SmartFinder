@@ -118,7 +118,7 @@ public partial class SearchTab : UserControl
             RawExcludeFilesPattern = exceptSearchPatterns,
             TextSearchPattern = query,
             TextMatchingOptions = options,
-            BaseDirectoriesPattern = UserSearchDto.NormalizeDirectoryName(cmbRootDir.Text),
+            BaseDirectoriesPattern = cmbRootDir.Text,
             EnableFileExclusion = chkEnableExclusions.Checked,
             FilterByModifiedDate = chkFilterByDate.Checked,
             IncludeFolders = chkShowHidden.Checked,

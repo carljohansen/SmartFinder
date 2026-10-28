@@ -44,6 +44,8 @@ public class UserSearchDto
 
     public required string BaseDirectoriesPattern { get; set; }
 
+    public string GetNormalizedBaseDirectory() => NormalizeDirectoryName(BaseDirectoriesPattern);
+
     public bool EnableFileExclusion { get; set; }
 
     public bool FilterByModifiedDate { get; set; }
@@ -122,7 +124,8 @@ public class UserSearchDto
 
     public bool IsValidBaseDir()
     {
-        return !(string.IsNullOrWhiteSpace(BaseDirectoriesPattern) || !Directory.Exists(BaseDirectoriesPattern));
+        return !string.IsNullOrWhiteSpace(BaseDirectoriesPattern) 
+               && Directory.Exists(GetNormalizedBaseDirectory());
     }
 
     public static UserSearchDto CreateDefault() => new()
@@ -159,7 +162,7 @@ public class UserSearchDto
 
     public string? GetRelativePath(string folderPath)
     {
-        var baseDir = Path.GetFullPath(BaseDirectoriesPattern);
+        var baseDir = Path.GetFullPath(GetNormalizedBaseDirectory());
         var relativeFolder = Path.GetRelativePath(baseDir, folderPath);
 
         if (relativeFolder == ".")
@@ -201,7 +204,7 @@ public class UserSearchDto
         }
         else if (!string.IsNullOrWhiteSpace(BaseDirectoriesPattern))
         {
-            var normalizedBaseDir = NormalizeDirectoryName(BaseDirectoriesPattern);
+            var normalizedBaseDir = GetNormalizedBaseDirectory();
             if (Directory.Exists(normalizedBaseDir))
             {
                 var leafDir = Path.GetFileName(normalizedBaseDir.TrimEnd(Path.DirectorySeparatorChar));

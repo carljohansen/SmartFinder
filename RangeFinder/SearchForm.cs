@@ -1,6 +1,7 @@
 ﻿using RangeFinder.Domain;
 using RangeFinder.Domain.History;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace RangeFinder;
 
@@ -360,6 +361,7 @@ public partial class SearchForm : Form
 
     private void SearchForm_DragEnter(object sender, DragEventArgs e)
     {
+        Debug.WriteLine("in DragEnter");
         var unverifiedFileName = SearchFormHelper.GetRawDraggedFileName(e);
 
         if (unverifiedFileName == null)
@@ -390,9 +392,11 @@ public partial class SearchForm : Form
             e.Effect = DragDropEffects.Copy;
             _verifiedDropFileName = verifiedFileName;
             _currentUnverifiedDropFileName = unverifiedFileName;
+            Debug.WriteLine("Set Copy");
         }
         else
         {
+            Debug.WriteLine("Set none");
             _currentUnverifiedDropFileName = null;
             e.Effect = DragDropEffects.None;
         }
@@ -400,6 +404,7 @@ public partial class SearchForm : Form
 
     private async void SearchForm_DragDrop(object sender, DragEventArgs e)
     {
+        Debug.WriteLine("in DragDrop");
         _currentUnverifiedDropFileName = null;
 
         if (_verifiedDropFileName != null)
@@ -418,5 +423,17 @@ public partial class SearchForm : Form
     private void tabsMain_DragDrop(object sender, DragEventArgs e)
     {
         SearchForm_DragDrop(sender, e);
+    }
+
+    private void tabsMain_DragLeave(object sender, EventArgs e)
+    {
+        SearchForm_DragLeave(sender, e);
+    }
+
+    private void SearchForm_DragLeave(object sender, EventArgs e)
+    {
+        Debug.WriteLine("In DragLeave");
+        _currentUnverifiedDropFileName = null;
+        _verifiedDropFileName = null;
     }
 }
