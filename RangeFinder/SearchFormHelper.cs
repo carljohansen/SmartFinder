@@ -30,7 +30,7 @@ internal static class SearchFormHelper
         return result;
     }
 
-    public static async Task<string?> GetDraggedZipFileNameAsync(DragEventArgs e)
+    public static string? GetRawDraggedFileName(DragEventArgs e)
     {
         if (!e.Data?.GetDataPresent(DataFormats.FileDrop) ?? false)
         {
@@ -42,8 +42,12 @@ internal static class SearchFormHelper
             return null;
         }
 
-        var fileName = fileNames[0];
-        return ZipExpander.VerifyZipFileByContent(fileName);
+        return fileNames[0];
+    }
+
+    public static string? GetDraggedZipFileName(string rawFileName)
+    {
+        return ZipExpander.VerifyZipFileByContent(rawFileName);
     }
 
     public static void DrawTabHeaders(TabControl tabControl, DrawItemEventArgs e)

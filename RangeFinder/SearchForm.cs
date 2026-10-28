@@ -356,28 +356,67 @@ public partial class SearchForm : Form
     }
 
     private string? _verifiedDropFileName = null;
+    private string? _currentUnverifiedDropFileName = null;
 
-    private async void SearchForm_DragEnter(object sender, DragEventArgs e)
+    private void SearchForm_DragEnter(object sender, DragEventArgs e)
     {
-        _verifiedDropFileName = null;
+        var unverifiedFileName = SearchFormHelper.GetRawDraggedFileName(e);
 
-        var verifiedFileName = await SearchFormHelper.GetDraggedZipFileNameAsync(e);
+        if (unverifiedFileName == null)
+        {
+            return; // Not at all a valid file.
+        }
+
+        if (_currentUnverifiedDropFileName != null
+            && unverifiedFileName == _currentUnverifiedDropFileName)
+        {
+            return; // We've already started this drag.
+        }
+
+        if (_currentUnverifiedDropFileName != null
+            && unverifiedFileName != _currentUnverifiedDropFileName)
+        {
+            _verifiedDropFileName = null;
+            _currentUnverifiedDropFileName = null;
+            return; // Wow, that's weird.  Abandon whatever drag we were doing.
+        }
+
+        _verifiedDropFileName = null;
+        _currentUnverifiedDropFileName = null;
+
+        var verifiedFileName = SearchFormHelper.GetDraggedZipFileName(unverifiedFileName);
         if (verifiedFileName != null)
         {
             e.Effect = DragDropEffects.Copy;
             _verifiedDropFileName = verifiedFileName;
+            _currentUnverifiedDropFileName = unverifiedFileName;
         }
         else
         {
+            _currentUnverifiedDropFileName = null;
             e.Effect = DragDropEffects.None;
         }
     }
 
     private async void SearchForm_DragDrop(object sender, DragEventArgs e)
     {
+        _currentUnverifiedDropFileName = null;
+
         if (_verifiedDropFileName != null)
         {
-            await AddTabFromZipAsync(_verifiedDropFileName);
+            var dropFileName = _verifiedDropFileName;
+            _verifiedDropFileName = null;
+            await AddTabFromZipAsync(dropFileName);
         }
+    }
+
+    private void tabsMain_DragEnter(object sender, DragEventArgs e)
+    {
+        SearchForm_DragEnter(sender, e);
+    }
+
+    private void tabsMain_DragDrop(object sender, DragEventArgs e)
+    {
+        SearchForm_DragDrop(sender, e);
     }
 }
