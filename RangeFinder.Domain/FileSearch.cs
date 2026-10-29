@@ -211,7 +211,7 @@ public class FileSearch
         await foreach (var val in SearchFilesInternalAsync(directoryPath,
                                         includePatterns,
                                         excludePatterns,
-                                        [.. TextSearches.Select(ts => new FileTextMatcher(directoryPath, ts))],
+                                        new FileMatcher(directoryPath, TextSearches),
                                         cancellationToken))
         {
             yield return val;
@@ -221,7 +221,7 @@ public class FileSearch
     private async IAsyncEnumerable<FileDisplay> SearchFilesInternalAsync(string baseDirectory,
                                                                         PathCollection includePatterns,
                                                                         PathCollection excludePatterns,
-                                                                        FileTextMatcher[] textChecks,
+                                                                        FileMatcher textChecks,
                                                                         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
@@ -232,7 +232,7 @@ public class FileSearch
         if (SearchCriteria == null)
             yield break; // Should not happen.
 
-        var hasTextChecks = textChecks.Length > 0;
+        var hasTextChecks = textChecks.HasTextChecks;
 
         _progressCallback?.Report(new SearchProgressReportArgs { StatusMessage = "Building file list", ProgressPercentage = -1 });
 
@@ -261,10 +261,10 @@ public class FileSearch
 
     private async IAsyncEnumerable<FileDisplay> ProcessFiles(string baseDirectory,
                                                             IEnumerable<FilePatternMatch> files,
-                                                            FileTextMatcher[] textChecks,
+                                                            FileMatcher textChecks,
                                                             [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var hasTextChecks = textChecks.Length > 0;
+        var hasTextChecks = textChecks.HasTextChecks;
         var actionMsg = hasTextChecks ? "Searching in files" : "Annotating files";
 
         if (hasTextChecks)
@@ -296,19 +296,19 @@ public class FileSearch
             var passesTextCheck = true;
             if (hasTextChecks)
             {
-                var checkerState = new bool[textChecks.Length]; // false = still evaluating; true already found a match
+                var checkerState = new bool[textChecks.NumTextChecks]; // false = still evaluating; true already found a match
 
                 try
                 {
                     foreach (var line in File.ReadLines(Path.Combine(_fileLocationRepository.BaseDirectory, match.Path)))
                     {
-                        for (var i = 0; i < textChecks.Length; i++)
+                        for (var i = 0; i < textChecks.NumTextChecks; i++)
                         {
                             if (checkerState[i] == false)
                             {
-                                if (textChecks[i].HasMatchOnLine(line))
+                                if (textChecks.Matchers[i].HasMatchOnLine(line))
                                 {
-                                    if (textChecks[i].IsExclusion)
+                                    if (textChecks.Matchers[i].IsExclusion)
                                     {
                                         passesTextCheck = false;
                                         break;
@@ -330,9 +330,9 @@ public class FileSearch
                     passesTextCheck = false;
                 }
 
-                for (var i = 0; i < textChecks.Length; i++)
+                for (var i = 0; i < textChecks.NumTextChecks; i++)
                 {
-                    if (textChecks[i].IsExclusion)
+                    if (textChecks.Matchers[i].IsExclusion)
                     {
                         checkerState[i] = true;
                     }
@@ -401,15 +401,8 @@ public class FileSearch
             return [];
         }
 
-        var result = new List<IFileLineDisplay>();
-        foreach (var match in TextSearches)
-        {
-            var checker = new FileTextMatcher(null, match);
-            result.AddRange(checker.GetMatches(filePath));
-        }
-
-        result.Sort(FileLineTextMatchSorter);
-        return result;
+        var matcher = new FileMatcher(null, TextSearches);
+        return matcher.GetMatches(filePath);
     }
 
     private int FileLineTextMatchSorter(IFileLineDisplay x, IFileLineDisplay y)
