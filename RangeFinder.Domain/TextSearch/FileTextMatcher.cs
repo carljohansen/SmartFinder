@@ -11,14 +11,14 @@ public class FileTextMatcher(string? BaseDirectory, AtomicTextMatch TextMatch)
             return filePath; // This better be absolute!
         }
         return Path.Combine(BaseDirectory, filePath);
-    }    
+    }
 
     public bool HasMatchOnLine(string line)
     {
         return TextMatch.FindInLine(line) >= 0;
     }
 
-    public IReadOnlyCollection<FileLineTextMatch> GetMatches(string filePath, int max = 200)
+    public IReadOnlyCollection<IFileLineDisplay> GetMatches(string filePath, int max = 200)
     {
         var numFound = 0;
         if (TextMatch.IsExclusion)
@@ -26,7 +26,7 @@ public class FileTextMatcher(string? BaseDirectory, AtomicTextMatch TextMatch)
             return [];
         }
 
-        var matches = new List<FileLineTextMatch>();
+        var matches = new List<IFileLineDisplay>();
         var fullPath = GetFullPath(filePath);
         int lineNumber = 0;
         foreach (var line in File.ReadLines(fullPath))
@@ -40,6 +40,10 @@ public class FileTextMatcher(string? BaseDirectory, AtomicTextMatch TextMatch)
                 {
                     return matches;
                 }
+            }
+            else
+            {
+                matches.Add(new FileLinePlainPreview(line, lineNumber));
             }
         }
         return matches;

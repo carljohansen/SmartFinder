@@ -2,9 +2,11 @@
 
 public class AtomicTextMatch
 {
+    public readonly static int MatchHighlightColourIndexBase = 2; // Index of Orange.
+
     public readonly int Length;
 
-    public readonly int Index;
+    public readonly int Index; // 1-based
 
     public readonly bool IsExclusion;
 

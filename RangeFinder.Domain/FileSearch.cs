@@ -401,7 +401,7 @@ public class FileSearch
             return [];
         }
 
-        var result = new List<FileLineTextMatch>();
+        var result = new List<IFileLineDisplay>();
         foreach (var match in TextSearches)
         {
             var checker = new FileTextMatcher(null, match);
@@ -412,8 +412,11 @@ public class FileSearch
         return result;
     }
 
-    private int FileLineTextMatchSorter(FileLineTextMatch x, FileLineTextMatch y)
+    private int FileLineTextMatchSorter(IFileLineDisplay x, IFileLineDisplay y)
     {
-        return x.LineNumber.CompareTo(y.LineNumber);
+        var lineNumCompare = x.LineNumber.CompareTo(y.LineNumber);
+        if (lineNumCompare != 0)
+            return lineNumCompare;
+        return x.SecondarySortKey.CompareTo(y.SecondarySortKey);
     }
 }

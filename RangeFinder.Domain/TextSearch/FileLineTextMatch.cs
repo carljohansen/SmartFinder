@@ -6,6 +6,8 @@ namespace RangeFinder.Domain.TextSearch;
 
 public record FileLineTextMatch(string Line, int LineNumber, int StartPos, int Length, AtomicTextMatch Source) : IFileLineDisplay
 {
+    public int SecondarySortKey => Source.Index;
+
     public MatchSegmentDisplay[] GetSegments()
     {
         var (optimizedLine, optimizedStartPos) = GetOptimizedLine(200);
@@ -14,7 +16,7 @@ public record FileLineTextMatch(string Line, int LineNumber, int StartPos, int L
         {
             segments.Add(new(optimizedLine[..optimizedStartPos], 0));
         }
-        segments.Add(new(optimizedLine[optimizedStartPos..(optimizedStartPos + Length)], Source.Index));
+        segments.Add(new(optimizedLine[optimizedStartPos..(optimizedStartPos + Length)], Source.Index + AtomicTextMatch.MatchHighlightColourIndexBase - 1));
         if (StartPos + Length < Line.Length)
         {
             segments.Add(new(optimizedLine[(optimizedStartPos + Length)..], 0));

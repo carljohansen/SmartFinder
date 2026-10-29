@@ -7,7 +7,7 @@ internal class MatchListRenderer
 {
     private Font? _highlightFont;
 
-    private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
+    private readonly Brush[] _brushes = [.. new[] { Color.Black, Color.DarkGray, Color.Orange, Color.Purple, Color.CornflowerBlue, Color.DarkKhaki, Color.Green }.Select(c => new SolidBrush(c))];
 
     public readonly static MatchListRenderer Instance = new();
 
@@ -45,7 +45,7 @@ internal class MatchListRenderer
             g.DrawString(lineNumberText, highlightFont, brush, e.Bounds.Left + 5, e.Bounds.Top + 3, StringFormat.GenericTypographic);
         }
         else
-        {            
+        {
             var textSegments = itemUnderlyingMatches.GetSegments();
             float xPos = e.Bounds.Left;
 
