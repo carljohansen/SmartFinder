@@ -22,10 +22,15 @@ internal class MatchListRenderer
         return _highlightFont;
     }
 
-    public void DrawMatchListViewSubItem(FileLineTextMatch? itemUnderlyingMatches, ListView listView, DrawListViewSubItemEventArgs e)
+    public void DrawMatchListViewSubItem(IFileLineDisplay? itemUnderlyingMatches, ListView listView, DrawListViewSubItemEventArgs e)
     {
         if (e.ItemIndex < 0)
             return;
+
+        if (itemUnderlyingMatches == null)
+        {
+            return;
+        }
 
         Font font = listView.Font;
         var highlightFont = GetHighlightFont(listView);
@@ -35,17 +40,12 @@ internal class MatchListRenderer
         if (e.ColumnIndex == 0)
         {
             // Line Number:
-            string lineNumberText = e.SubItem!.Text;
+            string lineNumberText = itemUnderlyingMatches.LineNumber.ToString();
             Brush brush = _brushes[0];
             g.DrawString(lineNumberText, highlightFont, brush, e.Bounds.Left + 5, e.Bounds.Top + 3, StringFormat.GenericTypographic);
         }
         else
-        {
-            if (itemUnderlyingMatches == null)
-            {
-                return;
-            }
-
+        {            
             var textSegments = itemUnderlyingMatches.GetSegments();
             float xPos = e.Bounds.Left;
 

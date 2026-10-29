@@ -554,7 +554,7 @@ public partial class SearchTab : UserControl
         if (e.ItemIndex < 0)
             return;
 
-        var itemUnderlyingMatches = lstTextMatches.Items[e.ItemIndex].Tag as FileLineTextMatch;
+        var itemUnderlyingMatches = lstTextMatches.Items[e.ItemIndex].Tag as IFileLineDisplay;
 
         MatchListRenderer.Instance.DrawMatchListViewSubItem(itemUnderlyingMatches, lstTextMatches, e);
     }
@@ -573,7 +573,7 @@ public partial class SearchTab : UserControl
             lstTextMatches.Items.Clear();
             foreach (var match in matches)
             {
-                var newItem = lstTextMatches.Items.Add(new ListViewItem([match.LineNumber.ToString(), match.Line]));
+                var newItem = lstTextMatches.Items.Add(new ListViewItem(["", ""]));
                 newItem.Tag = match;
             }
         }

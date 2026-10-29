@@ -9,6 +9,7 @@ public class AtomicTextMatch
     public readonly bool IsExclusion;
 
     public readonly bool HasLeadingWhitespace;
+
     private readonly string textPattern;
     private readonly TextMatchingOptions options;
 

@@ -394,7 +394,7 @@ public class FileSearch
         return _currentStatusReportedDirectory!;
     }
 
-    public IReadOnlyCollection<FileLineTextMatch> GetMatches(string filePath)
+    public IReadOnlyCollection<IFileLineDisplay> GetMatches(string filePath)
     {
         if (TextSearches.Count == 0)
         {

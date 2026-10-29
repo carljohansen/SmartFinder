@@ -4,7 +4,7 @@
 
 namespace RangeFinder.Domain.TextSearch;
 
-public record FileLineTextMatch(string Line, int LineNumber, int StartPos, int Length, AtomicTextMatch Source)
+public record FileLineTextMatch(string Line, int LineNumber, int StartPos, int Length, AtomicTextMatch Source) : IFileLineDisplay
 {
     public MatchSegmentDisplay[] GetSegments()
     {
