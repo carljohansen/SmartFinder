@@ -54,6 +54,10 @@ public class FileMatcher
             else
             {
                 numMatchingLinesFound++;
+                if (numMatchingLinesFound >= max)
+                {
+                    break;
+                }
             }
         }
         return matches;
