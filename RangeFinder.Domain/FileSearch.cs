@@ -277,6 +277,8 @@ public class FileSearch
         FileDisplay? matchedItem = null;
         var numFilesProcessed = 0;
         var numFiles = files.Count();
+        var numInclusiveChecks = textChecks.NumInclusiveChecks;
+        var hasExclusiveChecks = textChecks.NumExclusiveChecks > 0;
 
         foreach (var match in files)
         {
@@ -294,10 +296,11 @@ public class FileSearch
             }
 
             var passesTextCheck = true;
+            var canShortCircuit = false;
             if (hasTextChecks)
             {
                 var checkerState = new bool[textChecks.NumTextChecks]; // false = still evaluating; true already found a match
-
+                var numInclusiveChecksSatisfied = 0;
                 try
                 {
                     foreach (var line in File.ReadLines(Path.Combine(_fileLocationRepository.BaseDirectory, match.Path)))
@@ -311,14 +314,22 @@ public class FileSearch
                                     if (textChecks.Matchers[i].IsExclusion)
                                     {
                                         passesTextCheck = false;
+                                        canShortCircuit = true;
                                         break;
                                     }
                                     checkerState[i] = true;
+                                    numInclusiveChecksSatisfied++;
+                                    if (numInclusiveChecksSatisfied == numInclusiveChecks
+                                        && !hasExclusiveChecks)
+                                    {
+                                        canShortCircuit = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
 
-                        if (!passesTextCheck)
+                        if (canShortCircuit)
                         {
                             break;
                         }
@@ -394,15 +405,15 @@ public class FileSearch
         return _currentStatusReportedDirectory!;
     }
 
-    public IReadOnlyCollection<IFileLineDisplay> GetMatches(string filePath)
+    public void GetMatches(string filePath, Action<IFileLineDisplay> matchAction)
     {
         if (TextSearches.Count == 0)
         {
-            return [];
+            return;
         }
 
         var matcher = new FileMatcher(null, TextSearches);
-        return matcher.GetMatches(filePath);
+        matcher.GetMatches(filePath, matchAction);
     }
 
     private int FileLineTextMatchSorter(IFileLineDisplay x, IFileLineDisplay y)

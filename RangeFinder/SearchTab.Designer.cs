@@ -31,7 +31,7 @@ namespace RangeFinder
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             btnSearch = new Button();
             cmbFilePattern = new ComboBox();
             cmbContainingText = new PredictiveComboBox();
@@ -43,11 +43,11 @@ namespace RangeFinder
             mnuCopyPath = new ToolStripMenuItem();
             mnuCopyFolderPath = new ToolStripMenuItem();
             mnuCopyFiles = new ToolStripMenuItem();
+            mnuDeleteItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
             mnuSearchHere = new ToolStripMenuItem();
             mnuSearchHereInNewTab = new ToolStripMenuItem();
             mnuExcludeThisFolder = new ToolStripMenuItem();
-            mnuDeleteItem = new ToolStripMenuItem();
             chkMatchCase = new CheckBox();
             chkMatchWholeWord = new CheckBox();
             label1 = new Label();
@@ -55,12 +55,6 @@ namespace RangeFinder
             label3 = new Label();
             spltResultPanel = new SplitContainer();
             grdResult = new SearchResultDataGridView();
-            colIcon = new DataGridViewImageColumn();
-            colName = new DataGridViewTextBoxColumn();
-            colLocation = new DataGridViewTextBoxColumn();
-            colFileType = new DataGridViewTextBoxColumn();
-            colSize = new DataGridViewTextBoxColumn();
-            colLastModified = new DataGridViewTextBoxColumn();
             lstTextMatches = new ListView();
             mnuTextMatchContext = new ContextMenuStrip(components);
             mnuTextMatchLineCopy = new ToolStripMenuItem();
@@ -79,6 +73,12 @@ namespace RangeFinder
             lblStatusStripSpring = new ToolStripStatusLabel();
             lblFilesFound = new ToolStripStatusLabel();
             lblElapsedTime = new ToolStripStatusLabel();
+            colIcon = new DataGridViewImageColumn();
+            colName = new DataGridViewTextBoxColumn();
+            colLocation = new DataGridViewTextBoxColumn();
+            colFileType = new DataGridViewTextBoxColumn();
+            colSize = new DataGridViewTextBoxColumn();
+            colLastModified = new DataGridViewTextBoxColumn();
             mnuFileItemContext.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)spltResultPanel).BeginInit();
             spltResultPanel.Panel1.SuspendLayout();
@@ -124,7 +124,7 @@ namespace RangeFinder
             mnuFileItemContext.ImageScalingSize = new Size(20, 20);
             mnuFileItemContext.Items.AddRange(new ToolStripItem[] { mnuOpenFile, mnuOpenWithTextEditor, mnuShowInExplorer, toolStripSeparator1, mnuCopyPath, mnuCopyFolderPath, mnuCopyFiles, mnuDeleteItem, toolStripSeparator2, mnuSearchHere, mnuExcludeThisFolder });
             mnuFileItemContext.Name = "mnuFileItemContext";
-            mnuFileItemContext.Size = new Size(194, 236);
+            mnuFileItemContext.Size = new Size(194, 214);
             //
             // mnuOpenFile
             //
@@ -175,6 +175,13 @@ namespace RangeFinder
             mnuCopyFiles.Text = "Copy";
             mnuCopyFiles.Click += mnuCopyFiles_Click;
             //
+            // mnuDeleteItem
+            //
+            mnuDeleteItem.Name = "mnuDeleteItem";
+            mnuDeleteItem.Size = new Size(193, 22);
+            mnuDeleteItem.Text = "Move To Recycle Bin";
+            mnuDeleteItem.Click += mnuDeleteItem_Click;
+            //
             // toolStripSeparator2
             //
             toolStripSeparator2.Name = "toolStripSeparator2";
@@ -201,13 +208,6 @@ namespace RangeFinder
             mnuExcludeThisFolder.Size = new Size(193, 22);
             mnuExcludeThisFolder.Text = "Exclude This Folder...";
             mnuExcludeThisFolder.Click += mnuExcludeThisFolder_Click;
-            //
-            // mnuDeleteItem
-            //
-            mnuDeleteItem.Name = "mnuDeleteItem";
-            mnuDeleteItem.Size = new Size(193, 22);
-            mnuDeleteItem.Text = "Move To Recycle Bin";
-            mnuDeleteItem.Click += mnuDeleteItem_Click;
             //
             // chkMatchCase
             //
@@ -308,68 +308,6 @@ namespace RangeFinder
             grdResult.Sorted += grdResult_Sorted;
             grdResult.MouseEnter += grdResult_MouseEnter;
             grdResult.MouseLeave += grdResult_MouseLeave;
-            //
-            // colIcon
-            //
-            colIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            colIcon.DataPropertyName = "Icon";
-            colIcon.HeaderText = "";
-            colIcon.MinimumWidth = 6;
-            colIcon.Name = "colIcon";
-            colIcon.ReadOnly = true;
-            colIcon.Width = 22;
-            //
-            // colName
-            //
-            colName.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            colName.DataPropertyName = "Name";
-            colName.HeaderText = "Name";
-            colName.MinimumWidth = 6;
-            colName.Name = "colName";
-            colName.ReadOnly = true;
-            colName.Width = 200;
-            //
-            // colLocation
-            //
-            colLocation.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            colLocation.DataPropertyName = "Location";
-            colLocation.HeaderText = "Location";
-            colLocation.MinimumWidth = 6;
-            colLocation.Name = "colLocation";
-            colLocation.ReadOnly = true;
-            colLocation.Width = 95;
-            //
-            // colFileType
-            //
-            colFileType.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            colFileType.DataPropertyName = "FileTypeDescription";
-            colFileType.HeaderText = "Type";
-            colFileType.MinimumWidth = 6;
-            colFileType.Name = "colFileType";
-            colFileType.ReadOnly = true;
-            colFileType.Width = 69;
-            //
-            // colSize
-            //
-            colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colSize.DataPropertyName = "SizeDisplay";
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleRight;
-            colSize.DefaultCellStyle = dataGridViewCellStyle2;
-            colSize.HeaderText = "Size";
-            colSize.MinimumWidth = 6;
-            colSize.Name = "colSize";
-            colSize.ReadOnly = true;
-            colSize.Width = 52;
-            //
-            // colLastModified
-            //
-            colLastModified.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colLastModified.DataPropertyName = "LastModified";
-            colLastModified.HeaderText = "Modified";
-            colLastModified.MinimumWidth = 6;
-            colLastModified.Name = "colLastModified";
-            colLastModified.ReadOnly = true;
-            colLastModified.Width = 80;
             //
             // lstTextMatches
             //
@@ -548,6 +486,69 @@ namespace RangeFinder
             lblElapsedTime.Size = new Size(4, 17);
             lblElapsedTime.Visible = false;
             //
+            // colIcon
+            //
+            colIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            colIcon.DataPropertyName = "Icon";
+            colIcon.HeaderText = "";
+            colIcon.MinimumWidth = 6;
+            colIcon.Name = "colIcon";
+            colIcon.ReadOnly = true;
+            colIcon.Resizable = DataGridViewTriState.False;
+            colIcon.Width = 22;
+            //
+            // colName
+            //
+            colName.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            colName.DataPropertyName = "Name";
+            colName.HeaderText = "Name";
+            colName.MinimumWidth = 6;
+            colName.Name = "colName";
+            colName.ReadOnly = true;
+            colName.Width = 200;
+            //
+            // colLocation
+            //
+            colLocation.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            colLocation.DataPropertyName = "Location";
+            colLocation.HeaderText = "Location";
+            colLocation.MinimumWidth = 6;
+            colLocation.Name = "colLocation";
+            colLocation.ReadOnly = true;
+            colLocation.Width = 95;
+            //
+            // colFileType
+            //
+            colFileType.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            colFileType.DataPropertyName = "FileTypeDescription";
+            colFileType.HeaderText = "Type";
+            colFileType.MinimumWidth = 6;
+            colFileType.Name = "colFileType";
+            colFileType.ReadOnly = true;
+            colFileType.Width = 69;
+            //
+            // colSize
+            //
+            colSize.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colSize.DataPropertyName = "SizeDisplay";
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
+            colSize.DefaultCellStyle = dataGridViewCellStyle1;
+            colSize.HeaderText = "Size";
+            colSize.MinimumWidth = 6;
+            colSize.Name = "colSize";
+            colSize.ReadOnly = true;
+            colSize.Width = 52;
+            //
+            // colLastModified
+            //
+            colLastModified.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colLastModified.DataPropertyName = "LastModified";
+            colLastModified.HeaderText = "Modified";
+            colLastModified.MinimumWidth = 6;
+            colLastModified.Name = "colLastModified";
+            colLastModified.ReadOnly = true;
+            colLastModified.Width = 80;
+            //
             // SearchTab
             //
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -623,12 +624,6 @@ namespace RangeFinder
         private ToolStripMenuItem mnuTextMatchLineCopy;
         private CheckBox chkShowHidden;
         private ToolStripMenuItem mnuExcludeThisFolder;
-        private DataGridViewImageColumn colIcon;
-        private DataGridViewTextBoxColumn colName;
-        private DataGridViewTextBoxColumn colLocation;
-        private DataGridViewTextBoxColumn colFileType;
-        private DataGridViewTextBoxColumn colSize;
-        private DataGridViewTextBoxColumn colLastModified;
         private StatusStrip statusStrip1;
         private ToolStripProgressBar TabProgressBar;
         private ToolStripStatusLabel lblTabStatus;
@@ -639,5 +634,11 @@ namespace RangeFinder
         private ToolStripStatusLabel lblFilesFound;
         private ToolStripStatusLabel lblElapsedTime;
         private ToolStripMenuItem mnuDeleteItem;
+        private DataGridViewImageColumn colIcon;
+        private DataGridViewTextBoxColumn colName;
+        private DataGridViewTextBoxColumn colLocation;
+        private DataGridViewTextBoxColumn colFileType;
+        private DataGridViewTextBoxColumn colSize;
+        private DataGridViewTextBoxColumn colLastModified;
     }
 }

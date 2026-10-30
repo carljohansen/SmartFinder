@@ -8,11 +8,17 @@ public class FileMatcher
     {
         baseDirectory = BaseDirectory;
         Matchers = atomicTextMatches.Select(atm => new LineTextMatcher(atm)).ToArray();
+        NumExclusiveChecks = Matchers.Count(m => m.IsExclusion);
+        NumInclusiveChecks = Matchers.Length - NumExclusiveChecks;
     }
 
     public bool HasTextChecks => Matchers.Length > 0;
 
-    public int NumTextChecks => Matchers.Length;
+    public int NumTextChecks => NumInclusiveChecks + NumExclusiveChecks;
+
+    public readonly int NumInclusiveChecks;
+
+    public readonly int NumExclusiveChecks;
 
     public readonly LineTextMatcher[] Matchers;
 
@@ -25,11 +31,10 @@ public class FileMatcher
         return Path.Combine(baseDirectory, filePath);
     }
 
-    public IReadOnlyCollection<IFileLineDisplay> GetMatches(string filePath, int max = 200)
+    public void GetMatches(string filePath, Action<IFileLineDisplay> matchAction, int max = 200)
     {
         var numMatchingLinesFound = 0;
 
-        var matches = new List<IFileLineDisplay>();
         var fullPath = GetFullPath(filePath);
         int lineNumber = 0;
 
@@ -42,16 +47,12 @@ public class FileMatcher
                 var match = matcher.GetMatch(line, lineNumber);
                 if (match != null)
                 {
-                    matches.Add(match);
+                    matchAction(match);
                     lineHasMatch = true;
                 }
             }
 
-            if (!lineHasMatch)
-            {
-                matches.Add(new FileLinePlainPreview(line, lineNumber));
-            }
-            else
+            if (lineHasMatch)
             {
                 numMatchingLinesFound++;
                 if (numMatchingLinesFound >= max)
@@ -59,7 +60,10 @@ public class FileMatcher
                     break;
                 }
             }
+            else
+            {
+                matchAction(new FileLinePlainPreview(line, lineNumber));
+            }
         }
-        return matches;
     }
 }

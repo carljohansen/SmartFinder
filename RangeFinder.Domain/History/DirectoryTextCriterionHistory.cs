@@ -15,6 +15,12 @@ public class DirectoryTextCriterionHistory : TextCriterionHistory
             possibleContinuations = base.GetPossibleContinuations(userInput);
         }
 
+        if (Path.EndsInDirectorySeparator(userInput)
+            && !possibleContinuations.Contains(userInput))
+        {
+            possibleContinuations = [userInput, .. possibleContinuations];
+        }
+
         return possibleContinuations;
-    }    
+    }
 }

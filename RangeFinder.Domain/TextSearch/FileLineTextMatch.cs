@@ -8,6 +8,8 @@ public record FileLineTextMatch(string Line, int LineNumber, int StartPos, int L
 {
     public int SecondarySortKey => Source.Index;
 
+    public bool HasMatches => true;
+
     public MatchSegmentDisplay[] GetSegments()
     {
         var (optimizedLine, optimizedStartPos) = GetOptimizedLine(200);

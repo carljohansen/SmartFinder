@@ -15,7 +15,7 @@ public class FileDisplay
 
     public string SizeDisplay { get; private set; }
 
-    public DateTime LastModified { get; private set; }
+    public DateTime? LastModified { get; private set; }
 
     public string FileTypeDescription { get; private set; } = string.Empty;
 
@@ -67,6 +67,10 @@ public class FileDisplay
         return result;
     }
 
+    private static bool IsMagicUnknownDate(DateTime modifiedDate) => modifiedDate.Year == 1980 && modifiedDate.Month == 1 && modifiedDate.Day == 1;
+
+    private static DateTime? NormalizeModificationTime(DateTime modifiedDateTime) => IsMagicUnknownDate(modifiedDateTime) ? null : modifiedDateTime;
+
     public void InitializeMetadata()
     {
         if (LastModified != default)
@@ -87,7 +91,7 @@ public class FileDisplay
 
         Size = fileInfo.Length; // File size in bytes
         SizeDisplay = BytesToString(Size);
-        LastModified = fileInfo.LastWriteTime; // Last modified date/time
+        LastModified = NormalizeModificationTime(fileInfo.LastWriteTime); // Last modified date/time
         //}
     }
 

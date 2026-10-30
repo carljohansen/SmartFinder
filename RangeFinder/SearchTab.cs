@@ -31,6 +31,7 @@ public partial class SearchTab : UserControl
     private int _chkMatchCaseFixedRight;
     private CancellationTokenSource? _searchCancellationTokenSource;
     private bool _isClosing = false;
+    private bool _isSearchInProgress = false;
     private bool _hasInitializedFromUserPrefs = false;
 
     private SearchForm _parent;
@@ -57,7 +58,9 @@ public partial class SearchTab : UserControl
     public void ApplyUserPreferences(UserTabSettings settings)
     {
         _currentSearch.DataTable.DefaultView.Sort = settings.ResultSortOrder;
-        if (settings.SplitterDistance.HasValue)
+        if (settings.SplitterDistance.HasValue
+            && spltResultPanel.Panel1MinSize <= settings.SplitterDistance.Value
+            && settings.SplitterDistance.Value <= spltResultPanel.Width - spltResultPanel.Panel2MinSize)
         {
             spltResultPanel.SplitterDistance = settings.SplitterDistance.Value;
         }
@@ -229,6 +232,7 @@ public partial class SearchTab : UserControl
         SetStatusText("Searching...");
         btnSearch.Enabled = false;
         btnCancelSearch.Enabled = true;
+        _isSearchInProgress = true;
         CollapseDropdowns();
         SetProgress(0);
         RaiseFilesFoundUpdate(-1, searchStatus: FileSearchStatus.Running);
@@ -236,7 +240,23 @@ public partial class SearchTab : UserControl
         contextMenuRowIndex = -1;
         _searchCancellationTokenSource = new CancellationTokenSource();
 
-        spltResultPanel.FixedPanel = searchDto.HasTextSearch() ? FixedPanel.Panel1 : FixedPanel.Panel2;
+        if (searchDto.HasTextSearch())
+        {
+            if (spltResultPanel.Panel2Collapsed)
+            {
+                spltResultPanel.Panel2Collapsed = false;
+                spltResultPanel.FixedPanel = FixedPanel.Panel2;
+                ResizeResultsGrid();
+            }
+        }
+        else
+        {
+            if (!spltResultPanel.Panel2Collapsed)
+            {
+                spltResultPanel.Panel2Collapsed = true;
+                ResizeResultsGrid();
+            }
+        }
 
         SearchOutcome? searchOutcome = null;
         try
@@ -250,6 +270,12 @@ public partial class SearchTab : UserControl
         catch
         {
             SetStatusText("Invalid search criteria");
+        }
+        finally
+        {
+            _isSearchInProgress = false;
+            _searchCancellationTokenSource?.Dispose();
+            _searchCancellationTokenSource = null;
         }
 
         UserSearchRepository.SaveSearchDto(searchDto);
@@ -559,6 +585,8 @@ public partial class SearchTab : UserControl
         MatchListRenderer.Instance.DrawMatchListViewSubItem(itemUnderlyingMatches, lstTextMatches, e);
     }
 
+    private SlidingWindow<IFileLineDisplay> _priorContextWindow = new(2);
+
     private void grdResult_RowEnter(object sender, DataGridViewCellEventArgs e)
     {
         if (e.RowIndex < 0)
@@ -566,17 +594,36 @@ public partial class SearchTab : UserControl
             return;
         }
 
-        var fileDisplay = GetRowFileDisplay(e.RowIndex);
-        if (fileDisplay != null)
+        if (_isSearchInProgress)
         {
-            var matches = _currentSearch.GetMatches(fileDisplay.FullPath);
-            lstTextMatches.Items.Clear();
-            foreach (var match in matches)
-            {
-                var newItem = lstTextMatches.Items.Add(new ListViewItem(["", ""]));
-                newItem.Tag = match;
-            }
+            return;
         }
+
+        var fileDisplay = GetRowFileDisplay(e.RowIndex);
+        if (fileDisplay == null)
+        {
+            return;
+        }
+
+        lstTextMatches.Items.Clear();
+        _priorContextWindow.Clear();
+        _currentSearch.GetMatches(fileDisplay.FullPath, match =>
+        {
+            if (!match.HasMatches)
+            {
+                _priorContextWindow.Add(match);
+                return;
+            }
+
+            var priorItems = _priorContextWindow.GetWindowAndClear();
+            foreach (var priorItem in priorItems)
+            {
+                var priorListItem = lstTextMatches.Items.Add(new ListViewItem(["", ""]));
+                priorListItem.Tag = priorItem;
+            }
+            var newItem = lstTextMatches.Items.Add(new ListViewItem(["", ""]));
+            newItem.Tag = match;
+        });
     }
 
     private void SearchTab_Load(object sender, EventArgs e)
@@ -795,7 +842,7 @@ public partial class SearchTab : UserControl
         var currPath = cmbRootDir.Text;
 
         var possibleContinuations = TextCriterionHistoryCollection.Instance.BaseDirHistory.GetPossibleContinuations(currPath);
-
+        
         cmbRootDir.PopulateDropdown(TextCriterionHistoryCollection.Instance.BaseDirHistory, possibleContinuations);
     }
 
